@@ -1,0 +1,194 @@
+{
+  "_note": "ステージデータ（仮）。会話はすべて仮テキスト（scenario.md は取り込んでいない）。",
+  "first": "t1",
+  "stages": {
+    "t1": {
+      "title": "試験1：外傷",
+      "map": { "x": 330, "y": 540 },
+      "hasChoice": false,
+      "startVital": 70,
+      "naturalDrain": { "intervalSec": 2, "amount": 1 },
+      "timeLimitSec": 240,
+      "coef": {},
+      "talkBefore": [
+        { "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "patient", "name": "患者", "speaker": "right", "text": "【仮】会話テキスト。患者が運ばれてくる。" },
+        { "name": "主人公", "speaker": "left", "text": "【仮】会話テキスト。背中の外傷を確認する。" },
+        { "briefing": true }
+      ],
+      "briefing": {
+        "text": "【仮】背中に切り傷と金属片、裂傷がある。",
+        "clear": "すべての外傷を治療する",
+        "effort": [{ "id": "nomiss", "type": "noMiss", "text": "ミスをしない" }]
+      },
+      "steps": [
+        {
+          "background": "skin",
+          "lesions": [
+            { "id": "c1", "type": "cut", "points": [[12, 10], [26, 14], [38, 12]], "appear": { "type": "start" } },
+            { "id": "c2", "type": "cut", "points": [[14, 36], [26, 40]], "appear": { "type": "start" } },
+            { "id": "f1", "type": "fragment", "point": [62, 16], "appear": { "type": "start" } },
+            { "id": "f2", "type": "fragment", "point": [74, 26], "appear": { "type": "time", "sec": 20 } },
+            { "id": "l1", "type": "laceration", "points": [[52, 38], [66, 42], [80, 37]], "appear": { "type": "after", "id": "f1" } }
+          ],
+          "events": [
+            { "at": 0.5, "subtitle": { "name": "主人公", "text": "【仮】まずは消毒と、軽い切り傷の治療だ。" } },
+            { "onClear": "f1", "subtitle": { "name": "主人公", "text": "【仮】破片の下に裂傷がある。血を吸ってから縫合する。" } },
+            { "at": 20, "subtitle": { "name": "主人公", "text": "【仮】もう一つ破片が見つかった。" } }
+          ]
+        }
+      ],
+      "timeUpTalk": [
+        { "bg": "clinic", "left": "protagonist", "right": null, "name": "主人公", "speaker": "left", "text": "【仮】時間切れの会話。……間に合わなかった。" }
+      ],
+      "talkAfter": [
+        { "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "broker", "name": "仲介屋", "speaker": "right", "text": "【仮】手術後の会話。" }
+      ],
+      "score": [
+        { "cond": "clear", "points": 50 },
+        { "cond": "effort", "id": "nomiss", "points": 20 },
+        { "cond": "vitalAtLeast", "value": 50, "points": 15 },
+        { "cond": "timeLeftRatio", "value": 0.5, "points": 15 }
+      ],
+      "unlocks": [{ "stage": "t2" }]
+    },
+
+    "t2": {
+      "title": "試験2：切開と処置分岐",
+      "map": { "x": 800, "y": 540 },
+      "hasChoice": true,
+      "startVital": 80,
+      "naturalDrain": { "intervalSec": 2, "amount": 1 },
+      "timeLimitSec": 300,
+      "coef": { "anesthesia": 1.0 },
+      "talkBefore": [
+        { "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "assistant", "name": "助手", "speaker": "right", "text": "【仮】会話テキスト。体内に腫瘍がある患者。" },
+        { "name": "主人公", "speaker": "left", "text": "【仮】処置の方針を決める（処置内容の分岐の試験）。" },
+        { "choice": [
+          { "text": "【仮】慎重に進める（大きな腫瘍1つ）", "set": { "approach": "careful" } },
+          { "text": "【仮】手早く進める（小さな腫瘍2つ）", "set": { "approach": "quick" } }
+        ] },
+        { "briefing": true }
+      ],
+      "briefing": {
+        "text": "【仮】胸部を切開し、体内の腫瘍を摘出する。",
+        "clear": "腫瘍をすべて摘出する",
+        "effort": [
+          { "id": "disinfect", "type": "noGelSkip", "text": "切開の前にヒールゼリーで消毒する" },
+          { "id": "nomiss", "type": "noMiss", "text": "ミスをしない" }
+        ]
+      },
+      "steps": [
+        {
+          "background": "skin",
+          "lesions": [
+            { "id": "i1", "type": "incision", "points": [[50, 6], [50, 18], [50, 30], [50, 42]], "appear": { "type": "start" } }
+          ],
+          "events": [
+            { "at": 0.5, "subtitle": { "name": "助手", "text": "【仮】切開の前に消毒をお願いします。" } }
+          ]
+        },
+        {
+          "background": "internal",
+          "variants": [
+            { "if": { "flag": "approach", "eq": "careful" },
+              "lesions": [
+                { "id": "t1", "type": "tumor", "center": [50, 25], "radius": 5, "appear": { "type": "start" } }
+              ] },
+            { "lesions": [
+                { "id": "t1", "type": "tumor", "center": [32, 20], "radius": 3, "appear": { "type": "start" } },
+                { "id": "t2", "type": "tumor", "center": [68, 30], "radius": 3, "appear": { "type": "time", "sec": 5 } }
+              ] }
+          ],
+          "events": [
+            { "at": 0, "talk": [
+              { "left": "protagonist", "right": "assistant", "name": "助手", "speaker": "right", "text": "【仮】ゲーム中の会話（キャラクター絵つき）。この間はゲームが止まる。" },
+              { "name": "主人公", "speaker": "left", "text": "【仮】膿を吸い出してから、腫瘍を切除する。" }
+            ] }
+          ]
+        }
+      ],
+      "timeUpTalk": [
+        { "bg": "clinic", "left": "protagonist", "right": "assistant", "name": "助手", "speaker": "right", "text": "【仮】時間切れの会話。" }
+      ],
+      "talkAfter": [
+        { "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "assistant", "name": "助手", "speaker": "right", "text": "【仮】手術後の会話。ここでシナリオ分岐の選択肢を出す。" },
+        { "choice": [
+          { "text": "【仮】闇ルートへ進む", "set": { "route": "dark" } },
+          { "text": "【仮】光ルートへ進む", "set": { "route": "light" } }
+        ] }
+      ],
+      "score": [
+        { "cond": "clear", "points": 50 },
+        { "cond": "effort", "id": "disinfect", "points": 15 },
+        { "cond": "effort", "id": "nomiss", "points": 15 },
+        { "cond": "vitalAtLeast", "value": 50, "points": 10 },
+        { "cond": "timeLeftRatio", "value": 0.5, "points": 10 }
+      ],
+      "unlocks": [
+        { "stage": "t3d", "if": { "flag": "route", "eq": "dark" } },
+        { "stage": "t3l", "if": { "flag": "route", "eq": "light" } }
+      ]
+    },
+
+    "t3d": {
+      "title": "試験3：闇ルート",
+      "map": { "x": 1300, "y": 360 },
+      "hasChoice": false,
+      "startVital": 50,
+      "naturalDrain": { "intervalSec": 1.5, "amount": 1 },
+      "timeLimitSec": 120,
+      "coef": { "damage": 1.2 },
+      "talkBefore": [
+        { "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "broker", "name": "仲介屋", "speaker": "right", "text": "【仮】闇ルートの会話。" },
+        { "briefing": true }
+      ],
+      "briefing": { "text": "【仮】重傷の患者。", "clear": "すべての外傷を治療する", "effort": [{ "id": "nomiss", "type": "noMiss", "text": "ミスをしない" }] },
+      "steps": [
+        { "background": "skin", "lesions": [
+          { "id": "l1", "type": "laceration", "points": [[20, 14], [40, 20]], "appear": { "type": "start" } },
+          { "id": "l2", "type": "laceration", "points": [[60, 34], [82, 28]], "appear": { "type": "time", "sec": 10 } },
+          { "id": "f1", "type": "fragment", "point": [50, 40], "appear": { "type": "start" } }
+        ], "events": [] }
+      ],
+      "timeUpTalk": [{ "bg": "clinic", "left": "protagonist", "right": null, "name": "主人公", "speaker": "left", "text": "【仮】時間切れ。" }],
+      "talkAfter": [{ "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": null, "name": "主人公", "speaker": "left", "text": "【仮】闇ルートのエンディング。" }],
+      "score": [
+        { "cond": "clear", "points": 50 },
+        { "cond": "effort", "id": "nomiss", "points": 25 },
+        { "cond": "vitalAtLeast", "value": 30, "points": 25 }
+      ],
+      "unlocks": []
+    },
+
+    "t3l": {
+      "title": "試験3：光ルート",
+      "map": { "x": 1300, "y": 720 },
+      "hasChoice": false,
+      "startVital": 90,
+      "naturalDrain": { "intervalSec": 3, "amount": 1 },
+      "timeLimitSec": 180,
+      "coef": { "heal": 1.2 },
+      "talkBefore": [
+        { "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "assistant", "name": "助手", "speaker": "right", "text": "【仮】光ルートの会話。" },
+        { "briefing": true }
+      ],
+      "briefing": { "text": "【仮】軽傷の患者が多数。", "clear": "すべての外傷を治療する", "effort": [{ "id": "fast", "type": "timeLeftRatio", "value": 0.6, "text": "制限時間を6割以上残す" }] },
+      "steps": [
+        { "background": "skin", "lesions": [
+          { "id": "c1", "type": "cut", "points": [[10, 10], [30, 10]], "appear": { "type": "start" } },
+          { "id": "c2", "type": "cut", "points": [[70, 10], [90, 14]], "appear": { "type": "time", "sec": 5 } },
+          { "id": "c3", "type": "cut", "points": [[40, 40], [60, 40]], "appear": { "type": "time", "sec": 10 } },
+          { "id": "f1", "type": "fragment", "point": [50, 25], "appear": { "type": "after", "id": "c1" } }
+        ], "events": [] }
+      ],
+      "timeUpTalk": [{ "bg": "clinic", "left": "protagonist", "right": null, "name": "主人公", "speaker": "left", "text": "【仮】時間切れ。" }],
+      "talkAfter": [{ "bg": "clinic", "bgm": "talk", "left": "protagonist", "right": "assistant", "name": "助手", "speaker": "right", "text": "【仮】光ルートのエンディング。" }],
+      "score": [
+        { "cond": "clear", "points": 50 },
+        { "cond": "effort", "id": "fast", "points": 30 },
+        { "cond": "vitalAtLeast", "value": 70, "points": 20 }
+      ],
+      "unlocks": []
+    }
+  }
+}

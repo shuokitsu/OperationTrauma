@@ -1,0 +1,49 @@
+{
+  "_note": "医療機器データ（仮）。値はすべて試作用の仮置き。",
+  "order": ["gel", "drain", "tweezers", "scalpel", "suture", "syringe"],
+  "list": {
+    "gel": {
+      "name": "ヒールゼリー",
+      "stock": 5,
+      "stockRegenSec": 3,
+      "brushRadius": 3,
+      "healPerUse": 1,
+      "whiff": { "result": "none" }
+    },
+    "drain": {
+      "name": "ドレーン",
+      "radius": 3,
+      "ratePerSec": 0.8,
+      "whiff": { "result": "none" }
+    },
+    "tweezers": {
+      "name": "ピンセット",
+      "grabRange": 2,
+      "failDamage": 3,
+      "whiff": { "result": "none" }
+    },
+    "scalpel": {
+      "name": "メス",
+      "passRange": 2,
+      "tolerance": 3,
+      "failDamage": 2,
+      "whiff": { "result": "damage", "damage": 2, "spawn": "laceration" }
+    },
+    "suture": {
+      "name": "縫合針",
+      "passRange": 2,
+      "failDamage": 1,
+      "whiff": { "result": "damage", "damage": 1 }
+    },
+    "syringe": {
+      "name": "注射",
+      "gaugeRefillSec": 10,
+      "hitSize": 3,
+      "drugs": [
+        { "id": "stim", "name": "回復剤", "heal": 20 },
+        { "id": "anesthesia", "name": "麻酔", "durationSec": 10, "drainRate": 0.5 }
+      ],
+      "whiff": { "result": "none" }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "_note": "病巣データ（種類）。値・手順はすべて試作用の仮置き。step.tool = 使う機器、step.action = 判定方法。",
+  "types": {
+    "cut": {
+      "name": "切り傷",
+      "shape": "line",
+      "steps": [{ "tool": "gel", "action": "cover" }],
+      "successHeal": 2,
+      "drain": { "intervalSec": 4, "amount": 1 }
+    },
+    "laceration": {
+      "name": "裂傷",
+      "shape": "line",
+      "blood": { "initial": 1.0, "poolRadius": 5, "rebleedSec": 8 },
+      "steps": [
+        { "tool": "drain", "action": "suckBlood" },
+        { "tool": "tweezers", "action": "pinch" },
+        { "tool": "suture", "action": "stitch" },
+        { "tool": "gel", "action": "cover" }
+      ],
+      "successHeal": 5,
+      "drain": { "intervalSec": 3, "amount": 1 }
+    },
+    "fragment": {
+      "name": "破片痕",
+      "shape": "point",
+      "steps": [
+        { "tool": "tweezers", "action": "extract" },
+        { "tool": "gel", "action": "cover" }
+      ],
+      "successHeal": 3,
+      "drain": { "intervalSec": 5, "amount": 1 }
+    },
+    "incision": {
+      "name": "切開",
+      "shape": "points",
+      "steps": [
+        { "tool": "gel", "action": "cover", "optional": true, "skipPenalty": 3 },
+        { "tool": "scalpel", "action": "cut" }
+      ],
+      "successHeal": 0
+    },
+    "tumor": {
+      "name": "腫瘍",
+      "shape": "circle",
+      "pus": { "initial": 1.0 },
+      "steps": [
+        { "tool": "drain", "action": "suckPus" },
+        { "tool": "gel", "action": "cover" },
+        { "tool": "scalpel", "action": "cut" },
+        { "tool": "tweezers", "action": "extract" },
+        { "tool": "gel", "action": "cover" }
+      ],
+      "successHeal": 10,
+      "drain": { "intervalSec": 2, "amount": 1 }
+    }
+  }
+}
