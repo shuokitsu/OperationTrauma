@@ -12,7 +12,7 @@
 | 02 | [02_screens.md](02_screens.md) | 画面一覧、画面遷移、各画面の仕様、オプション、セーブ | 草案（B1〜B6 反映済み） |
 | 03 | [03_game_rules.md](03_game_rules.md) | バイタル、麻酔、制限時間、クリア・ゲームオーバー条件、評価・ランク、係数・難易度 | 草案（C1〜C5 反映済み。C3 は一部検討中）。係数・難易度の仕様を追加 |
 | 04 | [04_surgery_area.md](04_surgery_area.md) | 手術エリア（グリッド・当たり判定）、患者の表現 | 草案 |
-| 05 | [05_instruments.md](05_instruments.md) | 医療機器 | 草案 |
+| 05 | [05_instruments.md](05_instruments.md) | 医療機器（操作方法・判定方法・結果の4分類） | 草案（M1〜M35 反映済み） |
 | 06 | [06_lesions.md](06_lesions.md) | 病巣（種類・治療手順） | 草案 |
 | 07 | [07_data_format.md](07_data_format.md) | データ仕様（データの種類と基本ルール、医療機器・病巣・ステージ・システム・シナリオ・セーブ） | 草案（R1〜R7 反映済み） |
 | 08 | [08_assets.md](08_assets.md) | フォルダ構成、素材 | 草案 |

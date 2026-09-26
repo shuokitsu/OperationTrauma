@@ -1,0 +1,91 @@
+{
+  "_note": "病巣データ（種類）。テーマ3（病巣の再整理）が未決のため、手順・値はすべて試作の仮置き。形（判定データ）は配置側で指定する（試作の仮）",
+  "scratch": {
+    "name": "切り傷", "width": 1.2, "color": "#c0504d",
+    "decline": { "intervalSec": 5, "amount": 1 },
+    "steps": [ { "tool": "gel", "heal": 2 } ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  },
+  "small_cut": {
+    "name": "小さな切り傷", "width": 1.0, "color": "#d0605a",
+    "decline": { "intervalSec": 6, "amount": 1 },
+    "steps": [ { "tool": "gel", "heal": 1 } ],
+    "sounds": { "appear": "miss", "step": "success", "done": "heal" }
+  },
+  "fragment": {
+    "name": "破片痕", "radius": 1.6, "color": "#9aa5b1",
+    "decline": { "intervalSec": 4, "amount": 1 },
+    "steps": [
+      { "tool": "tweezers", "dest": "tray", "failDamage": 2, "label": "破片をトレイへ" },
+      { "tool": "gel", "heal": 2 }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  },
+  "laceration": {
+    "name": "裂傷", "width": 2.0, "color": "#8e1f1f",
+    "decline": { "intervalSec": 3, "amount": 1 },
+    "steps": [
+      { "tool": "drain", "amount": 30, "regenPerSec": 2, "max": 40, "label": "血溜まり" },
+      { "tool": "suture", "failDamage": 1 },
+      { "tool": "gel", "heal": 3 }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  },
+  "foreign_body": {
+    "name": "皮膚の中の異物", "width": 1.2, "color": "#6f5a3a",
+    "decline": { "intervalSec": 5, "amount": 1 },
+    "steps": [
+      { "tool": "gel", "optional": true, "skipDamage": 3, "label": "消毒（省略可）" },
+      { "tool": "scalpel", "failDamage": 2, "label": "切開" },
+      { "tool": "tweezers", "dest": "tray", "failDamage": 2, "label": "異物をトレイへ" },
+      { "tool": "suture", "failDamage": 1 },
+      { "tool": "gel", "heal": 3 }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  },
+  "incision": {
+    "name": "切開（開腹）", "width": 1.2, "color": "#e0c080",
+    "decline": null,
+    "steps": [
+      { "tool": "gel", "optional": true, "skipDamage": 3, "label": "消毒（省略可）" },
+      { "tool": "scalpel", "failDamage": 2, "label": "切開" }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "success" }
+  },
+  "closure": {
+    "name": "閉腹", "width": 1.6, "color": "#a04040",
+    "decline": { "intervalSec": 4, "amount": 1 },
+    "steps": [
+      { "tool": "suture", "failDamage": 1 },
+      { "tool": "gel", "heal": 3 }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  },
+  "tumor": {
+    "name": "腫瘍", "radius": 4, "color": "#7a8f3a",
+    "decline": { "intervalSec": 2, "amount": 1 },
+    "steps": [
+      { "tool": "drain", "amount": 20, "regenPerSec": 0, "max": 20, "label": "膿" },
+      { "tool": "gel", "heal": 1, "label": "洗浄" },
+      { "tool": "scalpel", "closed": true, "failDamage": 3, "label": "周囲を切る" },
+      { "tool": "tweezers", "dest": "tray", "failDamage": 3, "label": "摘出" },
+      { "tool": "gel", "heal": 4 }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  },
+  "vessel": {
+    "name": "血管", "radius": 1.5, "color": "#c03050",
+    "decline": null,
+    "steps": [ { "tool": "tweezers", "dest": "fixed", "failDamage": 3, "label": "脇へ寄せる" } ],
+    "sounds": { "appear": null, "step": "success", "done": "success" }
+  },
+  "infection": {
+    "name": "感染巣", "radius": 3, "color": "#5f8f6f",
+    "decline": { "intervalSec": 3, "amount": 1 },
+    "steps": [
+      { "tool": "syringe", "drug": "antibiotic", "need": 60, "label": "抗菌剤" },
+      { "tool": "gel", "heal": 3 }
+    ],
+    "sounds": { "appear": null, "step": "success", "done": "heal" }
+  }
+}

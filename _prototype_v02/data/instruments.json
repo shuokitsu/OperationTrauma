@@ -1,0 +1,43 @@
+{
+  "_note": "医療機器データ（spec/05）。値は spec/05 の基本値。TBD-05-11 の値（筆の半径など）は試作の仮の値",
+  "order": ["gel", "drain", "tweezers", "scalpel", "suture", "syringe"],
+  "gel": {
+    "name": "ヒールゼリー", "icon": "icon_gel",
+    "stock": 5, "stockRegenSec": 5,
+    "healOnPress": 1, "healIntervalSec": 2, "healCapPerStock": 10,
+    "successHealDefault": 1, "brushRadius": 3,
+    "sounds": { "use": "gel", "fail": "miss", "invalid": "invalid", "miss": null }
+  },
+  "drain": {
+    "name": "ドレーン", "icon": "icon_drain",
+    "suckPerTick": 1, "tickSec": 0.1,
+    "sounds": { "use": "drain", "fail": "miss", "invalid": "invalid", "miss": null }
+  },
+  "tweezers": {
+    "name": "ピンセット", "icon": "icon_tweezers",
+    "failDamageDefault": 2, "destRange": 2,
+    "sounds": { "use": "grab", "fail": "miss", "invalid": "invalid", "miss": null }
+  },
+  "scalpel": {
+    "name": "メス", "icon": "icon_scalpel",
+    "pointRange": 2, "tolerance": 3, "minCutLength": 2,
+    "failDamageDefault": 2, "missDamage": 2, "missSpawn": "small_cut", "missSpawnMaxLength": 12,
+    "sounds": { "use": "cut", "fail": "miss", "invalid": "invalid", "miss": "miss" }
+  },
+  "suture": {
+    "name": "縫合針", "icon": "icon_suture",
+    "tolerance": 6, "failDamageDefault": 1, "missDamage": 1,
+    "sounds": { "use": "stitch", "fail": "miss", "invalid": "invalid", "miss": "miss" }
+  },
+  "syringe": {
+    "name": "注射", "icon": "icon_syringe",
+    "gaugeMax": 100, "gaugeRegenSec": 10, "injectPerSec": 50,
+    "defaultDrug": "recovery",
+    "drugs": {
+      "recovery":   { "name": "回復剤", "short": "回復", "healPerFull": 20 },
+      "anesthesia": { "name": "麻酔", "short": "麻酔", "secPerFull": 10, "declineRate": 0.5, "defaultLimit": 250, "warnRatio": 0.7 },
+      "antibiotic": { "name": "抗菌剤", "short": "抗菌", "targeted": true, "missDamage": 1 }
+    },
+    "sounds": { "use": "inject", "fail": "miss", "invalid": "invalid", "miss": "miss" }
+  }
+}

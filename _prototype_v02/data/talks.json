@@ -1,0 +1,75 @@
+{
+  "_note": "会話データ。s1_before は scenario.md のテキスト（話者の割り当てと「奥から主人公が出てくる」の地の文は試作の仮置き）。ほかはすべて仮テキスト",
+  "names": { "broker": "仲介屋", "patient": "怪我人", "protagonist": "主人公", "assistant": "助手", "narr": "" },
+  "chars": { "broker": "char_broker", "patient": "char_patient", "protagonist": "char_protagonist", "assistant": "char_assistant" },
+  "talks": {
+    "s1_before": {
+      "left": "broker", "right": "patient",
+      "lines": [
+        { "narr": "仲介屋が怪我人を連れてくる" },
+        { "who": "broker", "text": "ここだ、もう大丈夫だぞ" },
+        { "who": "patient", "text": "痛ぇ…" },
+        { "who": "broker", "text": "おーい、仕事だぞー" },
+        { "narr": "奥から主人公が出てくる", "right": "protagonist" },
+        { "who": "protagonist", "text": "…" },
+        { "who": "broker", "text": "今日は大した怪我じゃないよ。さっさとやってくれ" },
+        { "who": "protagonist", "text": "…" },
+        { "who": "patient", "text": "あんた…医者なのか…？", "left": "patient" },
+        { "who": "protagonist", "text": "生憎な" },
+        { "who": "protagonist", "text": "服を脱いでそこのベッドに寝るんだ" },
+        { "briefing": true },
+        { "who": "protagonist", "text": "背中に外傷、金属の破片もあるな" },
+        { "who": "protagonist", "text": "裂傷縫合と異物除去を行う" }
+      ]
+    },
+    "s1_after": {
+      "left": "broker", "right": "protagonist",
+      "lines": [
+        { "who": "broker", "text": "（仮）相変わらず手際がいいな" },
+        { "who": "protagonist", "text": "（仮）…次を連れてこい" }
+      ]
+    },
+    "s2_before": {
+      "left": "assistant", "right": "protagonist",
+      "lines": [
+        { "who": "assistant", "text": "（仮）今日から助手に入ります。よろしくお願いします" },
+        { "who": "protagonist", "text": "（仮）足を引っ張るなよ" },
+        { "briefing": true },
+        { "who": "protagonist", "text": "（仮）腹部に腫瘍。開腹して摘出する" }
+      ]
+    },
+    "s2_after": { "left": "assistant", "right": "protagonist", "lines": [ { "who": "assistant", "text": "（仮）すごい……" } ] },
+    "s3_before": {
+      "left": "assistant", "right": "protagonist",
+      "lines": [
+        { "who": "assistant", "text": "（仮）先生、どう進めますか？" },
+        { "choice": [
+          { "label": "確実に一つずつ（腫瘍1つ）", "flag": "s3_plan", "value": "safe" },
+          { "label": "まとめて片付ける（腫瘍2つ）", "flag": "s3_plan", "value": "bold" }
+        ] },
+        { "briefing": true },
+        { "who": "protagonist", "text": "（仮）感染巣と腫瘍。抗菌剤は感染巣に直接打つ" }
+      ]
+    },
+    "s3_after": { "left": "assistant", "right": "protagonist", "lines": [ { "who": "protagonist", "text": "（仮）結果は同じだ" } ] },
+    "s4_before": {
+      "left": "assistant", "right": "protagonist",
+      "lines": [
+        { "who": "assistant", "text": "（仮）……先生、私、少し体調が" },
+        { "who": "broker", "text": "（仮）これを飲ませておけ。よく効く", "left": "broker" },
+        { "choice": [
+          { "label": "助手に薬を飲ませる", "flag": "route", "value": "dark" },
+          { "label": "薬は使わない", "flag": "route", "value": "light" }
+        ] },
+        { "briefing": true },
+        { "who": "protagonist", "text": "（仮）外傷が多い。順に片付ける" }
+      ]
+    },
+    "s4_after": { "left": "assistant", "right": "protagonist", "lines": [ { "who": "protagonist", "text": "（仮）……これで良かったのか" } ] },
+    "dark_before": { "left": "broker", "right": "protagonist", "lines": [ { "who": "broker", "text": "（仮）もう後戻りはできないぞ" }, { "briefing": true } ] },
+    "dark_ending": { "left": "broker", "right": "protagonist", "lines": [ { "narr": "（仮）闇落ちエンディング" }, { "narr": "―― END ――" } ] },
+    "light_before": { "left": "assistant", "right": "protagonist", "lines": [ { "who": "assistant", "text": "（仮）一緒にここを出ましょう" }, { "briefing": true } ] },
+    "light_ending": { "left": "assistant", "right": "protagonist", "lines": [ { "narr": "（仮）光落ちエンディング" }, { "narr": "―― END ――" } ] },
+    "timeup": { "left": "assistant", "right": "protagonist", "lines": [ { "who": "protagonist", "text": "（仮）……間に合わなかったか" } ] }
+  }
+}

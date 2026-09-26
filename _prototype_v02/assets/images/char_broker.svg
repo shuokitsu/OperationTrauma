@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900" font-family="Yu Gothic, Meiryo, sans-serif">
+
+<ellipse cx="300" cy="230" rx="120" ry="140" fill="#a38b5a"/>
+<path d="M60 900 C60 560 160 420 300 420 C440 420 540 560 540 900 Z" fill="#a38b5a"/>
+<rect x="150" y="620" width="300" height="70" rx="12" fill="#000" fill-opacity="0.35"/>
+<text x="300" y="668" font-size="40" fill="#ffffff" fill-opacity="0.9" text-anchor="middle">仮：仲介屋</text>
+</svg>
