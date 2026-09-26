@@ -1,7 +1,7 @@
 # OperationTrauma 仕様書
 
 - ステータス：草案
-- 最終更新：2026-09-25
+- 最終更新：2026-09-26
 - 元資料：[memo.md](../memo.md)（アイデアメモの原本）、[scenario.md](../scenario.md)（シナリオ）
 
 ## 目次
@@ -14,7 +14,7 @@
 | 04 | [04_surgery_area.md](04_surgery_area.md) | 手術エリア（グリッド・当たり判定）、患者の表現 | 草案 |
 | 05 | [05_instruments.md](05_instruments.md) | 医療機器 | 草案 |
 | 06 | [06_lesions.md](06_lesions.md) | 病巣（種類・治療手順） | 草案 |
-| 07 | [07_data_format.md](07_data_format.md) | データ仕様（病巣・ステージ・シナリオ） | 草案 |
+| 07 | [07_data_format.md](07_data_format.md) | データ仕様（データの種類と基本ルール、医療機器・病巣・ステージ・システム・シナリオ・セーブ） | 草案（R1〜R7 反映済み） |
 | 08 | [08_assets.md](08_assets.md) | フォルダ構成、素材 | 草案 |
 | - | [glossary.md](glossary.md) | 用語集 | 草案 |
 
