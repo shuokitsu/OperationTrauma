@@ -1,3 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" font-family="Yu Gothic, Meiryo, sans-serif">
-<path d="M60 18 C40 50 28 66 28 82 A32 32 0 0 0 92 82 C92 66 80 50 60 18 Z" fill="#6fd39a"/>
+<g transform="rotate(45 60 60)">
+<rect x="41" y="14" width="38" height="16" rx="2" fill="#dfe8f1"/>
+<rect x="45" y="30" width="30" height="13" fill="#dfe8f1"/>
+<rect x="27" y="41" width="66" height="67" rx="7" fill="#dfe8f1"/>
+<path d="M32 62 Q42 59 53 62 T88 62 V98 Q88 103 83 103 H37 Q32 103 32 98 Z" fill="#7fc4ff"/>
+<rect x="27" y="41" width="66" height="67" rx="7" fill="none" stroke="#b8c7d6" stroke-width="2"/>
+<path d="M45 19 V25 M52 19 V25 M59 19 V25 M66 19 V25 M73 19 V25" stroke="#b8c7d6" stroke-width="2"/>
+<path d="M37 49 V57 M83 49 V57" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+</g>
 </svg>

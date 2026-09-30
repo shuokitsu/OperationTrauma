@@ -1,0 +1,27 @@
+{
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "json.format.enable": true,
+    "json.format.keepLines": true,
+    "chat.tools.terminal.autoApprove": {
+        "/^python -c \"import xml\\.etree\\.ElementTree as ET; ET\\.parse\\(r'_prototype_v02/assets/images/icon_drain\\.svg'\\); compile\\(open\\(r'_prototype_v02/tools/gen_images\\.py', encoding='utf-8'\\)\\.read\\(\\), r'_prototype_v02/tools/gen_images\\.py', 'exec'\\); print\\('SVG XML and generator syntax: OK'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -c \"import xml\\.etree\\.ElementTree as ET; root=ET\\.parse\\(r'_prototype_v02/assets/images/icon_gel\\.svg'\\)\\.getroot\\(\\); compile\\(open\\(r'_prototype_v02/tools/gen_images\\.py', encoding='utf-8'\\)\\.read\\(\\), r'_prototype_v02/tools/gen_images\\.py', 'exec'\\); print\\('SVG XML and generator syntax: OK; background shapes:', sum\\(1 for item in root if item\\.tag\\.endswith\\('rect'\\)\\)\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -c \"import xml\\.etree\\.ElementTree as ET; ET\\.parse\\(r'_prototype_v02/assets/images/icon_gel\\.svg'\\); compile\\(open\\(r'_prototype_v02/tools/gen_images\\.py', encoding='utf-8'\\)\\.read\\(\\), r'_prototype_v02/tools/gen_images\\.py', 'exec'\\); print\\('SVG XML and generator syntax: OK'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -c \"import xml\\.etree\\.ElementTree as ET; ET\\.parse\\(r'_prototype_v02/assets/images/icon_scalpel\\.svg'\\); compile\\(open\\(r'_prototype_v02/tools/gen_images\\.py', encoding='utf-8'\\)\\.read\\(\\), r'_prototype_v02/tools/gen_images\\.py', 'exec'\\); print\\('SVG XML and generator syntax: OK'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

@@ -25,7 +25,12 @@
 <rect x="170" y="51.5" width="620" height="18" rx="9" fill="#dfe3e8"/>
 <rect x="170" y="51.5" width="434.0" height="18" rx="9" fill="#3fae6a"/>
 <rect x="130" y="445" width="700" height="95" fill="#ffffff" stroke="#8a8f99" stroke-width="1.5"/>
-<text x="480.0" y="492.5" font-size="15" fill="#2b2f36" font-weight="normal" text-anchor="middle" dominant-baseline="middle">字幕エリア（リアルタイム会話ウィンドウ）</text>
+<g transform="translate(245 485)" fill="#ffffff" stroke="#35404d" stroke-width="1.5">
+<circle cx="0" cy="-16" r="21"/>
+<path d="M-37 38 C-33 14 -23 2 -11 4 C-6 11 9 9 11 4 C23 2 33 14 37 38 Z"/>
+</g>
+<text x="245" y="531" font-size="10" fill="#8a8f99" font-weight="normal" text-anchor="middle" dominant-baseline="middle">顔画像（背景透過・輪郭あり）</text>
+<text x="575.0" y="492.5" font-size="15" fill="#2b2f36" font-weight="normal" text-anchor="middle" dominant-baseline="middle">字幕エリア（リアルタイム会話ウィンドウ）</text>
 <rect x="830" y="0" width="130" height="95" fill="#e3e6eb" stroke="#8a8f99" stroke-width="1.5"/>
 <text x="895.0" y="47.5" font-size="16" fill="#2b2f36" font-weight="bold" text-anchor="middle" dominant-baseline="middle">残り時間</text>
 <rect x="830" y="95" width="130" height="445" fill="#ffffff" stroke="#8a8f99" stroke-width="1.5"/>

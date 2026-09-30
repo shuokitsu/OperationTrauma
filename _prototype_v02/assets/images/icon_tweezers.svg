@@ -1,3 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" font-family="Yu Gothic, Meiryo, sans-serif">
-<path d="M60 18 L32 100 M60 18 L88 100" stroke="#e4e7ec" stroke-width="10" stroke-linecap="round" fill="none"/>
+<g fill="#dfe8f1">
+<path d="M17 101 L22 96 L85 31 L96 22 L99 20 L95 27 L90 35 L25 108 Z"/>
+<path d="M17 101 L25 105 L93 51 L105 43 L110 41 L106 47 L98 56 L28 114 Z"/>
+<path d="M29 98 L74 49 M33 107 L88 60" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+</g>
 </svg>

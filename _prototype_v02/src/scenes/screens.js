@@ -92,7 +92,7 @@ export class Talk {
   get line() { return this.talk.lines[this.i]; }
   next() {
     const skip = this.app.save.options.skipTalk;
-    for (;;) {
+    for (; ;) {
       this.i += 1;
       const l = this.line;
       if (!l) { this.onDone(); return; }
@@ -117,7 +117,14 @@ export class Talk {
     const bg = img('bg_clinic'); if (bg) c.drawImage(bg, 0, 0, W, H); else { c.fillStyle = '#1b1f24'; c.fillRect(0, 0, W, H); }
     if (this.inBrief) { c.fillStyle = 'rgba(0,30,60,0.6)'; c.fillRect(0, 0, W, H); }
     const l = this.line || {};
-    const ch = (id, x) => { const im = id && img(this.T.chars[id]); if (!im) return; c.globalAlpha = l.who && l.who !== id ? 0.55 : 1; c.drawImage(im, x, 120, 520, 780); c.globalAlpha = 1; };
+    const ch = (id, x) => {
+      const im = id && img(this.T.chars[id]); if (!im) return;
+      const scale = Math.min(520 / im.naturalWidth, 780 / im.naturalHeight);
+      const drawWidth = im.naturalWidth * scale, drawHeight = im.naturalHeight * scale;
+      c.globalAlpha = l.who && l.who !== id ? 0.55 : 1;
+      c.drawImage(im, x + (520 - drawWidth) / 2, 120 + (780 - drawHeight) / 2, drawWidth, drawHeight);
+      c.globalAlpha = 1;
+    };
     ch(this.left, 120); ch(this.right, W - 640);
     if (this.inBrief && this.briefInfo) {
       panel(c, 560, 60, 800, 330, { fill: 'rgba(5,20,40,0.92)', stroke: '#6fb0e0' });

@@ -1,6 +1,6 @@
 {
   "_note": "ステージデータ（spec/07 5章）。ステージ1は scenario.md の会話とゲーム内テキストを使う。ステージ2以降の内容と会話は試作の仮置き（テーマ8で決める）",
-  "order": ["s1", "s2", "s3", "s4", "s_dark", "s_light"],
+  "order": [ "s1", "s2", "s3", "s4", "s_dark", "s_light" ],
   "map": {
     "s1": { "x": 300, "y": 540 }, "s2": { "x": 620, "y": 540 }, "s3": { "x": 940, "y": 540 },
     "s4": { "x": 1260, "y": 540 }, "s_dark": { "x": 1600, "y": 380 }, "s_light": { "x": 1600, "y": 700 }
@@ -9,7 +9,7 @@
     "s1": {
       "name": "ステージ1", "title": "裏通りの急患",
       "vitalStart": 80, "decline": { "intervalSec": 3, "amount": 1 }, "timeLimit": 300,
-      "patient": { "name": "怪我人", "drugLimits": {} },
+      "patient": { "name": "怪我人", "drugLimits": { } },
       "talkBefore": "s1_before", "talkAfter": "s1_after", "timeUpTalk": "timeup",
       "clearGoal": "背中の外傷をすべて治療する",
       "score": [
@@ -23,12 +23,12 @@
         {
           "bg": "skin",
           "lesions": [
-            { "id": "sc1", "type": "scratch", "shape": { "line": [[14, 10], [26, 15]] }, "appear": "start" },
-            { "id": "sc2", "type": "scratch", "shape": { "line": [[12, 34], [24, 40]] }, "appear": "start" },
-            { "id": "sc3", "type": "scratch", "shape": { "line": [[78, 8], [90, 12]] }, "appear": "start" },
-            { "id": "f1", "type": "fragment", "shape": { "circle": [58, 20] }, "appear": { "after": ["sc1", "sc2", "sc3"] } },
-            { "id": "lac1", "type": "laceration", "shape": { "line": [[34, 30], [42, 34], [50, 36], [58, 34]] }, "appear": { "after": ["f1"] } },
-            { "id": "fb1", "type": "foreign_body", "shape": { "line": [[72, 28], [78, 32], [84, 36]] }, "appear": { "after": ["lac1"] } }
+            { "id": "sc1", "type": "scratch", "shape": { "line": [ [ 44, 10 ], [ 46, 15 ] ] }, "appear": "start" },
+            { "id": "sc2", "type": "scratch", "shape": { "line": [ [ 37, 24 ], [ 41, 28 ] ] }, "appear": "start" },
+            { "id": "sc3", "type": "scratch", "shape": { "line": [ [ 65, 8 ], [ 57, 13 ] ] }, "appear": "start" },
+            { "id": "f1", "type": "fragment", "shape": { "circle": [ 58, 20 ] }, "appear": { "after": [ "sc1", "sc2", "sc3" ] } },
+            { "id": "lac1", "type": "laceration", "shape": { "line": [ [ 37, 30 ], [ 42, 34 ], [ 50, 36 ], [ 58, 34 ] ] }, "appear": { "after": [ "f1" ] } },
+            { "id": "fb1", "type": "foreign_body", "shape": { "line": [ [ 72, 28 ], [ 74, 32 ], [ 77, 36 ] ] }, "appear": { "after": [ "lac1" ] } }
           ],
           "texts": [
             { "on": "start", "text": "まずは消毒と軽微な擦り傷の治療を行う" },
@@ -70,7 +70,7 @@
         {
           "bg": "skin",
           "lesions": [
-            { "id": "inc1", "type": "incision", "shape": { "line": [[28, 25], [40, 25], [52, 25], [64, 25], [76, 25]] }, "appear": "start" }
+            { "id": "inc1", "type": "incision", "shape": { "line": [ [ 28, 25 ], [ 40, 25 ], [ 52, 25 ], [ 64, 25 ], [ 76, 25 ] ] }, "appear": "start" }
           ],
           "texts": [
             { "on": "start", "text": "（助手）先生、麻酔を先に打ちましょう", "highlight": "syringe" },
@@ -81,8 +81,8 @@
         {
           "bg": "internal",
           "lesions": [
-            { "id": "v1", "type": "vessel", "shape": { "circle": [58, 14] }, "dest": [76, 8], "appear": "start" },
-            { "id": "t1", "type": "tumor", "shape": { "circle": [42, 28] }, "appear": { "after": ["v1"] } }
+            { "id": "v1", "type": "vessel", "shape": { "circle": [ 58, 14 ] }, "dest": [ 76, 8 ], "appear": "start" },
+            { "id": "t1", "type": "tumor", "shape": { "circle": [ 42, 28 ] }, "appear": { "after": [ "v1" ] } }
           ],
           "texts": [
             { "on": "start", "text": "血管が邪魔だ。ピンセットで印の位置へ寄せる", "highlight": "tweezers" },
@@ -95,7 +95,7 @@
         {
           "bg": "skin",
           "lesions": [
-            { "id": "cl1", "type": "closure", "shape": { "line": [[28, 25], [40, 25], [52, 25], [64, 25], [76, 25]] }, "appear": "start" }
+            { "id": "cl1", "type": "closure", "shape": { "line": [ [ 28, 25 ], [ 40, 25 ], [ 52, 25 ], [ 64, 25 ], [ 76, 25 ] ] }, "appear": "start" }
           ],
           "texts": [
             { "on": "start", "text": "閉腹する。縫合してゼリーで仕上げだ", "highlight": "suture" }
@@ -120,10 +120,10 @@
         {
           "bg": "internal",
           "lesions": [
-            { "id": "i1", "type": "infection", "shape": { "circle": [24, 20] }, "appear": "start" },
-            { "id": "t1", "type": "tumor", "shape": { "circle": [64, 26] }, "appear": "start", "cond": { "flag": "s3_plan", "eq": "safe" } },
-            { "id": "t2", "type": "tumor", "shape": { "circle": [56, 16] }, "appear": "start", "cond": { "flag": "s3_plan", "eq": "bold" } },
-            { "id": "t3", "type": "tumor", "shape": { "circle": [76, 34] }, "appear": { "afterSec": 20 }, "cond": { "flag": "s3_plan", "eq": "bold" } }
+            { "id": "i1", "type": "infection", "shape": { "circle": [ 24, 20 ] }, "appear": "start" },
+            { "id": "t1", "type": "tumor", "shape": { "circle": [ 64, 26 ] }, "appear": "start", "cond": { "flag": "s3_plan", "eq": "safe" } },
+            { "id": "t2", "type": "tumor", "shape": { "circle": [ 56, 16 ] }, "appear": "start", "cond": { "flag": "s3_plan", "eq": "bold" } },
+            { "id": "t3", "type": "tumor", "shape": { "circle": [ 76, 34 ] }, "appear": { "afterSec": 20 }, "cond": { "flag": "s3_plan", "eq": "bold" } }
           ],
           "texts": [
             { "on": "start", "text": "感染巣には抗菌剤を直接打つ。外すなよ", "highlight": "syringe" },
@@ -135,7 +135,7 @@
     "s4": {
       "name": "ステージ4", "title": "（仮）助手への投薬",
       "vitalStart": 70, "decline": { "intervalSec": 3, "amount": 1 }, "timeLimit": 240,
-      "patient": { "name": "患者（仮）", "drugLimits": {} },
+      "patient": { "name": "患者（仮）", "drugLimits": { } },
       "talkBefore": "s4_before", "talkAfter": "s4_after", "timeUpTalk": "timeup", "hasChoice": true,
       "clearGoal": "すべての外傷を治療する",
       "score": [
@@ -149,10 +149,10 @@
         {
           "bg": "skin",
           "lesions": [
-            { "id": "lac1", "type": "laceration", "shape": { "line": [[16, 20], [26, 24], [36, 22]] }, "appear": "start" },
-            { "id": "f1", "type": "fragment", "shape": { "circle": [60, 14] }, "appear": "start" },
-            { "id": "f2", "type": "fragment", "shape": { "circle": [70, 36] }, "appear": { "afterSec": 15 } },
-            { "id": "sc1", "type": "scratch", "shape": { "line": [[46, 40], [58, 43]] }, "appear": "start" }
+            { "id": "lac1", "type": "laceration", "shape": { "line": [ [ 16, 20 ], [ 26, 24 ], [ 36, 22 ] ] }, "appear": "start" },
+            { "id": "f1", "type": "fragment", "shape": { "circle": [ 60, 14 ] }, "appear": "start" },
+            { "id": "f2", "type": "fragment", "shape": { "circle": [ 70, 36 ] }, "appear": { "afterSec": 15 } },
+            { "id": "sc1", "type": "scratch", "shape": { "line": [ [ 46, 40 ], [ 58, 43 ] ] }, "appear": "start" }
           ],
           "texts": [ { "on": "start", "text": "同時に片付けるぞ" } ]
         }
@@ -168,13 +168,13 @@
         { "type": "clear", "pts": 60 }, { "type": "noMiss", "pts": 20, "label": "ミスをしない" },
         { "type": "timeLeft", "sec": 60, "pts": 10, "label": "残り時間 60秒以上" }, { "type": "vital", "min": 50, "pts": 10, "label": "バイタル 50以上で終える" }
       ],
-      "next": [],
+      "next": [ ],
       "steps": [
         {
           "bg": "internal",
           "lesions": [
-            { "id": "t1", "type": "tumor", "shape": { "circle": [36, 24] }, "appear": "start" },
-            { "id": "i1", "type": "infection", "shape": { "circle": [72, 30] }, "appear": "start" }
+            { "id": "t1", "type": "tumor", "shape": { "circle": [ 36, 24 ] }, "appear": "start" },
+            { "id": "i1", "type": "infection", "shape": { "circle": [ 72, 30 ] }, "appear": "start" }
           ],
           "texts": [ { "on": "start", "text": "……黙ってやるだけだ" } ]
         }
@@ -190,13 +190,13 @@
         { "type": "clear", "pts": 60 }, { "type": "noMiss", "pts": 20, "label": "ミスをしない" },
         { "type": "timeLeft", "sec": 60, "pts": 10, "label": "残り時間 60秒以上" }, { "type": "vital", "min": 50, "pts": 10, "label": "バイタル 50以上で終える" }
       ],
-      "next": [],
+      "next": [ ],
       "steps": [
         {
           "bg": "internal",
           "lesions": [
-            { "id": "t1", "type": "tumor", "shape": { "circle": [36, 24] }, "appear": "start" },
-            { "id": "lac1", "type": "laceration", "shape": { "line": [[60, 36], [70, 40], [80, 38], [88, 34]] }, "appear": "start" }
+            { "id": "t1", "type": "tumor", "shape": { "circle": [ 36, 24 ] }, "appear": "start" },
+            { "id": "lac1", "type": "laceration", "shape": { "line": [ [ 60, 36 ], [ 70, 40 ], [ 80, 38 ], [ 88, 34 ] ] }, "appear": "start" }
           ],
           "texts": [ { "on": "start", "text": "（助手）二人でなら、やれます" } ]
         }

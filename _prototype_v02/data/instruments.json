@@ -1,6 +1,6 @@
 {
   "_note": "医療機器データ（spec/05）。値は spec/05 の基本値。TBD-05-11 の値（筆の半径など）は試作の仮の値",
-  "order": ["gel", "drain", "tweezers", "scalpel", "suture", "syringe"],
+  "order": [ "gel", "drain", "tweezers", "scalpel", "suture", "syringe" ],
   "gel": {
     "name": "ヒールゼリー", "icon": "icon_gel",
     "stock": 5, "stockRegenSec": 5,
@@ -34,7 +34,7 @@
     "gaugeMax": 100, "gaugeRegenSec": 10, "injectPerSec": 50,
     "defaultDrug": "recovery",
     "drugs": {
-      "recovery":   { "name": "回復剤", "short": "回復", "healPerFull": 20 },
+      "recovery": { "name": "回復剤", "short": "回復", "healPerFull": 20 },
       "anesthesia": { "name": "麻酔", "short": "麻酔", "secPerFull": 10, "declineRate": 0.5, "defaultLimit": 250, "warnRatio": 0.7 },
       "antibiotic": { "name": "抗菌剤", "short": "抗菌", "targeted": true, "missDamage": 1 }
     },

@@ -1,9 +1,9 @@
 {
   "_note": "システムデータ（spec/07 6章）。難易度の段階・名前・係数は試作の仮置き（TBD-03-8、TBD-03-9）",
   "difficulties": [
-    { "id": "easy",   "name": "やさしい", "coef": { "damage": 0.7, "decline": 0.7, "heal": 1.3, "timeLimit": 1.3 } },
-    { "id": "normal", "name": "ふつう",   "coef": { "damage": 1.0, "decline": 1.0, "heal": 1.0, "timeLimit": 1.0 } },
-    { "id": "hard",   "name": "むずかしい", "coef": { "damage": 1.3, "decline": 1.3, "heal": 0.7, "timeLimit": 0.7 } }
+    { "id": "easy", "name": "やさしい", "coef": { "damage": 0.7, "decline": 0.7, "heal": 1.3, "timeLimit": 1.3 } },
+    { "id": "normal", "name": "ふつう", "coef": { "damage": 1.0, "decline": 1.0, "heal": 1.0, "timeLimit": 1.0 } },
+    { "id": "hard", "name": "むずかしい", "coef": { "damage": 1.3, "decline": 1.3, "heal": 0.7, "timeLimit": 0.7 } }
   ],
   "ranks": [
     { "rank": "XS", "min": 100 }, { "rank": "S", "min": 95 }, { "rank": "A", "min": 80 },

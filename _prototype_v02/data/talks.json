@@ -6,16 +6,15 @@
     "s1_before": {
       "left": "broker", "right": "patient",
       "lines": [
-        { "narr": "仲介屋が怪我人を連れてくる" },
-        { "who": "broker", "text": "ここだ、もう大丈夫だぞ" },
+        { "narr": "--" },
+        { "who": "broker", "text": "さて、もう大丈夫ですよ" },
         { "who": "patient", "text": "痛ぇ…" },
-        { "who": "broker", "text": "おーい、仕事だぞー" },
-        { "narr": "奥から主人公が出てくる", "right": "protagonist" },
-        { "who": "protagonist", "text": "…" },
-        { "who": "broker", "text": "今日は大した怪我じゃないよ。さっさとやってくれ" },
+        { "who": "protagonist", "text": "…", "right": "protagonist" },
+        { "who": "broker", "text": "仕事ですよ" },
+        { "who": "broker", "text": "今日は大した怪我ではありませんから\nさっさとやっちゃってください" },
         { "who": "protagonist", "text": "…" },
         { "who": "patient", "text": "あんた…医者なのか…？", "left": "patient" },
-        { "who": "protagonist", "text": "生憎な" },
+        { "who": "protagonist", "text": "…生憎な" },
         { "who": "protagonist", "text": "服を脱いでそこのベッドに寝るんだ" },
         { "briefing": true },
         { "who": "protagonist", "text": "背中に外傷、金属の破片もあるな" },
@@ -44,9 +43,9 @@
       "lines": [
         { "who": "assistant", "text": "（仮）先生、どう進めますか？" },
         { "choice": [
-          { "label": "確実に一つずつ（腫瘍1つ）", "flag": "s3_plan", "value": "safe" },
-          { "label": "まとめて片付ける（腫瘍2つ）", "flag": "s3_plan", "value": "bold" }
-        ] },
+            { "label": "確実に一つずつ（腫瘍1つ）", "flag": "s3_plan", "value": "safe" },
+            { "label": "まとめて片付ける（腫瘍2つ）", "flag": "s3_plan", "value": "bold" }
+          ] },
         { "briefing": true },
         { "who": "protagonist", "text": "（仮）感染巣と腫瘍。抗菌剤は感染巣に直接打つ" }
       ]
@@ -58,9 +57,9 @@
         { "who": "assistant", "text": "（仮）……先生、私、少し体調が" },
         { "who": "broker", "text": "（仮）これを飲ませておけ。よく効く", "left": "broker" },
         { "choice": [
-          { "label": "助手に薬を飲ませる", "flag": "route", "value": "dark" },
-          { "label": "薬は使わない", "flag": "route", "value": "light" }
-        ] },
+            { "label": "助手に薬を飲ませる", "flag": "route", "value": "dark" },
+            { "label": "薬は使わない", "flag": "route", "value": "light" }
+          ] },
         { "briefing": true },
         { "who": "protagonist", "text": "（仮）外傷が多い。順に片付ける" }
       ]

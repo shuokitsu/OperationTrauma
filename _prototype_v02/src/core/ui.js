@@ -36,7 +36,8 @@ export class ButtonScene {
 }
 // 画像の読み込み（読めなくても落とさない）
 const cache = {};
+const JPEG_IMAGES = new Set(['char_assistant', 'char_protagonist', 'patient_skin_0', 'patient_skin_1', 'patient_skin_2']);
 export function img(name) {
-  if (!cache[name]) { const i = new Image(); i.src = `assets/images/${name}.svg`; cache[name] = i; }
+  if (!cache[name]) { const i = new Image(); const ext = JPEG_IMAGES.has(name) ? 'jpg' : 'svg'; i.src = `assets/images/${name}.${ext}`; cache[name] = i; }
   const i = cache[name]; return i.complete && i.naturalWidth ? i : null;
 }
