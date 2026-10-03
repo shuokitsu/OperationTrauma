@@ -9,6 +9,7 @@ class App {
     this.view = new View(document.getElementById('c'));
     this.sound = new Sound();
     this.save = loadSave();
+    this.applyOptions();
     this.view.handlers = {
       down: p => this.scene.down?.(p),
       move: p => this.scene.move?.(p),
@@ -29,7 +30,8 @@ class App {
   }
   go(scene) { this.sound.stopLoops(); this.scene = scene; }
   writeSave() { writeSave(this.save); }
-  resetSave() { this.save = defaultSave(); this.writeSave(); }
+  applyOptions() { const o = this.save.options; this.sound.setVolume(o.se, o.bgm); }
+  resetSave() { this.save = defaultSave(); this.writeSave(); this.applyOptions(); }
   unlockAll() { this.save.unlocked = this.data.stages.stages.map(s => s.id); this.writeSave(); }
   toTitle() { this.go(new Title(this)); }
 

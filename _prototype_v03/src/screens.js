@@ -1,5 +1,5 @@
 // タイトル・ステージセレクト・会話・リザルト・ゲームオーバー・トレーニング（spec/02）
-import { W, H, text, wrap, panel, drawImg, Button } from './core.js';
+import { W, H, text, wrap, panel, drawImg, Button, Typer } from './core.js';
 
 class ButtonScene {
   constructor(app) { this.app = app; this.buttons = []; }
@@ -17,25 +17,56 @@ class ButtonScene {
 }
 
 export class Title extends ButtonScene {
-  constructor(app) {
+  constructor(app, o = {}) {
     super(app);
-    const o = app.save.options;
-    this.buttons = [
-      new Button(710, 470, 500, 100, 'ステージセレクト', () => app.go(new StageSelect(app)), { size: 36 }),
-      new Button(710, 590, 500, 100, 'トレーニング', () => app.go(new TrainingSelect(app)), { size: 36 }),
-      new Button(560, 760, 380, 80, `医療機器：${o.side === 'left' ? '左' : '右'}`, () => { o.side = o.side === 'left' ? 'right' : 'left'; app.writeSave(); app.go(new Title(app)); }, { size: 28 }),
-      new Button(980, 760, 380, 80, `会話画面全スキップ：${o.skipTalk ? 'オン' : 'オフ'}`, () => { o.skipTalk = !o.skipTalk; app.writeSave(); app.go(new Title(app)); }, { size: 26 }),
-      new Button(1560, 990, 320, 60, '試作：セーブ消去', () => { app.resetSave(); app.go(new Title(app)); }, { size: 22, fill: '#4a2a2a' }),
-      new Button(1220, 990, 320, 60, '試作：全ステージ開放', () => { app.unlockAll(); app.go(new Title(app)); }, { size: 22, fill: '#2a3a4a' }),
-    ];
+    this.showOptions = !!o.showOptions;   // オプションはタイトル画面のまま表示する（画面遷移しない：spec/02 3.1）
+    this.build();
     app.sound.bgm('title');
+  }
+  build() {
+    const app = this.app, opt = app.save.options;
+    this.buttons = [
+      new Button(120, 640, 460, 100, 'ステージセレクト', () => app.go(new StageSelect(app)), { size: 36 }),
+      new Button(120, 760, 460, 100, 'トレーニング', () => app.go(new TrainingSelect(app)), { size: 36 }),
+      new Button(120, 880, 460, 100, 'オプション', () => { this.showOptions = !this.showOptions; this.build(); }, { size: 36, active: this.showOptions, activeColor: '#9fd3ff', fill: this.showOptions ? '#3d6e96' : undefined }),
+      new Button(1560, 1000, 320, 60, '試作：セーブ消去', () => { app.resetSave(); app.go(new Title(app)); }, { size: 22, fill: '#4a2a2a' }),
+      new Button(1220, 1000, 320, 60, '試作：全ステージ開放', () => { app.unlockAll(); app.go(new Title(app)); }, { size: 22, fill: '#2a3a4a' }),
+    ];
+    this.rows = [];
+    if (!this.showOptions) return;
+    const rows = [
+      ['医療機器の配置', 'side', [['左', 'left'], ['右', 'right']]],
+      ['SE 音量', 'se', [['0', 0], ['40', 40], ['70', 70], ['100', 100]]],
+      ['BGM 音量', 'bgm', [['0', 0], ['30', 30], ['50', 50], ['80', 80]]],
+      ['文字送り速度', 'textSpeed', [['遅い', 'slow'], ['普通', 'normal'], ['速い', 'fast']]],
+      ['会話画面全スキップ', 'skipTalk', [['OFF', false], ['ON', true]]],
+    ];
+    // パネルの幅は、いちばん多いボタンの数から計算する（はみ出さない）
+    const BW = 200, BH = 84, GAP = 20, LABEL = 330, PAD = 50;
+    const maxN = Math.max(...rows.map(r => r[2].length));
+    const pw = PAD + LABEL + maxN * BW + (maxN - 1) * GAP + PAD;
+    const px = 1880 - pw, py = 60, rowH = 116;
+    this.panel = { x: px, y: py, w: pw, h: PAD + rows.length * rowH - (rowH - BH) + PAD };
+    rows.forEach(([label, keyName, vals], i) => {
+      const y = py + PAD + i * rowH;
+      this.rows.push({ label, y: y + BH / 2 });
+      vals.forEach(([t, v], k) => {
+        this.buttons.push(new Button(px + PAD + LABEL + k * (BW + GAP), y, BW, BH, t, () => {
+          opt[keyName] = v; app.writeSave(); app.applyOptions(); this.build();
+        }, { size: 30, active: opt[keyName] === v, activeColor: '#9fd3ff', fill: opt[keyName] === v ? '#3d6e96' : '#1b2330' }));
+      });
+    });
   }
   draw(c) {
     if (!drawImg(c, 'bg_title.svg', 0, 0, W, H)) { c.fillStyle = '#123'; c.fillRect(0, 0, W, H); }
     c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(0, 0, W, H);
-    text(c, 'OperationTrauma', W / 2, 260, { size: 96, align: 'center', bold: true, stroke: 6 });
-    text(c, '試作 v03（2026-10-03 時点の仕様で作った課題洗い出し用）', W / 2, 340, { size: 30, align: 'center', color: '#cde' });
-    text(c, 'オプション', W / 2, 740, { size: 24, align: 'center', color: '#bbb' });
+    text(c, 'OperationTrauma', 80, 330, { size: 140, bold: true, stroke: 6 });
+    text(c, '試作 v03（2026-10-03 時点の仕様）', 300, 440, { size: 36, color: '#9aa7b8' });
+    if (this.panel) {
+      const p = this.panel;
+      panel(c, p.x, p.y, p.w, p.h, { fill: 'rgba(12,16,22,0.94)', stroke: '#5b6878' });
+      for (const r of this.rows) text(c, r.label, p.x + 50, r.y + 2, { size: 32, base: 'middle' });
+    }
     this.drawButtons(c);
   }
 }
@@ -95,6 +126,7 @@ export class Talk extends ButtonScene {
     }
     this.lines = ls; this.i = -1; this.bg = 'bg_clinic.svg'; this.left = null; this.right = null;
     this.title = o.title || '';
+    this.typer = new Typer(app.save.options.textSpeed);
     app.sound.bgm('talk');
     this.next();
   }
@@ -104,13 +136,17 @@ export class Talk extends ButtonScene {
     if (!ln) { this.done = true; this.then(this.flags); return; }
     if (ln.bg) this.bg = ln.bg;
     if ('left' in ln) this.left = ln.left; if ('right' in ln) this.right = ln.right;
+    this.typer.reset(ln.t);
     this.buttons = ln.choice ? ln.choice.map((ch, k) => new Button(460, 260 + k * 130, 1000, 104, ch.t, () => { this.flags.add(ch.flag); this.next(); }, { size: 30 })) : [];
   }
   down(p) {
     this.app.sound.unlock();
     if (this.done) return;
+    if (!this.typer.done) { this.typer.finish(); return; }   // 表示の途中でタップしたら、その行を全部出す
     if (this.buttons.length) return super.down(p);
     this.app.sound.se('text'); this.next();
+  }
+  update(dt) { this.typer.update(dt);
   }
   draw(c) {
     const ln = this.lines[this.i] || {};
@@ -128,8 +164,9 @@ export class Talk extends ButtonScene {
     }
     panel(c, 120, 760, 1680, 280);
     if (ln.who) text(c, ln.who, 160, 815, { size: 32, color: '#9fc6ff', bold: true });
-    wrap(c, ln.t || '', 1580, 38).forEach((s, i) => text(c, s, 160, 880 + i * 52, { size: 38 }));
-    if (this.buttons.length) this.drawButtons(c); else text(c, '▼ タップで次へ', 1770, 1015, { size: 22, align: 'right', color: '#aaa' });
+    wrap(c, this.typer.shown, 1580, 38).forEach((s, i) => text(c, s, 160, 880 + i * 52, { size: 38 }));
+    if (this.buttons.length) { if (this.typer.done) this.drawButtons(c); }   // 選択肢は文字が出きってから
+    else text(c, '▼ タップで次へ', 1770, 1015, { size: 22, align: 'right', color: '#aaa' });
   }
 }
 

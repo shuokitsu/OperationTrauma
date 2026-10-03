@@ -98,6 +98,11 @@ export class Sound {
       this.loops[name] = s;
     } else if (!on && this.loops[name]) { try { this.loops[name].stop(); } catch (_) {} delete this.loops[name]; }
   }
+  // オプションの音量（0〜100）を反映する。BGM は再生中のものにもすぐ反映
+  setVolume(se, bgm) {
+    this.vol.se = se / 100; this.vol.bgm = bgm / 100 * 0.6;
+    if (this.bgmGain) this.bgmGain.gain.value = this.vol.bgm;
+  }
   stopLoops() { Object.keys(this.loops).forEach(k => this.loop(k, false)); }
   bgm(name) {
     if (this.bgmName === name) return;
@@ -108,7 +113,7 @@ export class Sound {
     if (!b) { this.pendingBgm = 'bgm_' + name; this.bgmName = null; return; }
     const s = this.ac.createBufferSource(); s.buffer = b; s.loop = true;
     const g = this.ac.createGain(); g.gain.value = this.vol.bgm; s.connect(g).connect(this.ac.destination); s.start();
-    this.bgmNode = s;
+    this.bgmNode = s; this.bgmGain = g;
   }
 }
 
@@ -120,11 +125,11 @@ export function defaultSave() {
     progress: {},          // ステージごとの到達コンティニューポイント（分岐ごと）
     trained: [],           // トレーニングで練習できる病巣の種類
     trainingBest: {},      // 病巣の種類 × 難易度：最高評価と最短時間
-    options: { side: 'left', skipTalk: false },
+    options: { side: 'left', se: 70, bgm: 50, textSpeed: 'normal', skipTalk: false },
   };
 }
 export function loadSave() {
-  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) return Object.assign(defaultSave(), s); } catch (_) {}
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) { const d = defaultSave(); const r = Object.assign(d, s); r.options = Object.assign(defaultSave().options, s.options || {}); return r; } } catch (_) {}
   return defaultSave();
 }
 export function writeSave(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
@@ -184,8 +189,19 @@ export class Button {
   hit(p) { return p && p.x >= this.x && p.x < this.x + this.w && p.y >= this.y && p.y < this.y + this.h; }
   draw(c, hover) {
     const dis = this.o.disabled;
-    panel(c, this.x, this.y, this.w, this.h, { fill: dis ? '#2a2d33' : hover ? '#3d5f8f' : (this.o.fill || '#26364d'), stroke: this.o.active ? '#ffd24a' : '#8fa3c0', lw: this.o.active ? 4 : 2 });
+    panel(c, this.x, this.y, this.w, this.h, { fill: dis ? '#2a2d33' : hover ? '#3d5f8f' : (this.o.fill || '#26364d'), stroke: this.o.active ? (this.o.activeColor || '#ffd24a') : '#8fa3c0', lw: this.o.active ? 4 : 2 });
     text(c, this.label, this.x + this.w / 2, this.y + this.h / 2 + 1, { size: this.o.size || 32, align: 'center', base: 'middle', color: dis ? '#777' : '#fff', bold: this.o.bold });
     if (this.o.sub) text(c, this.o.sub, this.x + this.w / 2, this.y + this.h - 14, { size: 20, align: 'center', color: '#c8d3e3' });
   }
+}
+
+// 文字送り（会話画面・止める会話）。速さはオプションの「文字送り速度」
+export const TEXT_SPEED = { slow: 18, normal: 40, fast: 90 };   // 1秒あたりの文字数（試作の仮の値）
+export class Typer {
+  constructor(speed) { this.cps = TEXT_SPEED[speed] || TEXT_SPEED.normal; this.reset(''); }
+  reset(s) { this.s = s || ''; this.n = 0; }
+  update(dt) { this.n = Math.min(this.s.length, this.n + this.cps * dt); }
+  get done() { return this.n >= this.s.length; }
+  finish() { this.n = this.s.length; }
+  get shown() { return this.s.slice(0, Math.floor(this.n)); }
 }

@@ -1,5 +1,5 @@
 // ゲーム画面（spec/02 3.4、spec/03、spec/05）
-import { W, H, text, wrap, panel, drawImg, Button, roundRect } from './core.js';
+import { W, H, text, wrap, panel, drawImg, Button, roundRect, Typer } from './core.js';
 import { AREA, CELL, COLS, ROWS, toCell, toPx, inArea, dist, distToSeg, distToPolyline, segCross, pathLength, key } from './geometry.js';
 import { Lesion, scoreLesion, makeSmallCut } from './lesion.js';
 
@@ -140,17 +140,19 @@ export class Surgery {
   openTalk(id, then) {
     this.forceRelease();          // 押している最中なら「離した」扱い（spec/05 2.5）
     this.sub = null; this.subQueue = [];   // 表示中の字幕は打ち切る（spec/02 3.4）
-    this.talk = { lines: this.D.talks[id] || [], i: 0, then, left: null, right: null, choiceButtons: null };
+    this.talk = { lines: this.D.talks[id] || [], i: 0, then, left: null, right: null, choiceButtons: null, typer: new Typer(this.app.save.options.textSpeed) };
     this.prepTalkLine();
   }
   prepTalkLine() {
     const tk = this.talk, ln = tk.lines[tk.i];
     if (!ln) { const f = tk.then; this.talk = null; f && f(); return; }
     if ('left' in ln) tk.left = ln.left; if ('right' in ln) tk.right = ln.right;
+    tk.typer.reset(ln.t);
     tk.choiceButtons = ln.choice ? ln.choice.map((c, k) => new Button(560, 300 + k * 120, 800, 96, c.t, () => { this.flags.add(c.flag); tk.i++; this.prepTalkLine(); }, { size: 30 })) : null;
   }
   talkClick(p) {
     const tk = this.talk;
+    if (!tk.typer.done) { tk.typer.finish(); return; }
     if (tk.choiceButtons) { const b = tk.choiceButtons.find(b => b.hit(p)); if (b) { this.app.sound.se('select'); b.onClick(); } return; }
     this.app.sound.se('text'); tk.i++; this.prepTalkLine();
   }
@@ -158,6 +160,7 @@ export class Surgery {
   // ---------------- 更新 ----------------
   update(dt) {
     this.real += dt;
+    if (this.talk) this.talk.typer.update(dt);
     if (this.ended || this.menu || this.talk) return;
     this.t += dt; this.stepT += dt;
     const I = this.D.instruments;
@@ -814,8 +817,8 @@ export class Surgery {
     if (tk.right && chars[tk.right]) drawImg(c, chars[tk.right].image, 1300, 120, 480, 760, 'contain');
     panel(c, 160, 760, 1600, 280);
     if (ln.who) text(c, ln.who, 200, 815, { size: 32, color: '#9fc6ff', bold: true });
-    wrap(c, ln.t || '', 1500, 38).forEach((s, i) => text(c, s, 200, 880 + i * 52, { size: 38 }));
-    if (tk.choiceButtons) tk.choiceButtons.forEach(b => b.draw(c, b.hit(this.hoverP)));
+    wrap(c, tk.typer.shown, 1500, 38).forEach((s, i) => text(c, s, 200, 880 + i * 52, { size: 38 }));
+    if (tk.choiceButtons && tk.typer.done) tk.choiceButtons.forEach(b => b.draw(c, b.hit(this.hoverP)));
     else text(c, '▼ タップで次へ', 1720, 1015, { size: 22, align: 'right', color: '#aaa' });
   }
 }
