@@ -35,6 +35,7 @@ export class Surgery {
     this.talk = null; this.menu = false; this.ended = false;
     this.totalFails = 0;
     this.trayShownAt = -1; this.tapeShownAt = -1;
+    this.trails = [];   // メス・縫合針・テーピングの軌跡（離した後もしばらく残す）
     this.grid = false; this.hint = false;
     this.lastCP = cfg.startStep || 0;     // リトライで戻るステップ
     this.cpFlags = [...this.flags];
@@ -194,6 +195,7 @@ export class Surgery {
     if (this.sub) { this.sub.left -= dt; if (this.sub.left <= 0) this.sub = null; }
     if (!this.sub && this.subQueue.length) { const s = this.subQueue.shift(); this.sub = { ...s, left: Math.max(3.5, s.t.length * 0.16) }; }
     this.fx = this.fx.filter(f => (f.life -= dt) > 0);
+    this.trails = this.trails.filter(t => (t.life -= dt) > 0);
     this.checkEnd();
   }
   checkEnd() {
@@ -301,13 +303,28 @@ export class Surgery {
     }
     const ir = this.instRects.find(r => this.hit(r, p));
     if (ir) { this.select(ir.id); return; }
-    if (this.tapeVisible() && this.hit(this.tape, p)) { this.op = { type: 'tapelift', up: (q, qp, forced) => { if (!forced && qp && this.hit(this.tape, qp)) { this.tapeLifted = true; this.app.sound.se('grab'); } } }; return; }
+    if (this.tapeVisible() && this.hit(this.tape, p)) {
+      // 持ち上げている間に出現位置をもう一度押すと、テープを置く（戻す）
+      if (this.tapeLifted) { this.tapeLifted = false; this.app.sound.se('cancel'); return; }
+      // テープの上で押せば、ドラッグしてもよい。離した時点で持ち上げる
+      this.op = { type: 'tapelift', up: (q, qp, forced) => { if (!forced) { this.tapeLifted = true; this.app.sound.se('grab'); } } };
+      return;
+    }
     const c = toCell(p);
     if (!inArea(c)) return;
     this.startOp(c, p);
+    const TR = { scalpel: { color: '#ff5a5a', width: 4 }, 'scalpel-miss': { color: '#ff5a5a', width: 4 }, needle: { color: '#f2f2f2', width: 3, zig: true } };
+    if (this.op && TR[this.op.type]) { this.op.trail = TR[this.op.type]; this.op.trailPts = [p]; }
   }
-  move(p) { if (this.op && this.op.move) this.op.move(toCell(p), p); this.hoverP = p; }
-  up(p, forced) { const op = this.op; this.op = null; if (op && op.up) op.up(toCell(p), p, forced); this.app.sound.stopLoops(); }
+  move(p) {
+    const op = this.op;
+    if (op && op.trail) op.trailPts.push(p);
+    if (op && op.move) op.move(toCell(p), p);
+    if (op && this.op !== op) this.keepTrail(op);   // 失敗・成功で操作が途中で終わったとき
+    this.hoverP = p;
+  }
+  up(p, forced) { const op = this.op; this.op = null; if (op && op.up) op.up(toCell(p), p, forced); if (op) this.keepTrail(op); this.app.sound.stopLoops(); }
+  keepTrail(op) { if (op.trail && !op.trailKept && op.trailPts.length > 1) { op.trailKept = true; this.trails.push({ ...op.trail, pts: op.trailPts, life: 1.8, max: 1.8 }); } }
   hover(p) { this.hoverP = p; }
   forceRelease() { if (this.op) { const op = this.op; this.op = null; op.up && op.up(op.last || { x: -99, y: -99 }, null, true); } this.app.sound.stopLoops(); this.app.view.primary = null; }
   key(k) {
@@ -379,14 +396,16 @@ export class Surgery {
   // ドレーン（spec/05 3.2）。重なった血溜まり・膿は同時に吸う
   opDrain(c) {
     const DR = this.D.instruments.drain, S = this.app.sound;
-    const op = { type: 'drain', cur: c, last: c, acc: 0 };
+    // 離すまでは、最初に触れた時点の血溜まりの範囲で吸える（縮んでも外れない）。離した後は縮んだ範囲で判定（P62）
+    const op = { type: 'drain', cur: c, last: c, acc: 0, radii: new Map() };
+    const inside = pl => { const r = op.radii.get(pl) ?? pl.radius(); const ok = dist(op.cur, { x: pl.ox, y: pl.oy }) <= r; if (ok && !op.radii.has(pl)) op.radii.set(pl, r); return ok; };
     S.loop('drain', true);
     op.move = q => { op.cur = q; op.last = q; };
     op.tick = dt => {
       op.acc += dt;
       while (op.acc >= DR.tick_sec) {
         op.acc -= DR.tick_sec;
-        const under = this.pools().filter(pl => pl.contains(op.cur));
+        const under = this.pools().filter(inside);
         for (const pl of under) {
           pl.amount = Math.max(0, Math.floor(pl.amount) - DR.per_tick);
           if (pl.amount <= 0) this.stepSuccess(pl, { at: op.cur });
@@ -512,7 +531,7 @@ export class Surgery {
       let crossed = false;
       for (let i = 0; i < l.path.length - 1; i++) if (segCross(op.prev, q, l.path[i], l.path[i + 1])) crossed = true;
       if (crossed && op.armed) { op.count++; op.armed = false; this.app.sound.se('stitch', 1.2); }
-      if (!op.armed && distToPolyline(q, l.path) >= N.tolerance / 3) op.armed = true;   // 手ぶれ対策
+      if (!op.armed && distToPolyline(q, l.path) >= N.tolerance * N.rearm_ratio) op.armed = true;   // 手ぶれ対策：線から少し離れたら次をまた数える
       op.prev = q; op.last = q;
     };
     op.up = (q, qp, forced) => {
@@ -560,23 +579,34 @@ export class Surgery {
     return pl == null ? null : pl * this.coef('dose_limit');
   }
 
-  // テーピング（spec/05 4.1。失敗・無効の扱いは未定のため、試作では外れたら無効）
+  // テーピング（spec/05 4.1）：幅およそ10マスの帯を、押した点と離した点を直線で結んで貼る。
+  // 傷のマスを覆えた割合が3割以上なら成功、はみ出た分は減点（（1−割合）×100。仮）。足りなければ無効
+  tapeCover(l, a, b) {
+    const half = this.D.instruments.special.taping.width / 2;
+    const n = l.cells.filter(cc => distToSeg(cc, a, b) <= half).length;
+    return l.cells.length ? n / l.cells.length : 0;
+  }
   opTaping(c) {
     const TP = this.D.instruments.special.taping;
-    const l = this.lesions.find(x => !x.done && x.path && this.stepFor(x, 'taping') && !this.blocked(x) && (dist(c, x.path[0]) <= TP.pass_radius || dist(c, x.path[x.path.length - 1]) <= TP.pass_radius));
-    if (!l) { this.invalid(); return; }
-    const skipped = this.stepFor(l, 'taping').skipped;
-    const P = l.path, n = P.length; const fromEnd = dist(c, P[0]) <= TP.pass_radius ? 0 : n - 1; const dir = fromEnd === 0 ? 1 : -1;
-    const op = { type: 'taping', idx: fromEnd, prev: c, last: c, done: false };
-    op.move = q => {
-      if (op.done) return;
-      const nxt = op.idx + dir;
-      if (distToSeg(q, P[op.idx], P[nxt]) > TP.tolerance) { op.done = true; this.invalid(); return; }
-      if (dist(q, P[nxt]) <= TP.pass_radius) { op.idx = nxt; if (op.idx === (dir > 0 ? n - 1 : 0)) { op.done = true; this.tapeLifted = false; this.stepSuccess(l, { skipped }); } }
-      op.last = q;
+    const op = { type: 'taping', a: c, b: c, last: c };
+    op.move = q => { op.b = q; op.last = q; };
+    op.up = (q, qp, forced) => {
+      if (forced) return;
+      const cands = this.lesions.filter(x => !x.done && this.stepFor(x, 'taping') && !this.blocked(x));
+      let best = null, br = 0;
+      for (const x of cands) { const r = this.tapeCover(x, op.a, op.b); if (r > br) { br = r; best = x; } }
+      if (!best || br < TP.cover_threshold) { this.invalid(); return; }   // 3割に足りない：無効（テープは持ち上げたまま）
+      best.coverPenalty += Math.round((1 - br) * 100);
+      best.tape = { a: op.a, b: op.b };
+      this.tapeLifted = false;
+      this.stepSuccess(best, { skipped: this.stepFor(best, 'taping').skipped });
     };
-    op.up = () => { if (!op.done) this.invalid(); };
     this.op = op;
+  }
+  drawTapeBand(c, a, b, alpha) {
+    const A = toPx(a), B = toPx(b), w = this.D.instruments.special.taping.width * CELL;
+    c.save(); c.globalAlpha = alpha; c.strokeStyle = '#f5ebc8'; c.lineWidth = w; c.lineCap = 'butt';
+    c.beginPath(); c.moveTo(A.x, A.y); c.lineTo(B.x === A.x && B.y === A.y ? B.x + 1 : B.x, B.y); c.stroke(); c.restore();
   }
 
   // ---------------- トレーニング ----------------
@@ -643,6 +673,14 @@ export class Surgery {
       c.fillStyle = 'rgba(120,200,255,0.28)';
       for (const k of op.covered) { const [x, y] = k.split(',').map(Number); c.fillRect(A.x + x * CELL, A.y + y * CELL, CELL, CELL); }
     }
+    const drawTrail = (t, a) => {
+      c.globalAlpha = a; c.strokeStyle = t.color; c.lineWidth = t.width; c.lineCap = 'round'; c.lineJoin = 'round';
+      c.beginPath(); t.pts.forEach((q, i) => i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y)); c.stroke(); c.globalAlpha = 1;
+    };
+    for (const t of this.trails) drawTrail(t, Math.min(1, t.life / t.max * 1.5));
+    if (op && op.trail) drawTrail({ ...op.trail, pts: op.trailPts }, 1);
+    for (const l of this.lesions) if (l.tape) this.drawTapeBand(c, l.tape.a, l.tape.b, 0.75);
+    if (op && op.type === 'taping') this.drawTapeBand(c, op.a, op.b, 0.55);
     if (op && op.type === 'needle') text(c, `${op.count} / ${op.l.path.length}`, toPx(op.last).x, toPx(op.last).y - 50, { size: 30, align: 'center', bold: true, stroke: 4 });
     // 指のまわりに機器の範囲を表示（見た目だけ）
     if (this.app.view.pressing && this.hoverP && !this.op?.type?.startsWith('tweezers')) {
@@ -654,48 +692,61 @@ export class Surgery {
   }
   drawLesion(c, l) {
     if (this.op && this.op.type === 'tweezers' && this.op.l === l) {   // 掴んでいる間は元の位置に薄い影
-      c.globalAlpha = 0.25; this.drawLesionShape(c, l, 0, 0); c.globalAlpha = 1; return;
+      c.globalAlpha = 0.25; this.drawLook(c, l, l.step.look, 0, 0); c.globalAlpha = 1; return;
     }
-    if (l.done) {
-      if (l.def.draw === 'object' || l.def.draw === 'tumor') return;      // 取り除いた物は消える
-      c.globalAlpha = 0.25; this.drawLesionShape(c, l, 0, 0); c.globalAlpha = 1; return;
+    if (l.done) { if (l.def.done_look) { c.globalAlpha = 0.7; this.drawLook(c, l, l.def.done_look, 0, 0); c.globalAlpha = 1; } return; }
+    this.drawLook(c, l, l.step.look, 0, 0);
+    // 通過点（メス・縫合針・テーピングの段階のとき）
+    if (l.path && ['scalpel', 'needle', 'taping'].includes(l.step.instrument)) {
+      c.fillStyle = '#fff'; for (const q of l.path) { const p = toPx(q); c.beginPath(); c.arc(p.x, p.y, 5, 0, Math.PI * 2); c.fill(); }
     }
-    this.drawLesionShape(c, l, 0, 0);
     const blocked = this.blocked(l);
-    if (this.hint || blocked) {
+    if (this.hint) {
       const p = toPx(l.center());
       const s = l.step; const label = blocked ? '血溜まり' : (this.D.instruments[s.instrument]?.name || (s.instrument === 'taping' ? 'テーピング' : s.instrument)) + (s.optional ? '（省略可）' : '');
       text(c, label, p.x, p.y - 30, { size: 20, align: 'center', color: blocked ? '#ffb0b0' : '#fff', stroke: 4 });
     }
     if (l.step.instrument === 'injector' && l.injected > 0) { const p = toPx(l.center()); text(c, `${Math.round(l.injected)}/${l.step.need}`, p.x, p.y + 40, { size: 22, align: 'center', stroke: 4 }); }
   }
-  drawLesionShape(c, l, dx, dy) {
-    const col = l.color;
-    const P = (q) => { const p = toPx(q); return { x: p.x + dx, y: p.y + dy }; };
-    const d = l.def.draw;
-    if (d === 'line' || d === 'cutline') {
-      if (l.drawPts) {
-        c.strokeStyle = col; c.lineWidth = l.def.thick ? 12 : 7; c.lineCap = 'round'; c.lineJoin = 'round';
-        if (d === 'cutline') c.setLineDash([14, 10]);
-        c.beginPath(); l.drawPts.forEach((q, i) => { const p = P(q); i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y); }); c.stroke(); c.setLineDash([]);
-        if (l.path && l.steps.some(s => ['scalpel', 'needle', 'taping'].includes(s.instrument)) && !l.done) {
-          c.fillStyle = '#fff'; for (const q of l.path) { const p = P(q); c.beginPath(); c.arc(p.x, p.y, 5, 0, Math.PI * 2); c.fill(); }
-        }
-      } else {
-        c.fillStyle = col; for (const q of l.cells) { const p = P(q); c.fillRect(p.x - 6, p.y - 3, 12, 6); }
-      }
-      if (l.step && l.step.instrument === 'taping' && !l.done) { c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 2; c.setLineDash([6, 6]); c.beginPath(); l.path.forEach((q, i) => { const p = P(q); i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y); }); c.stroke(); c.setLineDash([]); }
-    } else if (d === 'object') {
-      c.fillStyle = col; c.strokeStyle = '#222'; c.lineWidth = 2;
-      for (const q of l.cells) { const p = P(q); c.fillRect(p.x - 7, p.y - 7, 14, 14); c.strokeRect(p.x - 7, p.y - 7, 14, 14); }
-    } else if (d === 'tumor' || d === 'blob') {
-      const ctr = P(l.center());
-      c.fillStyle = col; c.beginPath(); c.arc(ctr.x, ctr.y, (l.def.hit[0].radius + 0.5) * CELL, 0, Math.PI * 2); c.fill();
-      if (l.path && l.step && l.step.instrument === 'scalpel' && !l.done) {
-        c.strokeStyle = '#2e86c1'; c.lineWidth = 4; c.setLineDash([10, 8]); c.beginPath();
-        l.path.forEach((q, i) => { const p = P(q); i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y); }); c.closePath(); c.stroke(); c.setLineDash([]);
-        c.fillStyle = '#fff'; for (const q of l.path) { const p = P(q); c.beginPath(); c.arc(p.x, p.y, 5, 0, Math.PI * 2); c.fill(); }
-      }
+  // 見た目の種類（試作の仮の描き方。本来は病巣データに画像を持つ）
+  drawLook(c, l, look, dx, dy) {
+    const P = q => { const p = toPx(q); return { x: p.x + dx, y: p.y + dy }; };
+    const line = (pts, color, w, dash) => {
+      c.strokeStyle = color; c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; if (dash) c.setLineDash(dash);
+      c.beginPath(); pts.forEach((q, i) => { const p = P(q); i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y); }); if (l.closed && pts === l.path) c.closePath(); c.stroke(); c.setLineDash([]);
+    };
+    const pts = l.drawPts, ctr = P(l.center()), rad = l.def.hit && l.def.hit[0].radius ? (l.def.hit[0].radius + 0.5) * CELL : 14;
+    const disc = (color, r) => { c.fillStyle = color; c.beginPath(); c.arc(ctr.x, ctr.y, r, 0, Math.PI * 2); c.fill(); };
+    switch (look) {
+      case 'cut': if (pts) line(pts, l.color, 6); break;
+      case 'open': if (pts) { line(pts, '#5a0d0d', 14); line(pts, '#c0392b', 6); } break;
+      case 'sutured':
+        if (pts) { line(pts, '#8e1b1b', 6);
+          // 縫い目：通過点を結んだ線に沿って、短い線を交差させる
+          const P2 = l.path || pts;
+          for (let i = 0; i < P2.length - 1; i++) {
+            const a = P(P2[i]), b = P(P2[i + 1]), len = Math.hypot(b.x - a.x, b.y - a.y), n = Math.max(1, Math.floor(len / 22));
+            const nx = -(b.y - a.y) / len, ny = (b.x - a.x) / len;
+            c.strokeStyle = '#f0f0f0'; c.lineWidth = 2.5;
+            for (let k = 0; k <= n; k++) { const x = a.x + (b.x - a.x) * k / n, y = a.y + (b.y - a.y) * k / n; c.beginPath(); c.moveTo(x - nx * 10, y - ny * 10); c.lineTo(x + nx * 10, y + ny * 10); c.stroke(); }
+          } }
+        break;
+      case 'taped':
+        if (pts) line(pts, '#8e1b1b', 5); break;
+      case 'healed':
+        if (pts && l.def.hit && l.def.hit[0].type === 'line' || (pts && l.runtime)) line(pts, 'rgba(255,170,170,0.6)', 5);
+        else disc('rgba(255,170,170,0.45)', Math.max(8, rad * 0.6));
+        break;
+      case 'object': c.fillStyle = l.color; c.strokeStyle = '#222'; c.lineWidth = 2;
+        for (const q of l.cells) { const p = P(q); c.fillRect(p.x - 7, p.y - 7, 14, 14); c.strokeRect(p.x - 7, p.y - 7, 14, 14); } break;
+      case 'wound': disc('#b03030', Math.max(9, rad * 0.7)); disc('#e06060', Math.max(4, rad * 0.35)); break;
+      case 'cutline': if (pts) line(pts, '#5dade2', 5, [14, 10]); break;
+      case 'opened': if (pts) { line(pts, '#c0392b', 12); line(pts, '#3a0606', 4); } break;
+      case 'tumor': disc(l.color, rad); if (l.path) line(l.path, '#5dade2', 4, [10, 8]); break;
+      case 'tumor_cut': disc(l.color, rad); if (l.path) line(l.path, '#ff5a5a', 4); break;
+      case 'hole': disc('#5a0d0d', rad); disc('#8e1b1b', rad * 0.6); break;
+      case 'blob': disc(l.color, rad); break;
+      default: if (pts) line(pts, l.color, 6); else disc(l.color, rad);
     }
   }
   drawPool(c, l) {
@@ -707,7 +758,7 @@ export class Surgery {
     const op = this.op;
     if (op && op.type === 'tweezers') {    // 掴んでいる物は最上位レイヤー
       const dx = op.cur.x - op.from.x, dy = op.cur.y - op.from.y;
-      this.drawLesionShape(c, op.l, dx, dy);
+      this.drawLook(c, op.l, op.l.step.look, dx, dy);
     }
     if (this.tapeLifted && this.hoverP) { c.fillStyle = 'rgba(245,235,200,0.9)'; c.fillRect(this.hoverP.x - 40, this.hoverP.y - 12, 80, 24); }
   }
@@ -727,38 +778,52 @@ export class Surgery {
   blinkOn() { const ph = this.real % 2.5; return ph < 1 || (ph >= 1.5 && ph < 2); }
   drawColumns(c) {
     const I = this.D.instruments, hl = this.highlights(), on = this.blinkOn();
-    panel(c, this.menuRect.x, 0, COL_W, MENU_H, { fill: '#e3e6eb', r: 0, stroke: '#8a8f99' });
-    text(c, 'Menu', this.menuRect.x + COL_W / 2, MENU_H / 2, { size: 40, align: 'center', base: 'middle', color: '#222', bold: true });
+    panel(c, this.menuRect.x, 0, COL_W, MENU_H, { fill: '#2a313b', r: 0, stroke: '#4a5563' });
+    text(c, 'Menu', this.menuRect.x + COL_W / 2, MENU_H / 2, { size: 40, align: 'center', base: 'middle', color: '#e8eef6', bold: true });
     this.instRects.forEach((r, i) => {
       const sel = this.sel === r.id && !this.tapeLifted;
-      c.fillStyle = sel ? '#fff3c4' : '#ffffff'; c.fillRect(r.x, r.y, r.w, r.h);
-      if (on && (hl.normal.has(r.id) || hl.light.has(r.id))) { c.fillStyle = hl.normal.has(r.id) ? 'rgba(255,170,0,0.55)' : 'rgba(255,200,80,0.25)'; c.fillRect(r.x, r.y, r.w, r.h); }
-      c.strokeStyle = sel ? '#e0a000' : '#8a8f99'; c.lineWidth = sel ? 6 : 2; c.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+      c.fillStyle = sel ? '#2d4a6e' : '#1c2229'; c.fillRect(r.x, r.y, r.w, r.h);
+      // 限度量（注射）・ストック（ヒールゼリー）に近づくほど、機器を徐々に赤くする
+      const red = this.redness(r.id);
+      if (red > 0) { c.fillStyle = `rgba(220,30,30,${0.6 * red})`; c.fillRect(r.x, r.y, r.w, r.h); }
+      if (on && (hl.normal.has(r.id) || hl.light.has(r.id))) { c.fillStyle = hl.normal.has(r.id) ? 'rgba(255,170,0,0.5)' : 'rgba(255,200,80,0.2)'; c.fillRect(r.x, r.y, r.w, r.h); }
+      c.strokeStyle = sel ? '#ffd24a' : '#4a5563'; c.lineWidth = sel ? 6 : 2; c.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
       drawImg(c, I[r.id].icon, r.x + 20, r.y + 18, 90, 90, 'contain');
-      text(c, String(i + 1), r.x + 14, r.y + 30, { size: 22, color: '#888' });
-      text(c, I[r.id].name, r.x + 120, r.y + 70, { size: 26, color: '#222', bold: sel });
+      text(c, String(i + 1), r.x + 14, r.y + 30, { size: 22, color: '#8899aa' });
+      text(c, I[r.id].name, r.x + 120, r.y + 70, { size: 26, color: '#e8eef6', bold: sel });
       if (r.id === 'healjelly') {
-        for (let k = 0; k < I.healjelly.stock; k++) { c.fillStyle = k < this.stock ? '#3d9be9' : '#ccd'; c.beginPath(); c.arc(r.x + 130 + k * 24, r.y + 112, 9, 0, Math.PI * 2); c.fill(); }
-        if (this.stock < I.healjelly.stock) { c.fillStyle = '#3d9be9'; c.fillRect(r.x + 120, r.y + 130, 120 * this.stockAcc / I.healjelly.recover_sec, 6); }
+        for (let k = 0; k < I.healjelly.stock; k++) { c.fillStyle = k < this.stock ? '#5fb4ff' : '#3a4450'; c.beginPath(); c.arc(r.x + 130 + k * 24, r.y + 112, 9, 0, Math.PI * 2); c.fill(); }
+        if (this.stock < I.healjelly.stock) { c.fillStyle = '#5fb4ff'; c.fillRect(r.x + 120, r.y + 130, 120 * this.stockAcc / I.healjelly.recover_sec, 6); }
       }
       if (r.id === 'injector') {
-        c.fillStyle = '#ddd'; c.fillRect(r.x + 120, r.y + 100, 120, 16);
+        c.fillStyle = '#3a4450'; c.fillRect(r.x + 120, r.y + 100, 120, 16);
         c.fillStyle = I.injector.drugs[this.drug].color; c.fillRect(r.x + 120, r.y + 100, 120 * this.gauge / 100, 16);
-        text(c, I.injector.drugs[this.drug].name, r.x + 120, r.y + 140, { size: 20, color: '#333' });
+        text(c, I.injector.drugs[this.drug].name, r.x + 120, r.y + 140, { size: 20, color: '#c8d3e3' });
       }
     });
     this.hlDrugs = hl.drugs;
+  }
+  redness(id) {
+    if (id === 'injector') {
+      const used = this.dose[this.patient || 'skin'] || {};
+      let m = 0;
+      for (const d of Object.keys(this.D.instruments.injector.drugs)) { const lim = this.doseLimit(d); if (lim) m = Math.max(m, (used[d] || 0) / lim); }
+      return Math.min(1, m);
+    }
+    if (id === 'healjelly') return 1 - this.stock / this.D.instruments.healjelly.stock;
+    return 0;
   }
   drawDrugs(c) {
     const I = this.D.instruments.injector, on = this.blinkOn();
     for (const r of this.drugRects) {
       const d = I.drugs[r.id], cur = this.drug === r.id;
-      panel(c, r.x, r.y, r.w, r.h, { fill: cur ? '#fff3c4' : '#f4f4f4', stroke: cur ? '#e0a000' : '#777', lw: cur ? 5 : 2 });
+      panel(c, r.x, r.y, r.w, r.h, { fill: cur ? '#2d4a6e' : '#232a33', stroke: cur ? '#ffd24a' : '#5a6573', lw: cur ? 5 : 2 });
+      const lim = this.doseLimit(r.id), used = ((this.dose[this.patient || 'skin'] || {})[r.id] || 0);
+      if (lim) { c.fillStyle = `rgba(220,30,30,${0.6 * Math.min(1, used / lim)})`; roundRect(c, r.x, r.y, r.w, r.h, 12); c.fill(); }
       if (on && this.hlDrugs && this.hlDrugs.has(r.id)) { c.fillStyle = 'rgba(255,170,0,0.45)'; roundRect(c, r.x, r.y, r.w, r.h, 12); c.fill(); }
       c.fillStyle = d.color; c.fillRect(r.x + 14, r.y + 30, 32, 32);
-      text(c, d.name, r.x + 60, r.y + 58, { size: 28, color: '#222', bold: cur });
-      const lim = this.doseLimit(r.id);
-      if (lim) { const used = ((this.dose[this.patient || 'skin'] || {})[r.id] || 0); text(c, `${Math.round(used)}/${Math.round(lim)}`, r.x + r.w - 10, r.y + 84, { size: 18, color: used > lim * 0.8 ? '#d00' : '#555', align: 'right' }); }
+      text(c, d.name, r.x + 60, r.y + 58, { size: 28, color: '#e8eef6', bold: cur });
+      if (lim) text(c, `${Math.round(used)}/${Math.round(lim)}`, r.x + r.w - 10, r.y + 84, { size: 18, color: '#c8d3e3', align: 'right' });
     }
   }
   drawTop(c) {
@@ -776,12 +841,12 @@ export class Surgery {
   }
   drawOpp(c) {
     const x = this.oppX;
-    panel(c, x, 0, COL_W, MENU_H, { fill: '#e3e6eb', r: 0, stroke: '#8a8f99' });
+    panel(c, x, 0, COL_W, MENU_H, { fill: '#2a313b', r: 0, stroke: '#4a5563' });
     if (this.timeLimit) {
       const s = Math.max(0, Math.ceil(this.timeLeft)); const mm = Math.floor(s / 60), ss = String(s % 60).padStart(2, '0');
-      text(c, '残り時間', x + COL_W / 2, 60, { size: 26, align: 'center', color: '#444' });
-      text(c, `${mm}:${ss}`, x + COL_W / 2, 130, { size: 54, align: 'center', bold: true, color: s <= 30 ? '#d00' : '#222' });
-    } else text(c, '制限時間なし', x + COL_W / 2, 100, { size: 26, align: 'center', color: '#444' });
+      text(c, '残り時間', x + COL_W / 2, 60, { size: 26, align: 'center', color: '#aab6c4' });
+      text(c, `${mm}:${ss}`, x + COL_W / 2, 130, { size: 54, align: 'center', bold: true, color: s <= 30 ? '#ff5a5a' : '#e8eef6' });
+    } else text(c, '制限時間なし', x + COL_W / 2, 100, { size: 26, align: 'center', color: '#aab6c4' });
     c.fillStyle = '#2b3038'; c.fillRect(x, MENU_H, COL_W, H - MENU_H);
     // トレイ：掴んだ時点で枠外から出てくる
     if (this.trayShownAt >= 0) {
@@ -798,7 +863,7 @@ export class Surgery {
       panel(c, r.x + off, r.y, r.w, r.h, { fill: '#f5ebc8', stroke: '#a89060', lw: 4, r: 90 });
       text(c, 'テープ', r.x + off + r.w / 2, r.y + r.h / 2, { size: 30, align: 'center', base: 'middle', color: '#6b5a30' });
       c.globalAlpha = 1;
-      text(c, this.tapeLifted ? '傷の端から端へなぞる' : 'タップして持ち上げる', x + COL_W / 2, r.y + r.h + 40, { size: 20, align: 'center', color: '#ddd' });
+      text(c, this.tapeLifted ? '傷を覆うようにスワイプ（ここを押すと戻す）' : 'タップして持ち上げる', x + COL_W / 2, r.y + r.h + 40, { size: 20, align: 'center', color: '#ddd' });
     } else this.tapeShownAt = -1;
   }
   drawSubtitle(c) {

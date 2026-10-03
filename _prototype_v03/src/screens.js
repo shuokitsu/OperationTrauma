@@ -32,7 +32,7 @@ export class Title extends ButtonScene {
       new Button(1560, 1000, 320, 60, '試作：セーブ消去', () => { app.resetSave(); app.go(new Title(app)); }, { size: 22, fill: '#4a2a2a' }),
       new Button(1220, 1000, 320, 60, '試作：全ステージ開放', () => { app.unlockAll(); app.go(new Title(app)); }, { size: 22, fill: '#2a3a4a' }),
     ];
-    this.rows = [];
+    this.rows = []; this.panel = null;
     if (!this.showOptions) return;
     const rows = [
       ['医療機器の配置', 'side', [['左', 'left'], ['右', 'right']]],
@@ -75,13 +75,25 @@ export class StageSelect extends ButtonScene {
   constructor(app) {
     super(app);
     const S = app.save;
-    const stages = app.data.stages.stages.filter(s => S.unlocked.includes(s.id));
-    stages.forEach((s, i) => {
-      const best = S.bestRank[s.id];
+    // ステージのつながり（クリアで開放されるステージ）をステージデータから作り、フローチャートとして並べる（spec/02 3.2）
+    const all = app.data.stages.stages, byId = Object.fromEntries(all.map(s => [s.id, s]));
+    const next = id => { const oc = byId[id].on_clear || {}; return [...(oc.unlock || []), ...(oc.unlock_if || []).map(u => u.stage)].filter(n => byId[n]); };
+    const depth = { [all[0].id]: 0 }, queue = [all[0].id];
+    while (queue.length) { const id = queue.shift(); for (const n of next(id)) if (depth[n] === undefined) { depth[n] = depth[id] + 1; queue.push(n); } }
+    const cols = {}; all.forEach(s => { const d = depth[s.id] ?? 0; (cols[d] = cols[d] || []).push(s.id); });
+    const NW = 320, NH = 150, GX = 360, CY = 560, GY = 210;
+    this.pos = {};
+    Object.entries(cols).forEach(([d, ids]) => ids.forEach((id, k) => { this.pos[id] = { x: 100 + d * GX, y: CY + (k - (ids.length - 1) / 2) * GY - NH / 2 }; }));
+    this.edges = [];
+    all.forEach(s => next(s.id).forEach(n => this.edges.push([s.id, n])));
+    this.unlocked = new Set(S.unlocked);
+    all.filter(s => S.unlocked.includes(s.id)).forEach(s => {
+      const best = S.bestRank[s.id], p = this.pos[s.id];
       const choice = (app.data.talks[s.talk_before] || []).some(l => l.choice) || s.steps.some(st => st.dialogue_before && (app.data.talks[st.dialogue_before] || []).some(l => l.choice));
-      this.buttons.push(new Button(160 + (i % 3) * 540, 220 + Math.floor(i / 3) * 230, 500, 190, s.name, () => this.pick(s),
-        { size: 40, bold: true, sub: `${s.sub}${choice ? '　◆選択肢あり' : ''}${best ? `　最高ランク ${best}` : S.cleared.includes(s.id) ? '　クリア' : ''}` }));
+      this.buttons.push(new Button(p.x, p.y, NW, NH, s.name, () => this.pick(s),
+        { size: 36, bold: true, active: S.cleared.includes(s.id), activeColor: '#7fd18f', sub: `${choice ? '◆選択肢あり　' : ''}${best ? `最高ランク ${best}` : S.cleared.includes(s.id) ? 'クリア' : '未クリア'}` }));
     });
+    this.NW = NW; this.NH = NH;
     this.buttons.push(new Button(60, 960, 300, 80, 'タイトルへ', () => app.toTitle()));
     app.sound.bgm('title');
   }
@@ -101,7 +113,14 @@ export class StageSelect extends ButtonScene {
   draw(c) {
     c.fillStyle = '#18202b'; c.fillRect(0, 0, W, H);
     text(c, 'ステージセレクト', 80, 120, { size: 56, bold: true });
-    text(c, '開放済みのステージだけを表示（試作：線のつながりは省略）', 80, 175, { size: 24, color: '#aab' });
+    text(c, '開放済みのステージだけを表示。線はクリアで開放されるつながり（分岐を含む）', 80, 175, { size: 24, color: '#aab' });
+    // つながりの線（両端とも開放済みのものだけ）。分岐は折れ線
+    c.strokeStyle = '#5b6b7d'; c.lineWidth = 6; c.lineJoin = 'round';
+    for (const [a, b] of this.edges) {
+      if (!this.unlocked.has(a) || !this.unlocked.has(b)) continue;
+      const p = this.pos[a], q = this.pos[b], x1 = p.x + this.NW, y1 = p.y + this.NH / 2, x2 = q.x, y2 = q.y + this.NH / 2, mx = (x1 + x2) / 2;
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(mx, y1); c.lineTo(mx, y2); c.lineTo(x2, y2); c.stroke();
+    }
     this.drawButtons(c);
     if (this.popup) {
       c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillRect(0, 0, W, H);
@@ -129,11 +148,12 @@ export class Talk extends ButtonScene {
     this.typer = new Typer(app.save.options.textSpeed);
     app.sound.bgm('talk');
     this.next();
+    this.started = true;
   }
   next() {
     this.i++;
     const ln = this.lines[this.i];
-    if (!ln) { this.done = true; this.then(this.flags); return; }
+    if (!ln) { this.done = true; if (this.started) this.then(this.flags); else this.finishLater = true; return; }
     if (ln.bg) this.bg = ln.bg;
     if ('left' in ln) this.left = ln.left; if ('right' in ln) this.right = ln.right;
     this.typer.reset(ln.t);
@@ -146,7 +166,7 @@ export class Talk extends ButtonScene {
     if (this.buttons.length) return super.down(p);
     this.app.sound.se('text'); this.next();
   }
-  update(dt) { this.typer.update(dt);
+  update(dt) { if (this.finishLater) { this.finishLater = false; this.then(this.flags); return; } this.typer.update(dt);
   }
   draw(c) {
     const ln = this.lines[this.i] || {};

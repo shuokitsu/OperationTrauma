@@ -34,16 +34,16 @@
     { "who": "助手", "t": "2人目の患者を運びました", "left": "主人公", "right": "助手" },
     { "who": "主人公", "t": "麻酔から始める" }
   ],
-  "t_s2_post": [{ "bg": "bg_clinic.svg", "who": "助手", "t": "2人とも無事です", "left": "主人公", "right": "助手" }],
+  "t_s2_post": [ { "bg": "bg_clinic.svg", "who": "助手", "t": "2人とも無事です", "left": "主人公", "right": "助手" } ],
   "t_s3_pre": [
     { "bg": "bg_clinic.svg", "who": "助手", "t": "腫瘍がいくつかあります。どうしますか", "left": "主人公", "right": "助手" },
     { "who": "主人公", "t": "……", "choice": [
-      { "t": "慎重にすべて取る（腫瘍2つ）", "flag": "s3_careful" },
-      { "t": "急いで主な腫瘍だけ（腫瘍1つ＋感染巣）", "flag": "s3_fast" }
-    ] },
+        { "t": "慎重にすべて取る（腫瘍2つ）", "flag": "s3_careful" },
+        { "t": "急いで主な腫瘍だけ（腫瘍1つ＋感染巣）", "flag": "s3_fast" }
+      ] },
     { "briefing": true, "bg": "bg_title.svg", "who": "主人公", "t": "腫瘍を摘出する（選択によって処置内容が変わる）" }
   ],
-  "t_s3_post": [{ "bg": "bg_clinic.svg", "who": "助手", "t": "お疲れさまでした", "left": "主人公", "right": "助手" }],
+  "t_s3_post": [ { "bg": "bg_clinic.svg", "who": "助手", "t": "お疲れさまでした", "left": "主人公", "right": "助手" } ],
   "t_s4_pre": [
     { "bg": "bg_clinic.svg", "who": "仲介屋", "t": "急患だ。あちこち撃たれてる", "left": "主人公", "right": "仲介屋" },
     { "briefing": true, "bg": "bg_title.svg", "who": "主人公", "t": "次々に出血する。優先順位を見極めろ" }
@@ -51,16 +51,16 @@
   "t_s4_mid": [
     { "who": "仲介屋", "t": "そいつを助けたら、お前も共犯だぞ", "left": "主人公", "right": "仲介屋" },
     { "who": "主人公", "t": "……", "choice": [
-      { "t": "命令に従う", "flag": "s4_dark" },
-      { "t": "自分の意志で助ける", "flag": "s4_light" }
-    ] }
+        { "t": "命令に従う", "flag": "s4_dark" },
+        { "t": "自分の意志で助ける", "flag": "s4_light" }
+      ] }
   ],
-  "t_s4_post": [{ "bg": "bg_clinic.svg", "who": "主人公", "t": "……終わった", "left": "主人公" }],
-  "t_dark_pre": [{ "bg": "bg_clinic.svg", "who": "主人公", "t": "これが最後の仕事だ", "left": "主人公" }, { "briefing": true, "bg": "bg_title.svg", "who": "主人公", "t": "腫瘍と感染巣を処置する" }],
-  "t_dark_post": [{ "bg": "bg_clinic.svg", "who": "", "t": "― 闇落ちエンディング（仮） ―" }],
-  "t_light_pre": [{ "bg": "bg_clinic.svg", "who": "助手", "t": "行きましょう", "left": "主人公", "right": "助手" }, { "briefing": true, "bg": "bg_title.svg", "who": "主人公", "t": "裂傷を処置して閉じる" }],
-  "t_light_post": [{ "bg": "bg_clinic.svg", "who": "", "t": "― 光落ちエンディング（仮） ―" }],
-  "go_vital": [{ "bg": "bg_clinic.svg", "who": "主人公", "t": "……脈が、止まった", "left": "主人公" }],
-  "go_dose": [{ "bg": "bg_clinic.svg", "who": "助手", "t": "麻酔の量が多すぎます！ 呼吸が……", "left": "主人公", "right": "助手" }],
-  "go_timeout": [{ "bg": "bg_clinic.svg", "who": "仲介屋", "t": "時間切れだ。もう間に合わない", "left": "主人公", "right": "仲介屋" }]
+  "t_s4_post": [ { "bg": "bg_clinic.svg", "who": "主人公", "t": "……終わった", "left": "主人公" } ],
+  "t_dark_pre": [ { "bg": "bg_clinic.svg", "who": "主人公", "t": "これが最後の仕事だ", "left": "主人公" }, { "briefing": true, "bg": "bg_title.svg", "who": "主人公", "t": "腫瘍と感染巣を処置する" } ],
+  "t_dark_post": [ { "bg": "bg_clinic.svg", "who": "", "t": "― 闇落ちエンディング（仮） ―" } ],
+  "t_light_pre": [ { "bg": "bg_clinic.svg", "who": "助手", "t": "行きましょう", "left": "主人公", "right": "助手" }, { "briefing": true, "bg": "bg_title.svg", "who": "主人公", "t": "裂傷を処置して閉じる" } ],
+  "t_light_post": [ { "bg": "bg_clinic.svg", "who": "", "t": "― 光落ちエンディング（仮） ―" } ],
+  "go_vital": [ { "bg": "bg_clinic.svg", "who": "主人公", "t": "……脈が、止まった", "left": "主人公" } ],
+  "go_dose": [ { "bg": "bg_clinic.svg", "who": "助手", "t": "麻酔の量が多すぎます！ 呼吸が……", "left": "主人公", "right": "助手" } ],
+  "go_timeout": [ { "bg": "bg_clinic.svg", "who": "仲介屋", "t": "時間切れだ。もう間に合わない", "left": "主人公", "right": "仲介屋" } ]
 }

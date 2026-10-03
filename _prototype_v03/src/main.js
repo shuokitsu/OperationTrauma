@@ -1,5 +1,5 @@
 // 起動・画面の切り替え・セーブとの橋渡し
-import { View, Sound, loadSave, writeSave, defaultSave } from './core.js';
+import { View, Sound, loadSave, writeSave, defaultSave, preloadImages } from './core.js';
 import { Title, StageSelect, Talk, StartPosition, Result, GameOver, TrainingSelect, TrainingResult } from './screens.js';
 import { Surgery } from './surgery.js';
 
@@ -94,7 +94,15 @@ async function boot() {
   const get = n => fetch(`data/${n}.json`).then(r => { if (!r.ok) throw new Error(n); return r.json(); });   // 相対パス（GitHub Pages でも動く）
   try {
     const [instruments, lesions, stages, system, talks] = await Promise.all(['instruments', 'lesions', 'stages', 'system', 'talks'].map(get));
-    document.getElementById('boot').remove();
+    // データに出てくる画像をすべて集めて、先に読み込む
+    const names = new Set(['bg_title.svg', 'bg_clinic.svg']);
+    Object.values(stages.patients).forEach(p => p.images.forEach(n => names.add(n)));
+    Object.values(talks.characters).forEach(ch => { names.add(ch.image); names.add(ch.face); });
+    Object.entries(talks).forEach(([k, v]) => { if (Array.isArray(v)) v.forEach(ln => ln.bg && names.add(ln.bg)); });
+    instruments.order.forEach(id => names.add(instruments[id].icon));
+    const boot = document.getElementById('boot');
+    await preloadImages([...names], (n, total) => { boot.textContent = `読み込み中… ${n} / ${total}`; });
+    boot.remove();
     window.app = new App({ instruments, lesions, stages, system, talks });
   } catch (e) {
     document.getElementById('boot').textContent = 'データの読み込みに失敗しました（index.html を直接開いた場合は、サーバ経由か GitHub Pages で開いてください）：' + e.message;

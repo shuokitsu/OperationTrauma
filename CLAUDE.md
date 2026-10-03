@@ -10,7 +10,8 @@
 
 - **`work.txt` はユーザーの作業用メモ。エージェントは読まない（サブエージェントにも読ませない）。** `git status` で変更が出ても中身を見ない。ただし**コミット・プッシュの対象には含める**（中身を見ずに `git add work.txt` する。2026-10-03 ユーザー指示）。
 - **ユーザーの回答・意図は、チャットでの発言か、資料の表の「回答・決定」列だけを根拠にする。**
-- `_prototype_vNN/`（NN は2桁の番号）は、その時点の仕様で作った課題洗い出し用の試作品。記録として GitHub にプッシュするが、**本実装では参考にしない**（コードも設計もベースにせず、`spec/` から作り直す）。再利用してよいのは仮素材（画像・音）とその生成スクリプトだけ。試作を作り直すときは、既存のフォルダを書き換えずに次の番号のフォルダを作る。
+- `_prototype_vNN/`（NN は2桁の番号）は、その時点の仕様で作った課題洗い出し用の試作品。記録として GitHub にプッシュするが、**本実装では参考にしない**（コードも設計もベースにせず、`spec/` から作り直す）。再利用してよいのは仮素材（画像・音）とその生成スクリプトだけ。試作を作り直すときは、既存のフォルダを書き換えずに次の番号のフォルダを作る。**新しい試作には [_records/prototype_carryover.md](_records/prototype_carryover.md) の機能（セーブ消去・全ステージ開放などの確認用機能、GitHub Pages で動く形など）をすべて入れる。**
+- **試作で見つかった不具合は [_records/bug_list.md](_records/bug_list.md) にためる。本実装のときは、この一覧をテスト項目にする**（仕様が変わって当てはまらないものは除く。2026-10-03 ユーザー指示）。
 
 ### 記録の残し方
 
@@ -71,7 +72,9 @@
 | [_prototype_v01/README.md](_prototype_v01/README.md) | 試作 v01（2026-09-25 時点の仕様）。起動：リポジトリのルートで `python -m http.server 8123 --directory _prototype_v01` → http://localhost:8123 |
 | [_prototype_v02/README.md](_prototype_v02/README.md) | 試作 v02（2026-09-26 時点の仕様。M1〜M35 を反映）。起動：リポジトリのルートで `python -m http.server 8124 --directory _prototype_v02` → http://localhost:8124 |
 | [_prototype_v03/README.md](_prototype_v03/README.md) | 試作 v03（2026-10-03 時点の仕様。open_questions A〜F を反映）。GitHub Pages：https://shuokitsu.github.io/OperationTrauma/_prototype_v03/ （Settings → Pages の有効化が必要）。ローカル：リポジトリのルートで `python -m http.server 8125` → http://localhost:8125/_prototype_v03/ |
-| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 試作 v03 の課題（P62〜P73）と、試作で仮に決めた動き。ユーザーが遊んで見つけた課題もここに足す |
+| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 試作 v03 の課題（P62〜P77）と、試作で仮に決めた動き。ユーザーが遊んで見つけた課題もここに足す |
+| [_records/bug_list.md](_records/bug_list.md) | **不具合の一覧**（B1〜）。本実装のテスト項目にする |
+| [_records/prototype_carryover.md](_records/prototype_carryover.md) | 試作を作るときに引き継ぐこと（確認用の機能、GitHub Pages で動く形、オプション画面の形など） |
 
 ## 現在の状況（最終更新：2026-10-03）
 
@@ -99,7 +102,7 @@
 | 対象 | 状態 | 内容 |
 |---|---|---|
 | [_records/2026-10-02_open_questions.md](_records/2026-10-02_open_questions.md) | ✅ すべて回答済み・spec に反映済み（A〜F。2026-10-03） |
-| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | ⬜ P62〜P73 が回答待ち。ユーザーが試作 v03 を遊んで課題を足す予定 | 試作 v03 の課題 | 仮案の確認と、追加仕様のたたき台 |
+| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | ⬜ P76（病巣の見た目の持ち方の仮案 `TBD-07-17`）が回答待ち。P62〜P75・P77 は回答済み | 試作 v03 の課題 | 仮案の確認と、追加仕様のたたき台 |
 | テーマ3「病巣の再整理」 | ⏳ ユーザーが検討中 | 病巣を新たに考え直すため、ユーザーの作業が先。エージェントはたたき台を作らずに待つ |
 | [_records/2026-09-25_prototype_findings.md](_records/2026-09-25_prototype_findings.md) | 🔶 一部回答済み | P5〜P7、P9、P12〜P20 は回答済み。残りはテーマ3以降で扱う |
 | [_records/2026-09-25_spec_review.md](_records/2026-09-25_spec_review.md) | ⏸ 一時停止中 | 回答済み：A1〜A4、B1〜B6、C1・C2・C4・C5、D1・D3・D4。一部決定：C3。資料上は「要再検討」のまま：D2・D5（中身はテーマ1・2で決まった）。未回答：E〜G。テーマ7で再精査する |

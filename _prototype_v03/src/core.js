@@ -168,6 +168,19 @@ export function img(name) {
   if (!imgCache[name]) { const i = new Image(); i.src = 'assets/images/' + name; imgCache[name] = i; }
   return imgCache[name];
 }
+// 起動時にすべての画像を読み込み、展開まで済ませておく（初めて描くときの読み込みでチカチカしないように）
+export async function preloadImages(names, onProgress) {
+  let done = 0;
+  await Promise.all(names.map(async n => {
+    const i = img(n);
+    try {
+      if (!i.complete) await new Promise((res, rej) => { i.addEventListener('load', res, { once: true }); i.addEventListener('error', rej, { once: true }); });
+      // 展開（decode）まで済ませる。画面が非表示のときなどに終わらないことがあるので、長くても2秒で打ち切る
+      if (i.decode) await Promise.race([i.decode().catch(() => {}), new Promise(r => setTimeout(r, 2000))]);
+    } catch (_) { /* 読めない画像は代わりの色で描く */ }
+    onProgress && onProgress(++done, names.length);
+  }));
+}
 export function drawImg(c, name, x, y, w, h, fit = 'cover') {
   const i = img(name);
   if (!i.complete || !i.naturalWidth) return false;

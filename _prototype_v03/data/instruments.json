@@ -15,19 +15,19 @@
     "pass_radius": 2, "tolerance": 3, "min_cut": 2,
     "default_fail_damage": 2, "miss_damage": 2, "small_cut_max_len": 10
   },
-  "needle": { "name": "縫合針", "icon": "icon_suture.svg", "tolerance": 5, "default_fail_damage": 1, "miss_damage": 1 },
+  "needle": { "name": "縫合針", "icon": "icon_suture.svg", "tolerance": 5, "default_fail_damage": 1, "miss_damage": 1, "rearm_ratio": 0.24 },
   "injector": {
     "name": "注射", "icon": "icon_syringe.svg",
     "gauge_recover_sec": 10, "rate_per_sec": 60,
     "initial_drug": "recovery",
     "drugs": {
-      "recovery":   { "name": "回復剤", "color": "#ff8080", "heal_full_gauge": 20 },
+      "recovery": { "name": "回復剤", "color": "#ff8080", "heal_full_gauge": 20 },
       "anesthesia": { "name": "麻酔", "color": "#8fb4ff", "duration_full_gauge": 10, "decay_interval_stretch": 2.0, "dose_limit": 250 },
       "antibiotic": { "name": "抗菌剤", "color": "#7fe08a", "specific": true, "miss_damage": 1, "wrong_step": "invalid" }
     }
   },
   "special": {
-    "taping": { "name": "テーピング", "pass_radius": 2.5, "tolerance": 4 }
+    "taping": { "name": "テーピング", "width": 7, "cover_threshold": 0.3 }
   },
-  "order": ["healjelly", "drain", "tweezers", "scalpel", "needle", "injector"]
+  "order": [ "healjelly", "drain", "tweezers", "scalpel", "needle", "injector" ]
 }
