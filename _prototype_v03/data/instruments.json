@@ -1,0 +1,33 @@
+{
+  "_note": "医療機器データ（プログラム側）。決定値は spec/05、それ以外は試作の仮の値",
+  "healjelly": {
+    "name": "ヒールゼリー", "icon": "icon_gel.svg",
+    "stock": 5, "recover_sec": 10, "pause_while_painting": true,
+    "brush_radius": 2.5,
+    "paint_heal": { "first": 1, "every_sec": 2, "step": 1, "cap": 10 },
+    "default_success_heal": 1,
+    "cover_threshold": 0.8
+  },
+  "drain": { "name": "ドレーン", "icon": "icon_drain.svg", "per_tick": 1, "tick_sec": 0.1 },
+  "tweezers": { "name": "ピンセット", "icon": "icon_tweezers.svg", "default_fail_damage": 2 },
+  "scalpel": {
+    "name": "メス", "icon": "icon_scalpel.svg",
+    "pass_radius": 2, "tolerance": 3, "min_cut": 2,
+    "default_fail_damage": 2, "miss_damage": 2, "small_cut_max_len": 10
+  },
+  "needle": { "name": "縫合針", "icon": "icon_suture.svg", "tolerance": 5, "default_fail_damage": 1, "miss_damage": 1 },
+  "injector": {
+    "name": "注射", "icon": "icon_syringe.svg",
+    "gauge_recover_sec": 10, "rate_per_sec": 60,
+    "initial_drug": "recovery",
+    "drugs": {
+      "recovery":   { "name": "回復剤", "color": "#ff8080", "heal_full_gauge": 20 },
+      "anesthesia": { "name": "麻酔", "color": "#8fb4ff", "duration_full_gauge": 10, "decay_interval_stretch": 2.0, "dose_limit": 250 },
+      "antibiotic": { "name": "抗菌剤", "color": "#7fe08a", "specific": true, "miss_damage": 1, "wrong_step": "invalid" }
+    }
+  },
+  "special": {
+    "taping": { "name": "テーピング", "pass_radius": 2.5, "tolerance": 4 }
+  },
+  "order": ["healjelly", "drain", "tweezers", "scalpel", "needle", "injector"]
+}

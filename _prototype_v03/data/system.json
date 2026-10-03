@@ -1,0 +1,10 @@
+{
+  "_note": "システムデータ（プログラム側）。難易度の係数。名前・値は例（spec/03 6.3）",
+  "difficulties": [
+    { "id": "easy",   "name": "やさしい",   "coef": { "damage": 0.7, "decay": 0.7, "heal": 1.3, "time": 1.3, "recover": 1.3, "start_vital": 1.1, "dose_limit": 1.2, "anesthesia": 1.3 } },
+    { "id": "normal", "name": "ふつう",     "coef": {} },
+    { "id": "hard",   "name": "むずかしい", "coef": { "damage": 1.3, "decay": 1.3, "heal": 0.7, "time": 0.7, "recover": 0.7, "start_vital": 0.9, "dose_limit": 0.8, "anesthesia": 0.7 } }
+  ],
+  "rank": [[1.0, "XS"], [0.95, "S"], [0.8, "A"], [0.6, "B"], [0.4, "C"], [0, "D"]],
+  "eval": [[90, "Cool"], [70, "Good"], [40, "Fine"], [0, "Bad"]]
+}

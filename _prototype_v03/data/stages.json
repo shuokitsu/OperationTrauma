@@ -1,0 +1,186 @@
+{
+  "_note": "ステージデータ（内容側）。ステージ2以降は試作用の仮の内容。値はすべて仮",
+  "patients": {
+    "skin":     { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } },
+    "skin2":    { "images": ["kanja_01.jpg", "kanja_02.jpg", "kanja_03.jpg"], "dose_limits": { "anesthesia": 200 } },
+    "internal": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"], "dose_limits": { "anesthesia": 150 } }
+  },
+  "gameover_dialogues": { "vital_zero": "go_vital", "dose_limit": "go_dose", "timeout": "go_timeout" },
+  "stages": [
+    {
+      "id": "s1", "name": "ステージ1", "sub": "背中の外傷（チュートリアル）",
+      "talk_before": "t_s1_pre", "talk_after": "t_s1_post",
+      "goals": { "clear": "背中の傷を治療し、異物を取り除く", "effort": [{ "text": "ミスを3回以内にする", "type": "miss_max", "value": 3, "bonus": 50 }] },
+      "start_vital": 60, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
+      "on_clear": { "unlock": ["s2"] },
+      "steps": [
+        { "patient": "skin",
+          "placements": [
+            { "id": "sc1", "lesion": "scratch", "pos": [24, 12], "appear": { "type": "start" } },
+            { "id": "sc2", "lesion": "scratch", "pos": [62, 33], "appear": { "type": "start" } }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "まずは消毒と軽微な擦り傷の治療を行う" },
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "背中全体にヒールゼリーを塗布" },
+            { "at": { "type": "lesion_done", "value": "sc1" }, "who": "主人公", "t": "右側は軽症だからこれでいいだろう" }
+          ] },
+        { "placements": [
+            { "id": "d1", "lesion": "debris", "pos": [40, 20], "appear": { "type": "start" } },
+            { "id": "d2", "lesion": "debris", "pos": [63, 16], "appear": { "type": "start" } }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "次は破片の除去だ" },
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "ピンセットを使う。掴んでトレイに運ぶんだ" },
+            { "at": { "type": "lesions_done", "value": ["d1", "d2"] }, "who": "主人公", "t": "よし、完了" }
+          ],
+          "continue_point_after": true },
+        { "placements": [
+            { "id": "lac", "lesion": "laceration", "pos": [36, 26], "appear": { "type": "start" } },
+            { "id": "p1", "lesion": "pool", "pos": [41, 27], "appear": { "type": "start" }, "overrides": { "amount": 22 } },
+            { "id": "p2", "lesion": "pool", "pos": [46, 28], "appear": { "type": "start" }, "overrides": { "amount": 16 } }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "次は裂傷の治療だ" },
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "まず血溜まりをドレーンで吸う。重なっていれば同時に吸える" },
+            { "at": { "type": "lesions_done", "value": ["p1", "p2"] }, "who": "主人公", "t": "血溜まりが無くなったら縫合だ" },
+            { "at": { "type": "lesions_done", "value": ["p1", "p2"] }, "who": "主人公", "t": "縫合針で縫い合わせたら、最後にヒールゼリーで癒着させる" }
+          ] },
+        { "placements": [],
+          "clear_condition": { "type": "inject", "drug": "recovery", "amount": 60 },
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "ん…皮膚の中にも異物があるな" },
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "切開の前にバイタルを安定させる。バイタル回復剤だ" }
+          ] },
+        { "placements": [
+            { "id": "inc", "lesion": "incision", "pos": [40, 18], "appear": { "type": "start" } },
+            { "id": "f1", "lesion": "foreign", "pos": [49, 18], "appear": { "type": "after_done", "value": "inc" } }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "消毒してから切開する" },
+            { "at": { "type": "lesion_appear", "value": "f1" }, "who": "主人公", "t": "異物を取り出してトレイへ" }
+          ] },
+        { "placements": [
+            { "id": "cl", "lesion": "closure", "pos": [40, 18], "appear": { "type": "start" } }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "縫合して、ゼリーを塗り、テープで留める" }
+          ] }
+      ]
+    },
+    {
+      "id": "s2", "name": "ステージ2", "sub": "（仮）2人の患者・麻酔・腫瘍",
+      "talk_before": "t_s2_pre", "talk_after": "t_s2_post",
+      "goals": { "clear": "2人の患者の手術を終える", "effort": [{ "text": "バイタル30以上でクリア", "type": "vital_min_at_clear", "value": 30, "bonus": 50 }] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 360,
+      "on_clear": { "unlock": ["s3"] },
+      "steps": [
+        { "patient": "skin2",
+          "placements": [
+            { "id": "lac", "lesion": "laceration", "pos": [38, 20], "appear": { "type": "start" } },
+            { "id": "p1", "lesion": "pool", "pos": [46, 21], "appear": { "type": "start" }, "overrides": { "amount": 18 } }
+          ],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "助手", "t": "1人目は裂傷です。血溜まりから" }],
+          "continue_point_after": true },
+        { "patient": "internal", "dialogue_before": "t_s2_mid",
+          "placements": [],
+          "clear_condition": { "type": "inject", "drug": "anesthesia", "amount": 60 },
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "助手", "t": "麻酔を打ってください。この患者の限度量は少なめです" }] },
+        { "placements": [
+            { "id": "t1", "lesion": "tumor", "pos": [50, 25], "appear": { "type": "start" } },
+            { "id": "pus1", "lesion": "pus", "pos": [50, 25], "appear": { "type": "start" } }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "主人公", "t": "膿を吸ってから、腫瘍の周りを一周切る" },
+            { "at": { "type": "lesion_done", "value": "pus1" }, "who": "助手", "t": "切ったらピンセットでトレイへ" }
+          ],
+          "continue_point_after": true },
+        { "placements": [{ "id": "cl", "lesion": "closure", "pos": [40, 24], "appear": { "type": "start" } }],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "主人公", "t": "閉じる。縫合、ゼリー、テーピング" }] }
+      ]
+    },
+    {
+      "id": "s3", "name": "ステージ3", "sub": "（仮）選択肢で処置内容が変わる",
+      "talk_before": "t_s3_pre", "talk_after": "t_s3_post",
+      "goals": { "clear": "腫瘍を摘出する", "effort": [{ "text": "ミスなしでクリア", "type": "miss_max", "value": 0, "bonus": 50 }] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 360,
+      "on_clear": { "unlock": ["s4"] },
+      "steps": [
+        { "patient": "internal",
+          "placements": [
+            { "id": "t1", "lesion": "tumor", "pos": [30, 20], "appear": { "type": "start" }, "if_flag": "s3_careful" },
+            { "id": "pus1", "lesion": "pus", "pos": [31, 21], "appear": { "type": "start" }, "if_flag": "s3_careful" },
+            { "id": "t2", "lesion": "tumor", "pos": [66, 30], "appear": { "type": "start" }, "if_flag": "s3_careful" },
+            { "id": "t3", "lesion": "tumor", "pos": [45, 22], "appear": { "type": "start" }, "if_flag": "s3_fast" },
+            { "id": "i1", "lesion": "infection", "pos": [70, 34], "appear": { "type": "start" }, "if_flag": "s3_fast" }
+          ],
+          "subtitles": [
+            { "at": { "type": "step_start" }, "who": "助手", "t": "感染巣には抗菌剤を。注射の薬を切り替えてください" }
+          ],
+          "continue_point_after": true },
+        { "placements": [{ "id": "cl", "lesion": "closure", "pos": [40, 30], "appear": { "type": "start" } }],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "主人公", "t": "閉じるぞ" }] }
+      ]
+    },
+    {
+      "id": "s4", "name": "ステージ4", "sub": "（仮）同時多発・シナリオ分岐",
+      "talk_before": "t_s4_pre", "talk_after": "t_s4_post",
+      "goals": { "clear": "すべての傷を治療する", "effort": [{ "text": "ミスを2回以内にする", "type": "miss_max", "value": 2, "bonus": 50 }] },
+      "start_vital": 65, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
+      "on_clear": { "unlock_if": [{ "flag": "s4_dark", "stage": "dark" }, { "flag": "s4_light", "stage": "light" }] },
+      "steps": [
+        { "patient": "skin2",
+          "placements": [
+            { "id": "sc1", "lesion": "scratch", "pos": [18, 10], "appear": { "type": "start" } },
+            { "id": "sc2", "lesion": "scratch", "pos": [70, 12], "appear": { "type": "start" } },
+            { "id": "lac", "lesion": "laceration", "pos": [38, 30], "appear": { "type": "start" } },
+            { "id": "p1", "lesion": "pool", "pos": [42, 31], "appear": { "type": "after_sec", "value": 5 } },
+            { "id": "p2", "lesion": "pool", "pos": [54, 32], "appear": { "type": "after_sec", "value": 10 } },
+            { "id": "d1", "lesion": "debris", "pos": [78, 36], "appear": { "type": "after_sec", "value": 8 } }
+          ],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "助手", "t": "次々に出血しています！" }],
+          "continue_point_after": true },
+        { "dialogue_before": "t_s4_mid",
+          "placements": [{ "id": "inc", "lesion": "incision", "pos": [40, 20], "appear": { "type": "start" } }],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "主人公", "t": "最後の切開だ" }] }
+      ]
+    },
+    {
+      "id": "dark", "name": "闇落ち", "sub": "（仮）クリアでエンディング",
+      "talk_before": "t_dark_pre", "talk_after": "t_dark_post",
+      "goals": { "clear": "最後の手術", "effort": [] },
+      "start_vital": 60, "natural_decay": { "interval_sec": 2, "amount": 1 }, "time_limit_sec": 240,
+      "on_clear": {},
+      "steps": [
+        { "patient": "internal",
+          "placements": [
+            { "id": "t1", "lesion": "tumor", "pos": [48, 24], "appear": { "type": "start" } },
+            { "id": "i1", "lesion": "infection", "pos": [70, 30], "appear": { "type": "start" } }
+          ],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "主人公", "t": "……" }] }
+      ]
+    },
+    {
+      "id": "light", "name": "光落ち", "sub": "（仮）クリアでエンディング",
+      "talk_before": "t_light_pre", "talk_after": "t_light_post",
+      "goals": { "clear": "最後の手術", "effort": [] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
+      "on_clear": {},
+      "steps": [
+        { "patient": "skin",
+          "placements": [
+            { "id": "lac", "lesion": "laceration", "pos": [38, 22], "appear": { "type": "start" } },
+            { "id": "p1", "lesion": "pool", "pos": [43, 23], "appear": { "type": "start" } }
+          ],
+          "subtitles": [{ "at": { "type": "step_start" }, "who": "助手", "t": "一緒に、最後までやりましょう" }],
+          "continue_point_after": true },
+        { "placements": [{ "id": "cl", "lesion": "closure", "pos": [38, 22], "appear": { "type": "start" } }],
+          "subtitles": [] }
+      ]
+    }
+  ],
+  "training": {
+    "id": "training", "name": "トレーニング",
+    "start_vital": 80, "natural_decay": { "interval_sec": 5, "amount": 1 }, "time_limit_sec": null,
+    "patient": "skin", "random_count": 5
+  }
+}
