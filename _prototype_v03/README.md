@@ -67,4 +67,4 @@ python -m http.server 8125
 | `src/screens.js` | タイトル、ステージセレクト（難易度）、会話・ブリーフィング、開始位置の選択、リザルト、ゲームオーバー、トレーニングの画面 |
 | `src/main.js` | 起動、画面の切り替え、セーブとの橋渡し |
 | `data/` | プログラム側：医療機器・病巣・システム（難易度）。内容側：ステージ・会話。値はすべて仮 |
-| `assets/`、`tools/` | 仮素材と生成スクリプト（v02 からコピー） |
+| `assets/`、`tools/` | 仮素材と生成スクリプト（v02 からコピー）。2026-10-09 に、仕様にあってまだ無かった音（心電図、評価、テーピングなど SE 14個、BGM 2曲）を `tools/gen_sounds.py` に足した（ゲームからはまだ使っていない）。一覧と試聴は `tools/sound_list.html`（ローカルなら http://localhost:8125/_prototype_v03/tools/sound_list.html ） |

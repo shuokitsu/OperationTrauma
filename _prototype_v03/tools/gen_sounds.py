@@ -83,6 +83,27 @@ def se():
         "alarm": seq(tone(1000, 0.12, "square", 0.25), silence(0.05), tone(1000, 0.12, "square", 0.25)),
         "clear": seq(tone(523, 0.12, "tri", 0.4), tone(659, 0.12, "tri", 0.4), tone(784, 0.12, "tri", 0.4), tone(1046, 0.4, "tri", 0.4)),
         "gameover": seq(tone(392, 0.25, "saw", 0.3), tone(330, 0.25, "saw", 0.3), tone(262, 0.6, "saw", 0.3)),
+        # --- 2026-10-09 追加（試作 v03 のコードからはまだ使っていない） ---
+        # 心電図（spec/03 1.4）：拍ごとの「ピッ」と、平坦になったときの「ピー」（2秒。継ぎ目なくループできる）
+        "ecg_beep": tone(1000, 0.07, "sine", 0.4, attack=0.002, release=0.03),
+        "ecg_flatline": tone(1000, 2.0, "sine", 0.35, attack=0, release=0),
+        # 病巣の発生と、治療の評価（spec/05 2.6、03 5.1。途中の段階は OK）
+        "lesion_appear": seq(tone(330, 0.07, "square", 0.2), tone(247, 0.12, "square", 0.2)),
+        "rate_ok": seq(tone(784, 0.06, "tri", 0.35), tone(1046, 0.1, "tri", 0.35)),
+        "rate_cool": seq(tone(1046, 0.06, "square", 0.22), tone(1318, 0.06, "square", 0.22), tone(1568, 0.06, "square", 0.22), tone(2093, 0.25, "square", 0.22)),
+        "rate_good": seq(tone(784, 0.07, "tri", 0.4), tone(988, 0.07, "tri", 0.4), tone(1175, 0.2, "tri", 0.4)),
+        "rate_fine": seq(tone(659, 0.08, "sine", 0.4), tone(784, 0.18, "sine", 0.4)),
+        "rate_bad": seq(tone(330, 0.1, "saw", 0.25), tone(262, 0.25, "saw", 0.25, slide=-80)),
+        # テーピング（spec/05 4.1）：持ち上げる・貼る
+        "tape_lift": tone(3000, 0.15, "noise", 0.18, attack=0.01, release=0.1),
+        "tape_stick": mix(tone(500, 0.06, "tri", 0.3), tone(3000, 0.05, "noise", 0.12, release=0.04)),
+        # ピンセットで運び先（トレイなど）に置く
+        "put": seq(tone(1200, 0.03, "tri", 0.3, release=0.02), tone(900, 0.05, "tri", 0.25)),
+        # 薬の限度量の警告（spec/05 3.6）
+        "dose_warn": seq(tone(1400, 0.08, "square", 0.2), silence(0.06), tone(1400, 0.08, "square", 0.2), silence(0.06), tone(1400, 0.08, "square", 0.2)),
+        # コンティニューポイントの通過、リザルトのランク表示
+        "checkpoint": seq(tone(659, 0.08, "tri", 0.35), tone(880, 0.08, "tri", 0.35), tone(1175, 0.2, "tri", 0.35)),
+        "rank": seq(tone(392, 0.1, "tri", 0.3), mix(tone(523, 0.6, "tri", 0.25), tone(659, 0.6, "tri", 0.2), tone(784, 0.6, "tri", 0.2))),
     }
     for k, v in sounds.items():
         save(os.path.join(d, k + ".wav"), v)
@@ -118,6 +139,11 @@ def bgm():
         "surgery": bgm_track([[52, 55, 59], [48, 52, 55], [50, 54, 57], [47, 51, 54]] * 2, 132, "square", "tri", vol=0.14),
         # リザルト（C - G - Am - F）
         "result": bgm_track([[48, 52, 55], [55, 59, 62], [57, 60, 64], [53, 57, 60]], 100, "tri", "sine"),
+        # --- 2026-10-09 追加（試作 v03 のコードからはまだ使っていない） ---
+        # ブリーフィング（Am - Dm - E - Am。落ち着いた緊張感。spec/02 3.3）
+        "briefing": bgm_track([[57, 60, 64], [50, 53, 57], [52, 56, 59], [57, 60, 64]] * 2, 72, "sine", "tri", arp=False),
+        # ゲームオーバーの会話（Cm - Ab - Fm - G。ゆっくり暗く）
+        "gameover": bgm_track([[48, 51, 55], [44, 48, 51], [41, 44, 48], [43, 47, 50]], 60, "sine", "sine", arp=False, vol=0.15),
     }
     for k, v in tracks.items():
         save(os.path.join(d, k + ".wav"), v)

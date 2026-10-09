@@ -55,7 +55,7 @@
 
 | 種類 | 内容 |
 |---|---|
-| SE | 効果音（医療機器の操作中の音、操作の結果の音、病巣の発生・段階の完了・治療の完了の音、治療の評価ごとの音など。[05_instruments.md](05_instruments.md) 2.6、[03_game_rules.md](03_game_rules.md) 5.1） |
+| SE | 効果音（医療機器の操作中の音、操作の結果の音、病巣の発生・段階の完了・治療の完了の音、治療の評価ごとの音、心電図の拍に合わせた音と平坦になったときの音（[03_game_rules.md](03_game_rules.md) 1.4）など。[05_instruments.md](05_instruments.md) 2.6、[03_game_rules.md](03_game_rules.md) 5.1） |
 | BGM | 音楽 |
 | ボイス | 音声（[07_data_format.md](07_data_format.md) のシナリオデータで指定。フォルダは `TBD-08-2`） |
 
