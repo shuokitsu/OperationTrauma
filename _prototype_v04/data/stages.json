@@ -1,0 +1,171 @@
+{
+  "_note": "ステージデータ（内容側）。ステージ2以降の中身は試作用の仮のもの。処置内容の分岐（TBD-07-5）・出現条件（TBD-07-2）の書き方は試作の仮の形",
+  "first_stage": "stage1",
+  "patients": {
+    "back": { "name": "背中", "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } },
+    "body": { "name": "全身", "images": ["kanja_01.jpg", "kanja_02.jpg", "kanja_03.jpg"], "dose_limits": { "anesthesia": 250 } },
+    "internal": { "name": "体内", "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"], "dose_limits": { "anesthesia": 120 } }
+  },
+  "default_gameover_dialogues": { "vital_zero": "dlg_over_vital", "dose_limit": "dlg_over_dose", "timeout": "dlg_over_time" },
+  "stages": [
+    {
+      "id": "stage1", "name": "ステージ1", "subtitle": "背中の外傷",
+      "unlock": { "initial": true },
+      "dialogue_before": "dlg_s1_before", "dialogue_after": "dlg_s1_after",
+      "briefing_text": "背中に外傷。擦り傷、金属の破片、裂傷、皮膚の中の異物がある。",
+      "goals": {
+        "clear": { "text": "すべての傷を治療し、異物を取り除く" },
+        "effort": [ { "text": "ミスを2回以内にする", "condition": { "type": "miss_count_max", "value": 2 }, "bonus_points": 50 } ]
+      },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
+      "on_clear": { "unlock_stages": ["stage2"] },
+      "steps": [
+        { "id": "s1_scratch", "patient": "back",
+          "treatment": { "placements": [
+            { "id": "sc1", "lesion": "scratch", "position": [18, 14], "appear": { "type": "start" } },
+            { "id": "sc2", "lesion": "scratch", "position": [64, 32], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "まずは消毒と軽微な擦り傷の治療を行う" },
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "傷にヒールゼリーを塗る。筆でなぞって覆うんだ" },
+              { "at": { "type": "lesion_done", "value": "sc1" }, "speaker": "protagonist", "text": "右側は軽症だからこれでいいだろう" } ] } },
+        { "id": "s1_shard", "patient": "back",
+          "treatment": { "placements": [ { "id": "sh1", "lesion": "shard", "position": [46, 20], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "次は破片の除去だ。ピンセットを使う" },
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "掴んでトレイに運ぶんだ" },
+              { "at": { "type": "lesion_done", "value": "sh1" }, "speaker": "protagonist", "text": "よし、完了" } ] },
+          "continue_point_after": { "name": "裂傷の治療から" } },
+        { "id": "s1_laceration", "patient": "back",
+          "treatment": { "placements": [
+            { "id": "lac1", "lesion": "laceration", "position": [36, 26], "appear": { "type": "start" } },
+            { "id": "b1", "lesion": "blood", "position": [40, 28], "appear": { "type": "start" } },
+            { "id": "b2", "lesion": "blood", "position": [47, 29], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "次は裂傷の治療だ。まず血溜まりをドレーンで吸う" },
+              { "at": { "type": "lesion_done", "value": "b2" }, "speaker": "protagonist", "text": "血溜まりが無くなったら縫合だ。線をまたぐように縫え" },
+              { "at": { "type": "lesion_done", "value": "lac1" }, "speaker": "protagonist", "text": "よし" } ] } },
+        { "id": "s1_recover", "patient": "back",
+          "treatment": { "placements": [],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "ん…皮膚の中にも異物があるな" },
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "切開の前にバイタルを安定させる。バイタル回復剤だ" } ] },
+          "clear_condition": { "type": "inject", "drug": "recovery", "amount": 30 } },
+        { "id": "s1_embedded", "patient": "back",
+          "treatment": { "placements": [ { "id": "em1", "lesion": "embedded", "position": [56, 16], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "切開する。消毒してから、線の端から端へ一息に" },
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "異物を取り出したら縫合、ゼリー、テーピングで閉じる" } ] } }
+      ]
+    },
+    {
+      "id": "stage2", "name": "ステージ2", "subtitle": "二人の患者（仮）",
+      "unlock": { "requires_cleared": ["stage1"] },
+      "dialogue_before": "dlg_s2_before", "dialogue_after": "dlg_s2_after",
+      "briefing_text": "一人目は裂傷。二人目は体内の腫瘍で、膿が溜まっている。麻酔は限度量が少ない患者。",
+      "goals": {
+        "clear": { "text": "二人の患者を治療する" },
+        "effort": [ { "text": "バイタルを50以上残してクリアする", "condition": { "type": "vital_min_at_clear", "value": 50 }, "bonus_points": 50 } ]
+      },
+      "start_vital": 65, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 360,
+      "coefficients": { "anesthesia_duration": 0.8 },
+      "on_clear": { "unlock_stages": ["stage3"] },
+      "steps": [
+        { "id": "s2_a", "patient": "back",
+          "treatment": { "placements": [
+            { "id": "lac", "lesion": "laceration", "position": [30, 22], "appear": { "type": "start" } },
+            { "id": "bl", "lesion": "blood", "position": [38, 25], "appear": { "type": "start" } },
+            { "id": "sc", "lesion": "scratch", "position": [66, 34], "appear": { "type": "after_sec", "value": 6 } } ],
+            "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "assistant", "text": "（仮）一人目、背中の裂傷です" } ] },
+          "continue_point_after": { "name": "2人目の患者から" } },
+        { "id": "s2_b_anesthesia", "patient": "internal", "dialogue_before": "dlg_s2_patientB",
+          "treatment": { "placements": [],
+            "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "注射で麻酔を選んで打つ（6キーで薬のボタン）" } ] },
+          "clear_condition": { "type": "inject", "drug": "anesthesia", "amount": 40 } },
+        { "id": "s2_b_tumor", "patient": "internal",
+          "treatment": { "placements": [
+            { "id": "tu", "lesion": "tumor", "position": [50, 24], "appear": { "type": "start" } },
+            { "id": "pu", "lesion": "pus", "position": [47, 22], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "（仮）膿を吸ってから、ゼリー、腫瘍の周りを切開、摘出です" },
+              { "at": { "type": "lesion_done", "value": "tu" }, "speaker": "assistant", "text": "（仮）摘出できました！" } ] } }
+      ]
+    },
+    {
+      "id": "stage3", "name": "ステージ3", "subtitle": "処置の分岐（仮）",
+      "unlock": { "requires_cleared": ["stage2"] },
+      "dialogue_before": "dlg_s3_before", "dialogue_after": "dlg_s3_after",
+      "briefing_text": "会話で選んだ方針によって、処置の内容が変わる（結果は変わらない）。",
+      "goals": { "clear": { "text": "方針どおりに処置する" }, "effort": [] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
+      "on_clear": { "unlock_stages": ["stage4"] },
+      "steps": [
+        { "id": "s3_main", "patient": "internal",
+          "treatment": [
+            { "when": { "s3_route": "infection" }, "placements": [
+              { "id": "t1", "lesion": "tumor", "position": [32, 25], "appear": { "type": "start" } },
+              { "id": "in1", "lesion": "infection", "position": [68, 25], "appear": { "type": "start" } } ],
+              "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "右は感染巣だ。注射で抗菌剤を選んで打て" } ] },
+            { "placements": [
+              { "id": "t1", "lesion": "tumor", "position": [32, 25], "appear": { "type": "start" } },
+              { "id": "t2", "lesion": "tumor", "position": [68, 25], "appear": { "type": "start" } } ],
+              "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "腫瘍を二つ摘出する" } ] }
+          ] }
+      ]
+    },
+    {
+      "id": "stage4", "name": "ステージ4", "subtitle": "シナリオ分岐（仮）",
+      "unlock": { "requires_cleared": ["stage3"] },
+      "dialogue_before": "dlg_s4_before", "dialogue_after": "dlg_s4_after",
+      "briefing_text": "時間がたつと出血が増える。途中で助手が限界を迎える。",
+      "goals": { "clear": { "text": "手術を最後までやり遂げる" }, "effort": [ { "text": "残り時間を120秒以上残す", "condition": { "type": "time_left_min", "value": 120 }, "bonus_points": 50 } ] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
+      "on_clear": { "unlock_if": [ { "flags": { "s4_drug": "yes" }, "stage": "dark" }, { "flags": { "s4_drug": "no" }, "stage": "light" } ] },
+      "steps": [
+        { "id": "s4_a", "patient": "body",
+          "treatment": { "placements": [
+            { "id": "la", "lesion": "laceration", "position": [24, 18], "appear": { "type": "start" } },
+            { "id": "ba", "lesion": "blood", "position": [30, 21], "appear": { "type": "start" } },
+            { "id": "bb", "lesion": "blood", "position": [70, 30], "appear": { "type": "after_sec", "value": 8 } },
+            { "id": "bc", "lesion": "blood", "position": [76, 33], "appear": { "type": "after_sec", "value": 14 } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "broker", "text": "（仮）出血がどんどん増えるぞ、急げ" },
+              { "at": { "type": "lesion_appear", "value": "bb" }, "speaker": "assistant", "text": "（仮）右側からも出血です！" } ] },
+          "continue_point_after": { "name": "後半から" } },
+        { "id": "s4_b", "patient": "body", "dialogue_before": "dlg_s4_mid",
+          "treatment": { "placements": [
+            { "id": "ic", "lesion": "incision", "position": [40, 32], "appear": { "type": "start" } },
+            { "id": "sh", "lesion": "shard", "position": [70, 16], "appear": { "type": "after_done", "value": "ic" } } ] } }
+      ]
+    },
+    {
+      "id": "dark", "name": "闇落ち", "subtitle": "エンディング（仮）",
+      "unlock": { "manual": true },
+      "dialogue_before": "dlg_dark_before", "dialogue_after": "dlg_dark_after",
+      "briefing_text": "（仮）",
+      "goals": { "clear": { "text": "治療する" }, "effort": [] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 240,
+      "on_clear": {},
+      "steps": [ { "id": "d1", "patient": "body", "treatment": { "placements": [
+        { "id": "a", "lesion": "scratch", "position": [30, 20], "appear": { "type": "start" } },
+        { "id": "b", "lesion": "shard", "position": [64, 30], "appear": { "type": "start" } } ] } } ]
+    },
+    {
+      "id": "light", "name": "光落ち", "subtitle": "エンディング（仮）",
+      "unlock": { "manual": true },
+      "dialogue_before": "dlg_light_before", "dialogue_after": "dlg_light_after",
+      "briefing_text": "（仮）",
+      "goals": { "clear": { "text": "治療する" }, "effort": [] },
+      "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 240,
+      "on_clear": {},
+      "steps": [ { "id": "l1", "patient": "body", "treatment": { "placements": [
+        { "id": "a", "lesion": "scratch", "position": [30, 20], "appear": { "type": "start" } },
+        { "id": "b", "lesion": "infection", "position": [64, 30], "appear": { "type": "start" } } ] } } ]
+    }
+  ],
+  "training": {
+    "id": "training", "name": "トレーニング",
+    "start_vital": 80, "natural_decay": { "interval_sec": 4, "amount": 1 },
+    "patient": "back",
+    "random_count": 5
+  }
+}

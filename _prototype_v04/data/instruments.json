@@ -1,0 +1,57 @@
+{
+  "_note": "医療機器データ（プログラム側）。値は spec/05 の決定値と例。例・未定の値は試作用の仮の値",
+  "order": ["healjelly", "drain", "tweezers", "scalpel", "needle", "injector"],
+  "healjelly": {
+    "name": "ヒールゼリー", "icon": "icon_gel.svg",
+    "stock_max": 5, "stock_recover_sec": 10,
+    "paint_heal": { "first": 1, "every_sec": 2, "step": 1, "cap": 10 },
+    "default_success_heal": 1,
+    "cover_threshold": 0.8,
+    "brush_radius": 3,
+    "sounds": { "use": "gel", "invalid": "invalid", "success": "success" }
+  },
+  "drain": {
+    "name": "ドレーン", "icon": "icon_drain.svg",
+    "suck_per_sec": 10,
+    "sounds": { "use": "drain", "invalid": "invalid" }
+  },
+  "tweezers": {
+    "name": "ピンセット", "icon": "icon_tweezers.svg",
+    "default_fail_damage": 2,
+    "dest_radius": 2,
+    "sounds": { "grab": "grab", "put": "put", "fail": "miss", "invalid": "invalid" }
+  },
+  "scalpel": {
+    "name": "メス", "icon": "icon_scalpel.svg",
+    "pass_radius": 2, "tolerance": 3, "min_cut_length": 2,
+    "default_fail_damage": 2, "miss_damage": 2,
+    "miss_spawn": "small_cut",
+    "sounds": { "use": "cut", "fail": "miss", "miss": "miss", "invalid": "invalid" }
+  },
+  "needle": {
+    "name": "縫合針", "icon": "icon_suture.svg",
+    "tolerance": 5, "recross_ratio": 0.24,
+    "default_fail_damage": 1, "miss_damage": 1,
+    "sounds": { "cross": "stitch", "fail": "miss", "miss": "miss", "invalid": "invalid" }
+  },
+  "injector": {
+    "name": "注射", "icon": "icon_syringe.svg",
+    "gauge_recover_sec": 10,
+    "inject_per_sec": 60,
+    "initial_drug": "recovery",
+    "drugs": {
+      "recovery": { "name": "回復剤", "short": "回復", "heal_full_gauge": 20, "dose_limit": null },
+      "anesthesia": { "name": "麻酔", "short": "麻酔", "duration_sec": 10, "decay_interval_stretch": 2.0, "dose_limit": 250 },
+      "antibiotic": { "name": "抗菌剤", "short": "抗菌", "target": true, "miss_damage": 1, "wrong_step": { "type": "invalid" }, "dose_limit": null }
+    },
+    "sounds": { "use": "inject", "miss": "miss", "invalid": "invalid" }
+  },
+  "special": {
+    "taping": {
+      "name": "テーピング",
+      "band_width": 7,
+      "success_ratio": 0.3,
+      "sounds": { "lift": "tape_lift", "stick": "tape_stick", "invalid": "invalid" }
+    }
+  }
+}

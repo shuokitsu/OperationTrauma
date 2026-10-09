@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>仮サウンド一覧</title>
+<style>body{font-family:sans-serif;margin:16px;background:#fff;color:#222}table{border-collapse:collapse}td,th{border-bottom:1px solid #ddd;padding:4px 8px;text-align:left}audio{height:32px}</style>
+</head><body>
+<h1>仮サウンド一覧（試作 v03）</h1>
+<p><code>tools/gen_sounds.py</code> で生成した仮素材。「新」は 2026-10-09 に追加したもの（試作 v03 のゲームからはまだ使っていない）。</p>
+<h2>SE</h2><table><tr><th></th><th>ファイル</th><th>用途</th><th>再生</th></tr>
+<tr><td><b>新</b></td><td><code>ecg_beep</code></td><td>心電図の拍（ピッ）</td><td><audio controls preload="none" src="../assets/sound/se/ecg_beep.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>ecg_flatline</code></td><td>心電図が平坦（ピー。2秒・ループ用）</td><td><audio controls preload="none" src="../assets/sound/se/ecg_flatline.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>lesion_appear</code></td><td>病巣の発生</td><td><audio controls preload="none" src="../assets/sound/se/lesion_appear.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>rate_ok</code></td><td>評価：OK（途中の段階の完了）</td><td><audio controls preload="none" src="../assets/sound/se/rate_ok.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>rate_cool</code></td><td>評価：Cool</td><td><audio controls preload="none" src="../assets/sound/se/rate_cool.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>rate_good</code></td><td>評価：Good</td><td><audio controls preload="none" src="../assets/sound/se/rate_good.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>rate_fine</code></td><td>評価：Fine</td><td><audio controls preload="none" src="../assets/sound/se/rate_fine.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>rate_bad</code></td><td>評価：Bad</td><td><audio controls preload="none" src="../assets/sound/se/rate_bad.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>tape_lift</code></td><td>テープを持ち上げる</td><td><audio controls preload="none" src="../assets/sound/se/tape_lift.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>tape_stick</code></td><td>テープを貼る</td><td><audio controls preload="none" src="../assets/sound/se/tape_stick.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>put</code></td><td>ピンセットで運び先に置く</td><td><audio controls preload="none" src="../assets/sound/se/put.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>dose_warn</code></td><td>薬の限度量の警告</td><td><audio controls preload="none" src="../assets/sound/se/dose_warn.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>checkpoint</code></td><td>コンティニューポイントの通過</td><td><audio controls preload="none" src="../assets/sound/se/checkpoint.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>rank</code></td><td>リザルトのランク表示</td><td><audio controls preload="none" src="../assets/sound/se/rank.wav"></audio></td></tr>
+<tr><td></td><td><code>select</code></td><td>決定</td><td><audio controls preload="none" src="../assets/sound/se/select.wav"></audio></td></tr>
+<tr><td></td><td><code>cancel</code></td><td>キャンセル</td><td><audio controls preload="none" src="../assets/sound/se/cancel.wav"></audio></td></tr>
+<tr><td></td><td><code>text</code></td><td>文字送り</td><td><audio controls preload="none" src="../assets/sound/se/text.wav"></audio></td></tr>
+<tr><td></td><td><code>success</code></td><td>成功</td><td><audio controls preload="none" src="../assets/sound/se/success.wav"></audio></td></tr>
+<tr><td></td><td><code>miss</code></td><td>失敗・空振り</td><td><audio controls preload="none" src="../assets/sound/se/miss.wav"></audio></td></tr>
+<tr><td></td><td><code>invalid</code></td><td>無効</td><td><audio controls preload="none" src="../assets/sound/se/invalid.wav"></audio></td></tr>
+<tr><td></td><td><code>heal</code></td><td>回復</td><td><audio controls preload="none" src="../assets/sound/se/heal.wav"></audio></td></tr>
+<tr><td></td><td><code>gel</code></td><td>ヒールゼリー</td><td><audio controls preload="none" src="../assets/sound/se/gel.wav"></audio></td></tr>
+<tr><td></td><td><code>cut</code></td><td>メス</td><td><audio controls preload="none" src="../assets/sound/se/cut.wav"></audio></td></tr>
+<tr><td></td><td><code>stitch</code></td><td>縫合針</td><td><audio controls preload="none" src="../assets/sound/se/stitch.wav"></audio></td></tr>
+<tr><td></td><td><code>grab</code></td><td>ピンセットで掴む</td><td><audio controls preload="none" src="../assets/sound/se/grab.wav"></audio></td></tr>
+<tr><td></td><td><code>inject</code></td><td>注射</td><td><audio controls preload="none" src="../assets/sound/se/inject.wav"></audio></td></tr>
+<tr><td></td><td><code>drain</code></td><td>ドレーン</td><td><audio controls preload="none" src="../assets/sound/se/drain.wav"></audio></td></tr>
+<tr><td></td><td><code>heartbeat</code></td><td>心音（ドクン）</td><td><audio controls preload="none" src="../assets/sound/se/heartbeat.wav"></audio></td></tr>
+<tr><td></td><td><code>alarm</code></td><td>警告</td><td><audio controls preload="none" src="../assets/sound/se/alarm.wav"></audio></td></tr>
+<tr><td></td><td><code>clear</code></td><td>クリア</td><td><audio controls preload="none" src="../assets/sound/se/clear.wav"></audio></td></tr>
+<tr><td></td><td><code>gameover</code></td><td>ゲームオーバー</td><td><audio controls preload="none" src="../assets/sound/se/gameover.wav"></audio></td></tr>
+</table>
+<h2>BGM</h2><table><tr><th></th><th>ファイル</th><th>用途</th><th>再生</th></tr>
+<tr><td><b>新</b></td><td><code>briefing</code></td><td>ブリーフィング</td><td><audio controls preload="none" src="../assets/sound/bgm/briefing.wav"></audio></td></tr>
+<tr><td><b>新</b></td><td><code>gameover</code></td><td>ゲームオーバーの会話</td><td><audio controls preload="none" src="../assets/sound/bgm/gameover.wav"></audio></td></tr>
+<tr><td></td><td><code>title</code></td><td>タイトル</td><td><audio controls preload="none" src="../assets/sound/bgm/title.wav"></audio></td></tr>
+<tr><td></td><td><code>talk</code></td><td>会話</td><td><audio controls preload="none" src="../assets/sound/bgm/talk.wav"></audio></td></tr>
+<tr><td></td><td><code>surgery</code></td><td>手術中</td><td><audio controls preload="none" src="../assets/sound/bgm/surgery.wav"></audio></td></tr>
+<tr><td></td><td><code>result</code></td><td>リザルト</td><td><audio controls preload="none" src="../assets/sound/bgm/result.wav"></audio></td></tr>
+</table>
+</body></html>

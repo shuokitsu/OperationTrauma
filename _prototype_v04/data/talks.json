@@ -1,0 +1,111 @@
+{
+  "_note": "シナリオデータ（内容側）。ステージ1の会話は scenario.md の原稿のまま。ほかのステージの会話は試作用の仮の文",
+  "characters": {
+    "protagonist": { "name": "主人公", "image": "char_protagonist.jpg" },
+    "assistant": { "name": "助手", "image": "char_assistant.jpg" },
+    "broker": { "name": "仲介屋", "image": "char_broker.svg" },
+    "patient": { "name": "患者", "image": "char_patient.svg" }
+  },
+  "dlg_s1_before": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [
+      { "text": "（仲介屋が怪我人を連れてくる）" },
+      { "speaker": "broker", "side": "left", "text": "ここだ、もう大丈夫だぞ" },
+      { "speaker": "patient", "side": "right", "text": "痛ぇ…" },
+      { "speaker": "broker", "side": "left", "text": "おーい、仕事だぞー" },
+      { "left": "protagonist", "text": "（奥から主人公が出てくる）" },
+      { "speaker": "protagonist", "side": "left", "text": "…" },
+      { "speaker": "broker", "side": "none", "text": "今日は大した怪我じゃないよ。さっさとやってくれ" },
+      { "speaker": "protagonist", "side": "left", "text": "…" },
+      { "speaker": "patient", "side": "right", "text": "あんた…医者なのか…？" },
+      { "speaker": "protagonist", "side": "left", "text": "生憎な" },
+      { "speaker": "protagonist", "side": "left", "text": "服を脱いでそこのベッドに寝るんだ" },
+      { "bgm": "briefing", "speaker": "protagonist", "side": "left", "text": "背中に外傷、金属の破片もあるな" },
+      { "speaker": "protagonist", "side": "left", "text": "裂傷縫合と異物除去を行う" },
+      { "briefing": true }
+    ]
+  },
+  "dlg_s1_after": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [
+      { "speaker": "patient", "side": "right", "text": "（試作用の仮の文）…助かった" },
+      { "speaker": "broker", "side": "none", "text": "腕は確かだな。また頼むよ" }
+    ]
+  },
+  "dlg_s2_before": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）今日から手伝います。よろしくお願いします" },
+      { "speaker": "protagonist", "side": "left", "text": "…患者は二人だ。まず一人目の裂傷から" },
+      { "bgm": "briefing", "briefing": true }
+    ]
+  },
+  "dlg_s2_patientB": {
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）二人目の患者を運び込みました！ お腹の中に腫瘍があります" },
+      { "speaker": "protagonist", "side": "left", "text": "麻酔を打ってから始める。打ちすぎるなよ" }
+    ]
+  },
+  "dlg_s2_after": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [ { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）二人とも助かりましたね" } ]
+  },
+  "dlg_s3_before": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）この患者、腫瘍が二つあるように見えます" },
+      { "speaker": "protagonist", "side": "left", "text": "…どう見る？" },
+      { "choice": { "flag": "s3_route", "options": [ { "label": "二つとも腫瘍だ", "value": "tumors" }, { "label": "片方は感染巣だ（抗菌剤を使う）", "value": "infection" } ] } },
+      { "speaker": "protagonist", "side": "left", "text": "よし、その方針でいく" },
+      { "bgm": "briefing", "briefing": true }
+    ]
+  },
+  "dlg_s3_after": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [ { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）どちらの方針でも、患者は助かりました" } ]
+  },
+  "dlg_s4_before": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [
+      { "speaker": "broker", "side": "left", "text": "（試作用の仮の文）大物の手術だ。失敗は許されないぞ" },
+      { "bgm": "briefing", "briefing": true }
+    ]
+  },
+  "dlg_s4_mid": {
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）…先生、私、もう限界です。手が震えて…" },
+      { "speaker": "protagonist", "side": "left", "text": "…" },
+      { "choice": { "flag": "s4_drug", "options": [ { "label": "助手に薬を打つ", "value": "yes" }, { "label": "打たずに励ます", "value": "no" } ] } },
+      { "speaker": "assistant", "side": "right", "text": "…続けます" }
+    ]
+  },
+  "dlg_s4_after": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [ { "speaker": "broker", "side": "left", "text": "（試作用の仮の文）見事だ。…さて、ここからが本題だ" } ]
+  },
+  "dlg_dark_before": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [ { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文・闇落ち）…先生の言うとおりにします" }, { "briefing": true } ]
+  },
+  "dlg_dark_after": {
+    "bg": "bg_title.svg", "bgm": "title",
+    "lines": [ { "text": "（試作用の仮の文）―― エンディング：闇落ち ――" } ]
+  },
+  "dlg_light_before": {
+    "bg": "bg_clinic.svg", "bgm": "talk",
+    "lines": [ { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文・光落ち）先生、一緒にここを出ましょう" }, { "briefing": true } ]
+  },
+  "dlg_light_after": {
+    "bg": "bg_title.svg", "bgm": "title",
+    "lines": [ { "text": "（試作用の仮の文）―― エンディング：光落ち ――" } ]
+  },
+  "dlg_over_vital": {
+    "lines": [ { "speaker": "protagonist", "side": "left", "text": "（試作用の仮の文）…脈が、止まった" } ]
+  },
+  "dlg_over_dose": {
+    "lines": [ { "speaker": "protagonist", "side": "left", "text": "（試作用の仮の文）しまった、薬を入れすぎた…" } ]
+  },
+  "dlg_over_time": {
+    "lines": [ { "speaker": "protagonist", "side": "left", "text": "（試作用の仮の文）時間をかけすぎた。これ以上はもたない" } ]
+  }
+}

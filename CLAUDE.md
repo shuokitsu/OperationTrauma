@@ -72,7 +72,9 @@
 | [_prototype_v01/README.md](_prototype_v01/README.md) | 試作 v01（2026-09-25 時点の仕様）。起動：リポジトリのルートで `python -m http.server 8123 --directory _prototype_v01` → http://localhost:8123 |
 | [_prototype_v02/README.md](_prototype_v02/README.md) | 試作 v02（2026-09-26 時点の仕様。M1〜M35 を反映）。起動：リポジトリのルートで `python -m http.server 8124 --directory _prototype_v02` → http://localhost:8124 |
 | [_prototype_v03/README.md](_prototype_v03/README.md) | 試作 v03（2026-10-03 時点の仕様。open_questions A〜F を反映）。GitHub Pages：https://shuokitsu.github.io/OperationTrauma/_prototype_v03/ （Settings → Pages の有効化が必要）。ローカル：リポジトリのルートで `python -m http.server 8125` → http://localhost:8125/_prototype_v03/ |
-| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 試作 v03 の課題（P62〜P78）と、試作で仮に決めた動き。ユーザーが遊んで見つけた課題もここに足す |
+| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 試作 v03 の課題（P62〜P78）と、試作で仮に決めた動き |
+| [_prototype_v04/README.md](_prototype_v04/README.md) | 試作 v04（2026-10-09 時点の仕様。心電図、ゲームオーバーの会話の重ね表示、段階ごとの見た目、open_questions H 章の推奨案を反映）。GitHub Pages：https://shuokitsu.github.io/OperationTrauma/_prototype_v04/ 。ローカル：リポジトリのルートで `python -m http.server 8125` → http://localhost:8125/_prototype_v04/ |
+| [_records/2026-10-09_prototype_v04_findings.md](_records/2026-10-09_prototype_v04_findings.md) | 試作 v04 の課題（P79〜）と、試作で仮に決めた動き。**ユーザーが遊んで見つけた課題はここに足す** |
 | [_records/2026-10-09_theme3_lesion_reference.md](_records/2026-10-09_theme3_lesion_reference.md) | テーマ3「病巣の再整理」の検討用の参考資料（決定ではない）。病巣を組み立てる部品の一覧、今の病巣の分解、組み合わせで作れるかの見分け方、病巣を1つ考えるときのチェックリスト、仕様書の不明点 Q1〜Q6 |
 | [_records/bug_list.md](_records/bug_list.md) | **不具合の一覧**（B1〜）。本実装のテスト項目にする |
 | [_records/prototype_carryover.md](_records/prototype_carryover.md) | 試作を作るときに引き継ぐこと（確認用の機能、GitHub Pages で動く形、オプション画面の形など） |
@@ -89,7 +91,7 @@
 - テーマ1「データの置き場所」を決定（R1〜R7、2026-09-26）。spec/07 に反映。
 - テーマ2「医療機器の再整理」を決定（M1〜M35、2026-09-26）。spec/05 を書き直し、関連ファイルにも反映。
 - テーマ2.5「医療機器の追加確認」を決定（試作 v02 の課題 P36〜P61 にすべて回答、2026-10-02）。spec/05 などに反映。例：縫合針の成功は「指を離した時点で、またいだ回数が通過点の数以上」。
-- 試作 v01（2026-09-25）・v02（2026-09-26）・v03（2026-10-03）を作り、課題を洗い出した。v02 で最初のゴールのステージ構成をひととおり遊べることを確認した。v03 は 2026-10-03 の決定（点数と評価、コンティニュー、重なり、画面の寸法など）を反映し、GitHub Pages で公開できる形にした（ルートに `.nojekyll`）。
+- 試作 v01（2026-09-25）・v02（2026-09-26）・v03（2026-10-03）・v04（2026-10-09。心電図、ゲームオーバーの会話の重ね表示、段階ごとの見た目、H 章の推奨案）を作り、課題を洗い出した。v02 で最初のゴールのステージ構成をひととおり遊べることを確認した。v03 は 2026-10-03 の決定（点数と評価、コンティニュー、重なり、画面の寸法など）を反映し、GitHub Pages で公開できる形にした（ルートに `.nojekyll`）。
 - 試作 v02 の仮素材を更新（立ち絵・皮膚背景を JPG に、注射アイコンに合わせてほかの5つの医療機器アイコンを描き直し、主人公の簡略 SVG を追加。ラフ画風の加工も試した（画像は削除済み、加工スクリプト `_prototype_v02/tools/rough_sketch_sample.py` は残してある）。2026-09-30〜10-02。詳細は worklog）。画像の画風は、ユーザーが別途検討する。
 - 仕様書の見直し（2026-10-02）。決定記録と spec を突き合わせ、事前知識の無いエージェントに読ませる検証を2回行い、spec/01〜08 を修正した。決定記録に無い規則は「【仮案・未確認】」と TBD にして、open_questions で確認待ちにした。
 - 追加仕様をほぼ決定（open_questions の A 章、2026-10-03 回答）：病巣トレーニングモード（**トレーニング専用のステージデータ**を持つ）、治療を止める会話表示（ステップの間だけ。出すとき字幕は打ち切る）、テーピング（特別機器。**病巣データの治療手順の1段階**）、今使うべき医療機器の強調表示（チュートリアル用の強調表示は廃止）。spec に反映済み。
@@ -104,6 +106,7 @@
 | 対象 | 状態 | 内容 |
 |---|---|---|
 | [_records/2026-10-02_open_questions.md](_records/2026-10-02_open_questions.md) | ⬜ H 章（H1〜H19）が回答待ち | 仕様書の3回目の点検（2026-10-09）で見つかった、決めないと実装が割れる点。推奨どおりなら「H 章は推奨どおり」でよい。A〜G は回答済み・spec に反映済み |
+| [_records/2026-10-09_prototype_v04_findings.md](_records/2026-10-09_prototype_v04_findings.md) | ⬜ P79〜P83 が回答待ち | 試作 v04 で作りながら気づいた点（心電図のテンポと音、血溜まりの点数、段階ごとの見た目など）。遊んでから答えてもらう |
 | [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 🔶 P78 は保留（2026-10-09）。P62〜P77 は回答済み | 試作 v03 の課題。P78 はスマホで操作が難しい件（判定の許容度を画面サイズ・難易度で変えるか） |
 | テーマ3「病巣の再整理」 | ⏳ ユーザーが検討中 | 病巣を新たに考え直すため、ユーザーの作業が先。エージェントはたたき台を作らずに待つ。検討の参考資料（決定ではない）：[_records/2026-10-09_theme3_lesion_reference.md](_records/2026-10-09_theme3_lesion_reference.md) |
 | [_records/2026-09-25_prototype_findings.md](_records/2026-09-25_prototype_findings.md) | 🔶 一部回答済み | P5〜P7、P9、P12〜P20 は回答済み。残りはテーマ3以降で扱う |
@@ -111,7 +114,7 @@
 
 ## 次にやること
 
-1. **試作 v03 をユーザーが遊んで見つけた課題を受け取ったら、[_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) に追記して回答を受ける**（P62〜P77 は回答済み。P78 は保留）。 GitHub Pages の有効化（Settings → Pages、`main` の `/ (root)`）はユーザーの操作。
+1. **試作 v04 をユーザーが遊んで見つけた課題を受け取ったら、[_records/2026-10-09_prototype_v04_findings.md](_records/2026-10-09_prototype_v04_findings.md) に追記し、P79〜P83 とあわせて回答を受ける。** v03 の P78（スマホ操作）は保留中。
 2. **テーマ3「病巣の再整理」は、ユーザーの検討結果を受け取ってから進める。** 受け取ったら、テーマ2と同じ形の表でたたき台を作る（spec/06、spec/07 4章、spec/05 の決定に沿う）。
    - テーマ3 では、今日決まった病巣まわりの前提（血溜まりは複数・重なってよく量に応じて広がる、血溜まり・膿が重なる病巣はドレーン以外無効、ヒットエリアは円・線・マスの集まり、病巣ごとの点数の配点、組み合わせで作れる病巣と新しい仕組みが要る病巣を分ける）に沿う。
 3. open_questions の H 章（H1〜H19）の回答を受けて spec に反映する（A〜G は反映済み）。新しい確認事項が出たら同じ形で表に足す。

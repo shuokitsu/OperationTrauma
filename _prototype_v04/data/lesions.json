@@ -1,0 +1,114 @@
+{
+  "_note": "病巣データ（種類。プログラム側）。座標は配置の位置を [0,0] とした相対座標。値はすべて試作用の仮の値。病巣の中身はテーマ3で決め直す。見た目（look）は試作では画像の代わりに図形の層で描く（段階ごとに look、治療後は done_look。P76）",
+  "scratch": {
+    "name": "切り傷",
+    "hit_area": [ { "type": "line", "points": [[0,0],[7,-2],[15,0]], "width": 1.5 } ],
+    "steps": [
+      { "instrument": "healjelly", "heal": 2, "look": [ { "kind": "line", "color": "#b3202a", "width": 7 } ] }
+    ],
+    "done_look": [ { "kind": "line", "color": "rgba(240,150,150,0.55)", "width": 5 } ],
+    "vital_drain": { "interval_sec": 6, "amount": 1 },
+    "score": { "time": { "points": 60, "full_within_sec": 8, "zero_after_sec": 30 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 0 }
+  },
+  "small_cut": {
+    "name": "小さな切り傷",
+    "generated": true,
+    "steps": [
+      { "instrument": "healjelly", "heal": 0, "look": [ { "kind": "line", "color": "#c22b35", "width": 4 } ] }
+    ],
+    "done_look": [ { "kind": "line", "color": "rgba(240,150,150,0.45)", "width": 3 } ]
+  },
+  "blood": {
+    "name": "血溜まり",
+    "unscored": true,
+    "pool": { "amount": 25, "max": 50, "grow_per_sec": 0.6, "base_radius": 1.5, "radius_per_sqrt_amount": 0.55 },
+    "steps": [ { "instrument": "drain", "heal": 0, "look": [ { "kind": "pool", "color": "rgba(150,0,10,0.82)" } ] } ]
+  },
+  "pus": {
+    "name": "膿",
+    "unscored": true,
+    "pool": { "amount": 20, "max": 40, "grow_per_sec": 0.3, "base_radius": 1.5, "radius_per_sqrt_amount": 0.55 },
+    "steps": [ { "instrument": "drain", "heal": 0, "look": [ { "kind": "pool", "color": "rgba(205,190,60,0.85)" } ] } ]
+  },
+  "shard": {
+    "name": "破片痕",
+    "hit_area": [ { "type": "circle", "center": [0,0], "radius": 1.8 } ],
+    "steps": [
+      { "instrument": "tweezers", "dest": "tray", "heal": 1, "fail_damage": 2,
+        "look": [ { "kind": "blob", "color": "#7a1d22", "radius": 1.6 }, { "kind": "object", "shape": "shard", "color": "#b8c2cc", "size": 2.2 } ] },
+      { "instrument": "healjelly", "heal": 2, "look": [ { "kind": "blob", "color": "#9a2229", "radius": 1.6 } ] }
+    ],
+    "done_look": [ { "kind": "blob", "color": "rgba(240,150,150,0.5)", "radius": 1.2 } ],
+    "vital_drain": { "interval_sec": 5, "amount": 1 },
+    "score": { "time": { "points": 60, "full_within_sec": 10, "zero_after_sec": 35 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 0 }
+  },
+  "laceration": {
+    "name": "裂傷",
+    "hit_area": [ { "type": "line", "points": [[0,0],[6,3],[12,2],[18,5]], "width": 2 } ],
+    "path": [[0,0],[6,3],[12,2],[18,5]],
+    "steps": [
+      { "instrument": "needle", "heal": 3, "fail_damage": 1, "look": [ { "kind": "line", "color": "#5a0b10", "width": 26 }, { "kind": "line", "color": "#c2252e", "width": 12 } ] },
+      { "instrument": "healjelly", "heal": 3, "look": [ { "kind": "line", "color": "#a33a40", "width": 8 } ] }
+    ],
+    "done_look": [ { "kind": "line", "color": "rgba(240,160,160,0.55)", "width": 6 } ],
+    "on_fail": "stay",
+    "vital_drain": { "interval_sec": 4, "amount": 1 },
+    "score": { "time": { "points": 60, "full_within_sec": 15, "zero_after_sec": 50 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 0 }
+  },
+  "incision": {
+    "name": "切開",
+    "hit_area": [ { "type": "line", "points": [[0,0],[18,0]], "width": 2 } ],
+    "path": [[0,0],[6,0],[12,0],[18,0]],
+    "steps": [
+      { "instrument": "healjelly", "optional": true, "skip_damage": 1, "look": [ { "kind": "line", "color": "#3a6fd8", "width": 4, "dash": [14, 10] } ] },
+      { "instrument": "scalpel", "heal": 1, "fail_damage": 2, "look": [ { "kind": "line", "color": "#3a6fd8", "width": 4, "dash": [14, 10] }, { "kind": "line", "color": "rgba(120,230,255,0.35)", "width": 16 } ] }
+    ],
+    "done_look": [ { "kind": "line", "color": "#8e1a20", "width": 10 } ],
+    "on_fail": "stay",
+    "score": { "time": { "points": 60, "full_within_sec": 12, "zero_after_sec": 40 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 20 }
+  },
+  "embedded": {
+    "name": "皮膚の中の異物",
+    "hit_area": [ { "type": "line", "points": [[0,0],[18,0]], "width": 2.5 } ],
+    "path": [[0,0],[6,0],[12,0],[18,0]],
+    "steps": [
+      { "instrument": "healjelly", "optional": true, "skip_damage": 1, "look": [ { "kind": "blob", "color": "rgba(120,80,70,0.5)", "radius": 3, "at": [9,0] }, { "kind": "line", "color": "#3a6fd8", "width": 4, "dash": [14, 10] } ] },
+      { "instrument": "scalpel", "heal": 1, "fail_damage": 2, "look": [ { "kind": "blob", "color": "rgba(120,80,70,0.5)", "radius": 3, "at": [9,0] }, { "kind": "line", "color": "#3a6fd8", "width": 4, "dash": [14, 10] } ] },
+      { "instrument": "tweezers", "dest": "tray", "heal": 1, "fail_damage": 2, "look": [ { "kind": "line", "color": "#5a0b10", "width": 28 }, { "kind": "object", "shape": "shard", "color": "#c9d1d8", "size": 2.6, "at": [9,0] } ] },
+      { "instrument": "needle", "heal": 2, "fail_damage": 1, "look": [ { "kind": "line", "color": "#5a0b10", "width": 28 }, { "kind": "line", "color": "#c2252e", "width": 12 } ] },
+      { "instrument": "healjelly", "optional": true, "skip_damage": 0, "heal": 2, "look": [ { "kind": "line", "color": "#a33a40", "width": 8 } ] },
+      { "instrument": "taping", "heal": 2, "look": [ { "kind": "line", "color": "#a33a40", "width": 8 } ] }
+    ],
+    "done_look": [ { "kind": "line", "color": "rgba(240,160,160,0.5)", "width": 6 } ],
+    "on_fail": "stay",
+    "vital_drain": { "interval_sec": 5, "amount": 1 },
+    "score": { "time": { "points": 60, "full_within_sec": 40, "zero_after_sec": 110 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 30 }
+  },
+  "tumor": {
+    "name": "腫瘍",
+    "hit_area": [ { "type": "circle", "center": [0,0], "radius": 3.2 } ],
+    "path": [[6,0],[4,4],[0,6],[-4,4],[-6,0],[-4,-4],[0,-6],[4,-4]],
+    "path_closed": true,
+    "steps": [
+      { "instrument": "healjelly", "heal": 1, "look": [ { "kind": "blob", "color": "#7b3f8f", "radius": 3.4 } ] },
+      { "instrument": "scalpel", "heal": 1, "fail_damage": 3, "look": [ { "kind": "blob", "color": "#7b3f8f", "radius": 3.4 }, { "kind": "ring", "color": "#3a6fd8", "radius": 5.66, "width": 4, "dash": [12, 10] } ] },
+      { "instrument": "tweezers", "dest": "tray", "heal": 2, "fail_damage": 3, "look": [ { "kind": "blob", "color": "#4a0a12", "radius": 5.2 }, { "kind": "object", "shape": "blob", "color": "#7b3f8f", "size": 3.4 } ] },
+      { "instrument": "healjelly", "heal": 4, "look": [ { "kind": "blob", "color": "#8e1a20", "radius": 5.2 } ] }
+    ],
+    "done_look": [ { "kind": "blob", "color": "rgba(240,150,150,0.45)", "radius": 4 } ],
+    "on_fail": "stay",
+    "vital_drain": { "interval_sec": 3, "amount": 1 },
+    "score": { "time": { "points": 60, "full_within_sec": 30, "zero_after_sec": 90 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 0 }
+  },
+  "infection": {
+    "name": "感染巣",
+    "hit_area": [ { "type": "circle", "center": [0,0], "radius": 2.6 } ],
+    "steps": [
+      { "instrument": "injector", "drug": "antibiotic", "need": 40, "heal": 1, "look": [ { "kind": "blob", "color": "#4f8a2b", "radius": 2.8 } ] },
+      { "instrument": "healjelly", "heal": 2, "look": [ { "kind": "blob", "color": "#8a6a3a", "radius": 2.4 } ] }
+    ],
+    "done_look": [ { "kind": "blob", "color": "rgba(240,150,150,0.4)", "radius": 2 } ],
+    "vital_drain": { "interval_sec": 4, "amount": 1 },
+    "score": { "time": { "points": 60, "full_within_sec": 15, "zero_after_sec": 45 }, "no_miss": 20, "no_skip": 20, "fail_penalty": 10, "skip_penalty": 0 }
+  }
+}
