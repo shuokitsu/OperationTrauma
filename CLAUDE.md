@@ -63,7 +63,7 @@
 | [spec/README.md](spec/README.md) | **仕様書**の目次（01〜08、用語集）。記述ルール・TBD の付け方もここに書いてある |
 | [scenario.md](scenario.md) | シナリオ（舞台背景、キャラクター、ステージ構成、テキスト）。ステージの内容は仮で、後日ユーザーが変更する |
 | [_records/worklog.md](_records/worklog.md) | 作業記録（新しいものが上） |
-| [_records/2026-10-02_open_questions.md](_records/2026-10-02_open_questions.md) | **回答待ちの一覧**。spec に書き足した仮案（TBD）の確認と、追加仕様（トレーニングモード、治療を止める会話、4段階評価、テーピング、機器の強調表示）のたたき台を、テーマ別（A〜E）にまとめたもの |
+| [_records/2026-10-02_open_questions.md](_records/2026-10-02_open_questions.md) | **回答待ちの一覧**。spec に書き足した仮案（TBD）の確認と、追加仕様（トレーニングモード、治療を止める会話、4段階評価、テーピング、機器の強調表示）のたたき台を、テーマ別（A〜E）にまとめたもの。2026-10-09 に G 章（心電図）と H 章（仕様書の3回目の点検）を追加 |
 | [_records/2026-09-25_data_ownership_draft.md](_records/2026-09-25_data_ownership_draft.md) | たたき台：どの値をどのデータに持たせるか（R1〜R7）。回答済み・spec/07 に反映済み |
 | [_records/2026-09-26_instruments_draft.md](_records/2026-09-26_instruments_draft.md) | たたき台：医療機器の再整理（M1〜M35）。回答済み・spec/05 などに反映済み |
 | [_records/2026-09-25_prototype_findings.md](_records/2026-09-25_prototype_findings.md) | 試作 v01 の課題（P1〜P35）と、試作で仮に決めた動き |
@@ -72,7 +72,8 @@
 | [_prototype_v01/README.md](_prototype_v01/README.md) | 試作 v01（2026-09-25 時点の仕様）。起動：リポジトリのルートで `python -m http.server 8123 --directory _prototype_v01` → http://localhost:8123 |
 | [_prototype_v02/README.md](_prototype_v02/README.md) | 試作 v02（2026-09-26 時点の仕様。M1〜M35 を反映）。起動：リポジトリのルートで `python -m http.server 8124 --directory _prototype_v02` → http://localhost:8124 |
 | [_prototype_v03/README.md](_prototype_v03/README.md) | 試作 v03（2026-10-03 時点の仕様。open_questions A〜F を反映）。GitHub Pages：https://shuokitsu.github.io/OperationTrauma/_prototype_v03/ （Settings → Pages の有効化が必要）。ローカル：リポジトリのルートで `python -m http.server 8125` → http://localhost:8125/_prototype_v03/ |
-| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 試作 v03 の課題（P62〜P77）と、試作で仮に決めた動き。ユーザーが遊んで見つけた課題もここに足す |
+| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 試作 v03 の課題（P62〜P78）と、試作で仮に決めた動き。ユーザーが遊んで見つけた課題もここに足す |
+| [_records/2026-10-09_theme3_lesion_reference.md](_records/2026-10-09_theme3_lesion_reference.md) | テーマ3「病巣の再整理」の検討用の参考資料（決定ではない）。病巣を組み立てる部品の一覧、今の病巣の分解、組み合わせで作れるかの見分け方、病巣を1つ考えるときのチェックリスト、仕様書の不明点 Q1〜Q6 |
 | [_records/bug_list.md](_records/bug_list.md) | **不具合の一覧**（B1〜）。本実装のテスト項目にする |
 | [_records/prototype_carryover.md](_records/prototype_carryover.md) | 試作を作るときに引き継ぐこと（確認用の機能、GitHub Pages で動く形、オプション画面の形など） |
 
@@ -102,9 +103,9 @@
 
 | 対象 | 状態 | 内容 |
 |---|---|---|
-| [_records/2026-10-02_open_questions.md](_records/2026-10-02_open_questions.md) | ✅ すべて回答済み・spec に反映済み（A〜F は 2026-10-03、G 章（心電図の演出）は 2026-10-09） |
-| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 🔶 P78（スマホで操作が難しい。判定の許容度を画面サイズ・難易度で変えるか）は保留（2026-10-09）。P62〜P77 は回答済み | 試作 v03 の課題 | 仮案の確認と、追加仕様のたたき台 |
-| テーマ3「病巣の再整理」 | ⏳ ユーザーが検討中 | 病巣を新たに考え直すため、ユーザーの作業が先。エージェントはたたき台を作らずに待つ |
+| [_records/2026-10-02_open_questions.md](_records/2026-10-02_open_questions.md) | ⬜ H 章（H1〜H19）が回答待ち | 仕様書の3回目の点検（2026-10-09）で見つかった、決めないと実装が割れる点。推奨どおりなら「H 章は推奨どおり」でよい。A〜G は回答済み・spec に反映済み |
+| [_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) | 🔶 P78 は保留（2026-10-09）。P62〜P77 は回答済み | 試作 v03 の課題。P78 はスマホで操作が難しい件（判定の許容度を画面サイズ・難易度で変えるか） |
+| テーマ3「病巣の再整理」 | ⏳ ユーザーが検討中 | 病巣を新たに考え直すため、ユーザーの作業が先。エージェントはたたき台を作らずに待つ。検討の参考資料（決定ではない）：[_records/2026-10-09_theme3_lesion_reference.md](_records/2026-10-09_theme3_lesion_reference.md) |
 | [_records/2026-09-25_prototype_findings.md](_records/2026-09-25_prototype_findings.md) | 🔶 一部回答済み | P5〜P7、P9、P12〜P20 は回答済み。残りはテーマ3以降で扱う |
 | [_records/2026-09-25_spec_review.md](_records/2026-09-25_spec_review.md) | ⏸ 一時停止中 | 回答済み：A1〜A4、B1〜B6、C1・C2・C4・C5、D1・D3・D4。一部決定：C3。資料上は「要再検討」のまま：D2・D5（中身はテーマ1・2で決まった）。未回答：E〜G。テーマ7で再精査する |
 
@@ -113,7 +114,7 @@
 1. **試作 v03 をユーザーが遊んで見つけた課題を受け取ったら、[_records/2026-10-03_prototype_v03_findings.md](_records/2026-10-03_prototype_v03_findings.md) に追記して回答を受ける**（P62〜P77 は回答済み。P78 は保留）。 GitHub Pages の有効化（Settings → Pages、`main` の `/ (root)`）はユーザーの操作。
 2. **テーマ3「病巣の再整理」は、ユーザーの検討結果を受け取ってから進める。** 受け取ったら、テーマ2と同じ形の表でたたき台を作る（spec/06、spec/07 4章、spec/05 の決定に沿う）。
    - テーマ3 では、今日決まった病巣まわりの前提（血溜まりは複数・重なってよく量に応じて広がる、血溜まり・膿が重なる病巣はドレーン以外無効、ヒットエリアは円・線・マスの集まり、病巣ごとの点数の配点、組み合わせで作れる病巣と新しい仕組みが要る病巣を分ける）に沿う。
-3. open_questions（A〜G）はすべて回答済み・spec に反映済み。新しい確認事項が出たら同じ形で表に足す。
+3. open_questions の H 章（H1〜H19）の回答を受けて spec に反映する（A〜G は反映済み）。新しい確認事項が出たら同じ形で表に足す。
 4. 回答が無い間は待つ。仮案を決定扱いにしたり、本実装を始めたりしない。
 
 ### テーマの順番（全体の計画）
