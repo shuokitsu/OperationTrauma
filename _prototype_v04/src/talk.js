@@ -13,7 +13,7 @@ export class TalkBox {
     this.bg = talk && talk.bg;
     this.left = null; this.right = null;
     let lines = (talk && talk.lines) || [];
-    // 会話画面全スキップ：ブリーフィングと選択肢だけを残す（spec/02 3.1、H1 の推奨案）
+    // 会話画面全スキップ：ブリーフィングと選択肢だけを残す（spec/02 3.1、H1）
     if (opt.skip) lines = lines.map(l => {
       if (l.briefing || l.choice) return l;
       // セリフは飛ばし、背景・立ち絵・BGM の指定だけ残す

@@ -110,7 +110,7 @@ class App {
     const prev = st.steps[nextStep - 1];
     const byStage = this.save.continues[st.id] || (this.save.continues[st.id] = {});
     const byKey = byStage[run.choiceKey] || (byStage[run.choiceKey] = {});
-    byKey[nextStep] = { name: prev.continue_point_after.name, flags: { ...flags } };   // 同じ地点は最後に到達したときのフラグで上書き（H5 の推奨案）
+    byKey[nextStep] = { name: prev.continue_point_after.name, flags: { ...flags } };   // 同じ地点は最後に到達したときのフラグで上書き（H5）
     this.persist();
     run.lastCP = nextStep; run.lastCPFlags = { ...flags };
     this.sound.se('checkpoint');

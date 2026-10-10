@@ -166,6 +166,7 @@
     "id": "training", "name": "トレーニング",
     "start_vital": 80, "natural_decay": { "interval_sec": 4, "amount": 1 },
     "patient": "back",
+    "pick_position": [43, 25],
     "random_count": 5
   }
 }

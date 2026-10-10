@@ -3,7 +3,7 @@
   "order": ["healjelly", "drain", "tweezers", "scalpel", "needle", "injector"],
   "healjelly": {
     "name": "ヒールゼリー", "icon": "icon_gel.svg",
-    "stock_max": 5, "stock_recover_sec": 10,
+    "stock_max": 5, "stock_return_sec": 10,
     "paint_heal": { "first": 1, "every_sec": 2, "step": 1, "cap": 10 },
     "default_success_heal": 1,
     "cover_threshold": 0.8,

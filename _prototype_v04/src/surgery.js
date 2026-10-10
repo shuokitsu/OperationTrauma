@@ -39,8 +39,8 @@ export class Surgery {
     this.remain = this.timeLimit;
     this.vital = Math.min(99, this.stage.start_vital * this.coef('start_vital'));
     this.decayAcc = 0;
-    this.anesthesia = 0;
-    this.stock = this.ins.healjelly.stock_max; this.stockAcc = 0;
+    this.anesthesia = 0; this.anesOn = false;
+    this.stock = this.ins.healjelly.stock_max; this.stockReturns = [];   // 使ったストックが戻るまでの残り秒（ストックごと。H11）
     this.gauge = 100;
     this.dose = {};                                    // dose[患者][薬]
     this.selected = 'healjelly';
@@ -110,7 +110,7 @@ export class Surgery {
     const type = this.data.lesions[typeId];
     const tmp = new Lesion(typeId, type, { position: [0, 0] }, 0);
     let pos;
-    if (tr.mode === 'pick') pos = [Math.round(49.5 - tmp.bounds.cx), Math.round(24.5 - tmp.bounds.cy)];   // 形の外枠の中心を中央に（H17 の推奨案）
+    if (tr.mode === 'pick') pos = this.stage.pick_position.slice();   // 位置はトレーニング用ステージのデータに書く（H17）
     else {
       const b = tmp.bounds;
       const x0 = Math.ceil(-b.x0) + 2, x1 = Math.floor(99 - b.x1) - 2, y0 = Math.ceil(-b.y0) + 2, y1 = Math.floor(49 - b.y1) - 2;
@@ -181,7 +181,7 @@ export class Surgery {
     this.popups = this.popups.filter(p => (p.t += dt) < 1.6);
     this.tray.anim = clamp(this.tray.anim + (this.tray.show ? dt : -dt) * 5, 0, 1);
     this.tape.show = this.tapeNeeded();
-    if (!this.tape.show) this.tape.lifted = false;
+    if (!this.tape.show && this.tape.lifted) this.putTape();
     this.tape.anim = clamp(this.tape.anim + (this.tape.show ? dt : -dt) * 4, 0, 1);
     this.flashAcc += dt;
     this.checkEnd();
@@ -202,7 +202,7 @@ export class Surgery {
   select(id, fromKey = false) {
     if (this.selected !== id) this.app.sound.se('select', { vol: 0.6 });
     this.selected = id;
-    this.tape.lifted = false;                         // 持ち替えで持ち上げを解除（P64）
+    this.tape.lifted = false; this.tape.prev = null;  // 持ち替えで持ち上げを解除（P64）
     this.drugMenu = id === 'injector';
   }
   // ---------------- 入力 ----------------
@@ -225,7 +225,7 @@ export class Surgery {
       }
       // テープ（空白エリア）
       if (this.tape.show && this.inTape(p)) {
-        if (this.tape.lifted) { this.tape.lifted = false; this.app.sound.se('cancel', { vol: 0.6 }); this.op = { type: 'ui' }; }   // 出現位置をもう一度押すと置く
+        if (this.tape.lifted) { this.putTape(); this.app.sound.se('cancel', { vol: 0.6 }); this.op = { type: 'ui' }; }   // 出現位置をもう一度押すと置く
         else this.op = { type: 'tapepress' };
         return;
       }
@@ -287,6 +287,7 @@ export class Surgery {
     if (id === 'healjelly') {
       if (this.stock < 1) { this.snd(I, 'invalid'); this.op = { type: 'none' }; return; }   // ストック0：無効（塗っている間の回復も無し）
       this.stock -= 1;
+      this.stockReturns.push(I.stock_return_sec / this.coef('recover'));   // 押した時点で消費し、10秒後に戻る（H11）
       this.op = { type: 'gel', cells: new Set(), last: c, healed: 0, timer: 0, snd: this.app.sound.se('gel', { loop: true, vol: 0.5 }) };
       this.trailStart(c, 'rgba(120,220,255,0.9)', I.brush_radius * 2 * AREA.cell, 0.28);
       this.paint(c, c);
@@ -336,7 +337,7 @@ export class Surgery {
       case 'cut': this.app.sound.se('invalid', { vol: 0.5 }); break;               // すべての通過点を通る前に離した：無効
       case 'cutmiss': this.releaseCutMiss(op); break;
       case 'stitch': this.releaseNeedle(op); break;
-      case 'tapepress': if (!cancel) { this.tape.lifted = true; this.app.sound.se('tape_lift'); } break;
+      case 'tapepress': if (!cancel) this.liftTape(); break;
       case 'tapeswipe': this.releaseTape(op); break;
     }
   }
@@ -377,7 +378,7 @@ export class Surgery {
       if (!sf || sf.skip || this.isBlocked(l) || l.isPool) { invalid = true; continue; }   // 手順違い・血溜まりの重なり：無効
       const th = l.step.cover_threshold ?? I.cover_threshold;
       if (ratio + 1e-9 < th) { invalid = true; continue; }
-      l.penalty += Math.round((1 - ratio) * 100 * (l.type.cover_penalty_scale ?? 1));   // 覆いきらなかった分の減点
+      l.penalty += (1 - ratio) * 100 * (l.type.cover_penalty_scale ?? 1);   // 覆いきらなかった分の減点
       this.succeed(l, l.step.heal ?? I.default_success_heal);
       any = true;
     }
@@ -638,6 +639,18 @@ export class Surgery {
     const slide = (1 - this.tape.anim) * (this.side === 'left' ? 1 : -1) * (COL_W + 40);
     return { x: x + slide, y: 780, w: TAPE.w, h: TAPE.h };
   }
+  // 持ち上げた時点で、選択中の機器をテープ扱いにする（機器の列は6つとも未選択の表示。H13）
+  liftTape() {
+    this.tape.lifted = true; this.tape.prev = this.selected;
+    this.selected = 'tape'; this.drugMenu = false;
+    this.app.sound.se('tape_lift');
+  }
+  // 置いたとき（貼り終えたときも）は、持ち上げる前の機器に戻す
+  putTape() {
+    this.tape.lifted = false;
+    if (this.selected === 'tape') this.selected = this.tape.prev || 'healjelly';
+    this.tape.prev = null;
+  }
   inTape(p) { const r = this.tapeRect(); return p.x >= r.x && p.x < r.x + r.w && p.y >= r.y && p.y < r.y + r.h; }
   releaseTape(op) {
     const T = this.ins.special.taping, half = T.band_width / 2;
@@ -651,14 +664,14 @@ export class Surgery {
       for (const c of l.cells) if (distSeg(c, a, b) <= half) n++;
       const ratio = l.cells.length ? n / l.cells.length : 0;
       if (ratio + 1e-9 < T.success_ratio) continue;
-      l.penalty += Math.round((1 - ratio) * 100);       // はみ出た分の減点（仮案 TBD-05-26）
+      l.penalty += (1 - ratio) * 100;                   // はみ出た分の減点（端数は点数の計算の最後に切り上げる）
       l.marks.push({ kind: 'tape', a, b, half });
       if (sf.skip) this.skipStep(l);
       this.succeed(l, l.step.heal ?? 0);
       any = true;
     }
     if (op.trail) op.trail.t = 99;
-    if (any) { this.tape.lifted = false; this.app.sound.se('tape_stick'); }
+    if (any) { this.putTape(); this.app.sound.se('tape_stick'); }
     else this.app.sound.se('invalid');                  // 3割に足りない：無効（テープは持ち上げたまま）
   }
   // ---------------- 結果の処理 ----------------
@@ -700,10 +713,12 @@ export class Surgery {
   // ---------------- バイタルの減少と回復（spec/03 1.2・1.3） ----------------
   decay(dt) {
     const stretch = this.anesthesia > 0 ? Math.max(1, this.drugInfo('anesthesia').decay_interval_stretch * this.coef('anesthesia_stretch')) : 1;
+    // 麻酔の効き始め・切れ目は、減少のタイマーを計り直す（H10）
+    const on = this.anesthesia > 0;
+    if (on !== this.anesOn) { this.anesOn = on; this.decayAcc = 0; for (const l of this.lesions) l.decayTimer = 0; }
     if (this.anesthesia > 0) this.anesthesia = Math.max(0, this.anesthesia - dt);
     const nd = this.stage.natural_decay;
     if (nd) {
-      // 経過を割合で持つので、麻酔の効き始め・切れ目は割合で引き継ぐ（H10 の推奨案）
       this.decayAcc += dt / (nd.interval_sec / this.coef('decay') * stretch);
       while (this.decayAcc >= 1) { this.decayAcc -= 1; this.vital -= nd.amount; }
     }
@@ -716,12 +731,9 @@ export class Surgery {
   }
   recover(dt) {
     const hj = this.ins.healjelly;
-    const painting = this.op && this.op.type === 'gel';
-    if (this.stock < hj.stock_max && !painting) {      // 塗っている間は止める（経過は保持。H11 の推奨案）
-      this.stockAcc += dt;
-      const need = hj.stock_recover_sec / this.coef('recover');
-      if (this.stockAcc >= need) { this.stockAcc -= need; this.stock++; }
-    } else if (this.stock >= hj.stock_max) this.stockAcc = 0;
+    // 使ったストックは、それぞれ使ってから10秒で戻る（塗っている間も止めない。H11）
+    for (let i = 0; i < this.stockReturns.length; i++) this.stockReturns[i] -= dt;
+    while (this.stockReturns.length && this.stockReturns[0] <= 0) { this.stockReturns.shift(); this.stock = Math.min(hj.stock_max, this.stock + 1); }
     const injecting = this.op && this.op.type === 'inject';
     if (!injecting) this.gauge = Math.min(100, this.gauge + dt * 100 / (this.ins.injector.gauge_recover_sec / this.coef('recover')));
   }
@@ -763,7 +775,7 @@ export class Surgery {
       if (last) { this.end = { kind: 'clear', t: 0 }; this.app.sound.se('clear'); return; }
       this.enterStep(i + 1);
     };
-    // 途中のステップの治療後の会話は、止める会話としてステップの間に出す（H2 の推奨案）
+    // 途中のステップの治療後の会話は、止める会話としてステップの間に出す（H2）
     if (step.dialogue_after_step && !last) this.startOverlayTalk(step.dialogue_after_step, 'stop', proceed);
     else proceed();
   }
@@ -781,9 +793,9 @@ export class Surgery {
       if (e.t > 1.2) this.training ? this.app.trainingDone(this) : this.app.stageClear(this);
       return;
     }
-    // ゲームオーバー：約1.5秒、平坦の波形と音を見せてから会話（H3 の推奨案）
+    // ゲームオーバー：約1.5秒、平坦の波形と音を見せてから会話（H3）
     if (e.cause !== 'timeout') this.ecg.update(dt, 0, false);
-    if (this.training && e.t > 3) { this.app.toTrainingSelect(); return; }   // トレーニングは会話を挟まずに戻る（H4 の推奨案）
+    if (this.training && e.t > 3) { this.app.toTrainingSelect(); return; }   // トレーニングは会話を挟まずに戻る（H4）
     if (e.t > 1.5 && !e.talked) {
       e.talked = true;
       if (this.training) { this.ecg.fadeFlatline(1); return; }

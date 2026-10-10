@@ -81,7 +81,7 @@ export class Lesion {
     pts -= this.misses * s.fail_penalty;
     if (this.skipped) pts -= s.skip_penalty;
     pts -= this.penalty;
-    this.score = Math.round(clamp(pts, 0, 100));
+    this.score = Math.ceil(clamp(pts, 0, 100) - 1e-9);   // 端数は切り上げ（H7）
     this.grade = gradeOf(this.score);
     this.time = t;
     return this.score;
