@@ -25,7 +25,7 @@
     "name": "メス", "icon": "icon_scalpel.svg",
     "pass_radius": 2, "tolerance": 3, "min_cut_length": 2,
     "default_fail_damage": 2, "miss_damage": 2,
-    "miss_spawn": "small_cut",
+    "miss_spawn": "scratch",
     "sounds": { "use": "cut", "fail": "miss", "miss": "miss", "invalid": "invalid" }
   },
   "needle": {

@@ -3,7 +3,8 @@ import { AREA, toLogical } from './geometry.js';
 
 const CELL = AREA.cell;
 
-function linePoints(l) {
+function linePoints(l, layer) {
+  if (layer && layer.pts) return layer.pts.map(q => ({ x: l.origin.x + q[0], y: l.origin.y + q[1] }));   // 層ごとに線の位置を書ける
   const ln = l.hit.find(s => s.type === 'line');
   if (ln) return ln.points;
   return l.path || [];
@@ -23,7 +24,22 @@ export function drawLesion(c, l, opt = {}) {
       c.globalAlpha = 0.25; drawObject(c, l, layer); c.globalAlpha = 1;   // 元の位置に薄い影を残す（P52）
       continue;
     }
-    if (layer.kind === 'line') drawLine(c, linePoints(l), layer);
+    if (layer.kind === 'line') drawLine(c, linePoints(l, layer), layer);
+    else if (layer.kind === 'taps') {
+      // ピンセットでタップする点（タップ済みは塗りつぶす）
+      (l.curTap || []).forEach((q, i) => {
+        const p = toLogical(q), done = l.tapped.has(i);
+        c.beginPath(); c.arc(p.x, p.y, (layer.radius || 0.9) * CELL, 0, Math.PI * 2);
+        if (done) { c.fillStyle = layer.done_color || '#5a0b10'; c.fill(); }
+        else { c.fillStyle = layer.color || 'rgba(255,230,120,0.35)'; c.fill(); c.strokeStyle = layer.stroke || '#ffe27a'; c.lineWidth = 3; c.stroke(); }
+      });
+    } else if (layer.kind === 'dots') {
+      // 病巣の点（裂傷・大型破片痕の点など）
+      for (const q of l.points || []) {
+        const p = toLogical(q);
+        c.fillStyle = layer.color; c.beginPath(); c.arc(p.x, p.y, (layer.radius || 0.8) * CELL, 0, Math.PI * 2); c.fill();
+      }
+    }
     else if (layer.kind === 'blob') {
       const p = centerOf(l, layer.at);
       c.fillStyle = layer.color;

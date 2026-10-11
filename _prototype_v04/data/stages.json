@@ -1,8 +1,9 @@
 {
-  "_note": "ステージデータ（内容側）。ステージ2以降の中身は試作用の仮のもの。処置内容の分岐（TBD-07-5）・出現条件（TBD-07-2）の書き方は試作の仮の形",
+  "_note": "ステージデータ（内容側）。ステージ1・2は scenario.md（2026-10-11）の原稿から作った。ステージ3以降の中身は試作用の仮のもの。処置内容の分岐（TBD-07-5）・出現条件（TBD-07-2）の書き方は試作の仮の形",
   "first_stage": "stage1",
   "patients": {
     "back": { "name": "背中", "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } },
+    "abdomen": { "name": "腹部（試作では背中の皮膚の画像で代用）", "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } },
     "body": { "name": "全身", "images": ["kanja_01.jpg", "kanja_02.jpg", "kanja_03.jpg"], "dose_limits": { "anesthesia": 250 } },
     "internal": { "name": "体内", "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"], "dose_limits": { "anesthesia": 120 } }
   },
@@ -12,82 +13,98 @@
       "id": "stage1", "name": "ステージ1", "subtitle": "背中の外傷",
       "unlock": { "initial": true },
       "dialogue_before": "dlg_s1_before", "dialogue_after": "dlg_s1_after",
-      "briefing_text": "背中に外傷。擦り傷、金属の破片、裂傷、皮膚の中の異物がある。",
+      "briefing_text": "背中に外傷。切り傷、血溜まりの下の金属の破片、皮膚の下の血腫がある。",
       "goals": {
-        "clear": { "text": "すべての傷を治療し、異物を取り除く" },
+        "clear": { "text": "すべての傷を治療し、破片と血腫を取り除く" },
         "effort": [ { "text": "ミスを2回以内にする", "condition": { "type": "miss_count_max", "value": 2 }, "bonus_points": 50 } ]
       },
       "start_vital": 70, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 300,
       "on_clear": { "unlock_stages": ["stage2"] },
       "steps": [
-        { "id": "s1_scratch", "patient": "back",
+        { "id": "s1_cut", "patient": "back", "dialogue_before": "dlg_s1_g1",
           "treatment": { "placements": [
             { "id": "sc1", "lesion": "scratch", "position": [18, 14], "appear": { "type": "start" } },
             { "id": "sc2", "lesion": "scratch", "position": [64, 32], "appear": { "type": "start" } } ],
             "dialogue_during": [
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "まずは消毒と軽微な擦り傷の治療を行う" },
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "傷にヒールゼリーを塗る。筆でなぞって覆うんだ" },
-              { "at": { "type": "lesion_done", "value": "sc1" }, "speaker": "protagonist", "text": "右側は軽症だからこれでいいだろう" } ] } },
-        { "id": "s1_shard", "patient": "back",
-          "treatment": { "placements": [ { "id": "sh1", "lesion": "shard", "position": [46, 20], "appear": { "type": "start" } } ],
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "ヒールゼリーを選んだ状態で傷をなぞるんだ" } ] } },
+        { "id": "s1_blood", "patient": "back", "dialogue_before": "dlg_s1_g2",
+          "treatment": { "placements": [ { "id": "bl1", "lesion": "blood", "position": [46, 22], "appear": { "type": "start" }, "overrides": { "amount": 40 } } ],
             "dialogue_during": [
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "次は破片の除去だ。ピンセットを使う" },
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "掴んでトレイに運ぶんだ" },
-              { "at": { "type": "lesion_done", "value": "sh1" }, "speaker": "protagonist", "text": "よし、完了" } ] },
-          "continue_point_after": { "name": "裂傷の治療から" } },
-        { "id": "s1_laceration", "patient": "back",
-          "treatment": { "placements": [
-            { "id": "lac1", "lesion": "laceration", "position": [36, 26], "appear": { "type": "start" } },
-            { "id": "b1", "lesion": "blood", "position": [40, 28], "appear": { "type": "start" } },
-            { "id": "b2", "lesion": "blood", "position": [47, 29], "appear": { "type": "start" } } ],
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "上から2番目のドレーンを選択し、血だまりを長押しで吸引だ" } ] } },
+        { "id": "s1_shard", "patient": "back", "dialogue_before": "dlg_s1_g3",
+          "treatment": { "placements": [ { "id": "sh1", "lesion": "shard", "position": [46, 22], "appear": { "type": "start" } } ],
             "dialogue_during": [
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "次は裂傷の治療だ。まず血溜まりをドレーンで吸う" },
-              { "at": { "type": "lesion_done", "value": "b2" }, "speaker": "protagonist", "text": "血溜まりが無くなったら縫合だ。線をまたぐように縫え" },
-              { "at": { "type": "lesion_done", "value": "lac1" }, "speaker": "protagonist", "text": "よし" } ] } },
-        { "id": "s1_recover", "patient": "back",
-          "treatment": { "placements": [],
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "破片を持ったままトレイに移動し、離すんだ" },
+              { "at": { "type": "lesion_step", "value": "sh1", "step": 1 }, "speaker": "protagonist", "text": "軽い傷はヒールゼリーを塗れば塞がるだろう" } ] },
+          "continue_point_after": { "name": "血腫の処置から" } },
+        { "id": "s1_hematoma", "patient": "back", "dialogue_before": "dlg_s1_g4", "dialogue_after_step": "dlg_s1_g5",
+          "treatment": { "placements": [ { "id": "he1", "lesion": "hematoma", "position": [62, 30], "appear": { "type": "start" } } ],
             "dialogue_during": [
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "ん…皮膚の中にも異物があるな" },
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "切開の前にバイタルを安定させる。バイタル回復剤だ" } ] },
-          "clear_condition": { "type": "inject", "drug": "recovery", "amount": 30 } },
-        { "id": "s1_embedded", "patient": "back",
-          "treatment": { "placements": [ { "id": "em1", "lesion": "embedded", "position": [56, 16], "appear": { "type": "start" } } ],
-            "dialogue_during": [
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "切開する。消毒してから、線の端から端へ一息に" },
-              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "異物を取り出したら縫合、ゼリー、テーピングで閉じる" } ] } }
+              { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "まず切開する\n上から4番目のメスを選んで、血腫に沿ってなぞるんだ" },
+              { "at": { "type": "lesion_step", "value": "he1", "step": 1 }, "speaker": "protagonist", "text": "血が出てきたな、ドレーンで除去する" },
+              { "at": { "type": "lesion_unblocked", "value": "he1" }, "speaker": "protagonist", "text": "あとはヒールゼリーで止血する" } ] } }
       ]
     },
     {
-      "id": "stage2", "name": "ステージ2", "subtitle": "二人の患者（仮）",
+      "id": "stage2", "name": "ステージ2", "subtitle": "開腹手術",
       "unlock": { "requires_cleared": ["stage1"] },
       "dialogue_before": "dlg_s2_before", "dialogue_after": "dlg_s2_after",
-      "briefing_text": "一人目は裂傷。二人目は体内の腫瘍で、膿が溜まっている。麻酔は限度量が少ない患者。",
+      "briefing_text": "先日激しい外傷を受けて治療した患者。腹部で内出血している可能性が高い。開腹して処置する。",
       "goals": {
-        "clear": { "text": "二人の患者を治療する" },
+        "clear": { "text": "開腹して内出血の原因を処置し、閉腹する" },
         "effort": [ { "text": "バイタルを50以上残してクリアする", "condition": { "type": "vital_min_at_clear", "value": 50 }, "bonus_points": 50 } ]
       },
-      "start_vital": 65, "natural_decay": { "interval_sec": 3, "amount": 1 }, "time_limit_sec": 360,
-      "coefficients": { "anesthesia_duration": 0.8 },
+      "start_vital": 45, "natural_decay": { "interval_sec": 4, "amount": 1 }, "time_limit_sec": 600,
       "on_clear": { "unlock_stages": ["stage3"] },
       "steps": [
-        { "id": "s2_a", "patient": "back",
-          "treatment": { "placements": [
-            { "id": "lac", "lesion": "laceration", "position": [30, 22], "appear": { "type": "start" } },
-            { "id": "bl", "lesion": "blood", "position": [38, 25], "appear": { "type": "start" } },
-            { "id": "sc", "lesion": "scratch", "position": [66, 34], "appear": { "type": "after_sec", "value": 6 } } ],
-            "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "assistant", "text": "（仮）一人目、背中の裂傷です" } ] },
-          "continue_point_after": { "name": "2人目の患者から" } },
-        { "id": "s2_b_anesthesia", "patient": "internal", "dialogue_before": "dlg_s2_patientB",
+        { "id": "s2_recover", "patient": "abdomen", "dialogue_before": "dlg_s2_g1",
           "treatment": { "placements": [],
-            "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "注射で麻酔を選んで打つ（6キーで薬のボタン）" } ] },
-          "clear_condition": { "type": "inject", "drug": "anesthesia", "amount": 40 } },
-        { "id": "s2_b_tumor", "patient": "internal",
-          "treatment": { "placements": [
-            { "id": "tu", "lesion": "tumor", "position": [50, 24], "appear": { "type": "start" } },
-            { "id": "pu", "lesion": "pus", "position": [47, 22], "appear": { "type": "start" } } ],
+            "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "protagonist", "text": "注射を選んで回復剤投与だ\n回復剤はどこに打っても効果がある" } ] },
+          "clear_condition": { "type": "inject", "drug": "recovery", "amount": 30 } },
+        { "id": "s2_incision", "patient": "abdomen", "dialogue_before": "dlg_s2_g2",
+          "treatment": { "placements": [ { "id": "ic", "lesion": "incision", "position": [41, 30], "appear": { "type": "start" } } ],
             "dialogue_during": [
-              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "（仮）膿を吸ってから、ゼリー、腫瘍の周りを切開、摘出です" },
-              { "at": { "type": "lesion_done", "value": "tu" }, "speaker": "assistant", "text": "（仮）摘出できました！" } ] } }
+              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "麻酔は注射を選んでから麻酔薬を選択します\n患部に針を打ち込んだままキープしてください" },
+              { "at": { "type": "lesion_step", "value": "ic", "step": 1 }, "speaker": "assistant", "text": "次にヒールゼリーで切開する箇所を消毒してください" },
+              { "at": { "type": "lesion_step", "value": "ic", "step": 2 }, "speaker": "assistant", "text": "最後はメスです\n慎重にどうぞ" } ] } },
+        { "id": "s2_bleeding", "patient": "internal", "dialogue_before": "dlg_s2_g3",
+          "treatment": { "placements": [
+            { "id": "b1", "lesion": "blood", "position": [34, 20], "appear": { "type": "start" } },
+            { "id": "b2", "lesion": "blood", "position": [52, 28], "appear": { "type": "start" }, "overrides": { "amount": 35 } },
+            { "id": "b3", "lesion": "blood", "position": [68, 18], "appear": { "type": "start" } } ],
+            "dialogue_during": [ { "at": { "type": "step_start" }, "speaker": "assistant", "text": "ドレーンで流血を吸い込んでください" } ] } },
+        { "id": "s2_vessel", "patient": "internal", "dialogue_before": "dlg_s2_g4",
+          "treatment": { "placements": [
+            { "id": "v1", "lesion": "vessel", "position": [30, 18], "appear": { "type": "start" } },
+            { "id": "v2", "lesion": "vessel", "position": [58, 32], "appear": { "type": "after_done", "value": "v1" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "ピンセットで血管同士を繋ぎ合わせましょう\n片方の血管を引っ張って、もう片方へ" },
+              { "at": { "type": "lesion_step", "value": "v1", "step": 1 }, "speaker": "assistant", "text": "今のうちに縫合針を\n線に沿ってジグザグに縫ってください" },
+              { "at": { "type": "lesion_appear", "value": "v2" }, "speaker": "assistant", "text": "もう1か所、見つかりました\n血管を引っ張ってもう片方へ" },
+              { "at": { "type": "lesion_step", "value": "v2", "step": 1 }, "speaker": "assistant", "text": "血管が繋がったら縫合針でジグザグに縫ってください" } ] },
+          "continue_point_after": { "name": "前回手術した箇所の処置から" } },
+        { "id": "s2_rupture", "patient": "internal", "dialogue_before": "dlg_s2_g5",
+          "treatment": { "placements": [ { "id": "lac", "lesion": "laceration", "position": [42, 22], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "まずは血だまりのドレーンを" },
+              { "at": { "type": "lesion_unblocked", "value": "lac" }, "speaker": "assistant", "text": "ピンセットで患部をつまんで閉じてください" },
+              { "at": { "type": "lesion_step", "value": "lac", "step": 1 }, "speaker": "assistant", "text": "縫合針で縫いましょう" },
+              { "at": { "type": "lesion_step", "value": "lac", "step": 2 }, "speaker": "assistant", "text": "ヒールゼリーです" } ] } },
+        { "id": "s2_tumor", "patient": "internal", "dialogue_before": "dlg_s2_g6",
+          "treatment": { "placements": [ { "id": "tu", "lesion": "tumor", "position": [50, 25], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "メスで腫瘍を切除しましょう\n丸く切り取ってください" },
+              { "at": { "type": "lesion_step", "value": "tu", "step": 1 }, "speaker": "assistant", "text": "切除しました\nピンセットで除去してください" },
+              { "at": { "type": "lesion_step", "value": "tu", "step": 2 }, "speaker": "assistant", "text": "続けてピンセットで切断面を近づけましょう\n左右をそれぞれつまんでください" },
+              { "at": { "type": "lesion_step", "value": "tu", "step": 3 }, "speaker": "assistant", "text": "開かないうちに縫いましょう\n縫合針、どうぞ" },
+              { "at": { "type": "lesion_step", "value": "tu", "step": 4 }, "speaker": "assistant", "text": "次は上下です\nピンセットでつまんでください" },
+              { "at": { "type": "lesion_step", "value": "tu", "step": 5 }, "speaker": "assistant", "text": "最後は上下の縫合です" } ] } },
+        { "id": "s2_closure", "patient": "abdomen", "dialogue_before": "dlg_s2_g7", "dialogue_after_step": "dlg_s2_g8",
+          "treatment": { "placements": [ { "id": "cl", "lesion": "closure", "position": [41, 30], "appear": { "type": "start" } } ],
+            "dialogue_during": [
+              { "at": { "type": "step_start" }, "speaker": "assistant", "text": "まずは縫合針です\nジグザグに縫ってください" },
+              { "at": { "type": "lesion_step", "value": "cl", "step": 1 }, "speaker": "assistant", "text": "ヒールゼリーで消毒しましょう" },
+              { "at": { "type": "lesion_step", "value": "cl", "step": 2 }, "speaker": "assistant", "text": "テーピングはこちらです\n持ち上げたあと、傷の端から端まで引っ張ってください" } ] } }
       ]
     },
     {

@@ -1,54 +1,179 @@
 {
-  "_note": "シナリオデータ（内容側）。ステージ1の会話は scenario.md の原稿のまま。ほかのステージの会話は試作用の仮の文",
+  "_note": "シナリオデータ（内容側）。ステージ1・2の会話は scenario.md（2026-10-11）の原稿のまま（【会話画面】は会話画面、【ゲーム画面】の「会話」はステップの間の止める会話、「字幕」はステージデータの dialogue_during）。ほかのステージの会話は試作用の仮の文",
   "characters": {
-    "protagonist": { "name": "主人公", "image": "char_protagonist.jpg" },
-    "assistant": { "name": "助手", "image": "char_assistant.jpg" },
-    "broker": { "name": "仲介屋", "image": "char_broker.svg" },
+    "protagonist": { "name": "ラーゼ", "image": "char_protagonist.jpg" },
+    "assistant": { "name": "エリテ", "image": "char_assistant.jpg" },
+    "broker": { "name": "ベクター", "image": "char_broker.svg" },
     "patient": { "name": "患者", "image": "char_patient.svg" }
   },
   "dlg_s1_before": {
     "bg": "bg_clinic.svg", "bgm": "talk",
     "lines": [
-      { "text": "（仲介屋が怪我人を連れてくる）" },
-      { "speaker": "broker", "side": "left", "text": "ここだ、もう大丈夫だぞ" },
+      { "text": "…" },
+      { "speaker": "broker", "side": "right", "text": "…" },
+      { "speaker": "broker", "side": "right", "text": "…さあ、もう大丈夫ですよ" },
       { "speaker": "patient", "side": "right", "text": "痛ぇ…" },
-      { "speaker": "broker", "side": "left", "text": "おーい、仕事だぞー" },
-      { "left": "protagonist", "text": "（奥から主人公が出てくる）" },
+      { "speaker": "broker", "side": "right", "text": "ラーゼさーん？" },
       { "speaker": "protagonist", "side": "left", "text": "…" },
-      { "speaker": "broker", "side": "none", "text": "今日は大した怪我じゃないよ。さっさとやってくれ" },
-      { "speaker": "protagonist", "side": "left", "text": "…" },
+      { "speaker": "broker", "side": "right", "text": "さてさて、仕事ですよ" },
+      { "speaker": "broker", "side": "right", "text": "今日は大した怪我ではありませんから\nさっさとやっちゃってください" },
       { "speaker": "patient", "side": "right", "text": "あんた…医者なのか…？" },
-      { "speaker": "protagonist", "side": "left", "text": "生憎な" },
-      { "speaker": "protagonist", "side": "left", "text": "服を脱いでそこのベッドに寝るんだ" },
+      { "speaker": "protagonist", "side": "left", "text": "…生憎な" },
+      { "speaker": "protagonist", "side": "left", "text": "傷を見せてみろ" },
       { "bgm": "briefing", "speaker": "protagonist", "side": "left", "text": "背中に外傷、金属の破片もあるな" },
       { "speaker": "protagonist", "side": "left", "text": "裂傷縫合と異物除去を行う" },
       { "briefing": true }
     ]
   },
+  "dlg_s1_g1": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "まずは軽い傷から片付ける" },
+      { "speaker": "protagonist", "side": "left", "text": "背中の傷にヒールゼリーを塗布する" },
+      { "speaker": "broker", "side": "right", "text": "黄色い枠で囲われているのがヒールゼリーですよ" },
+      { "speaker": "protagonist", "side": "left", "text": "…？\nお前、何を言ってるんだ？" },
+      { "speaker": "broker", "side": "right", "text": "いえ、なんでもありません" },
+      { "speaker": "protagonist", "side": "left", "text": "ともかく、開始する" }
+    ]
+  },
+  "dlg_s1_g2": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "これでいいだろう" },
+      { "speaker": "protagonist", "side": "left", "text": "次は邪魔な血を除去する" },
+      { "speaker": "protagonist", "side": "left", "text": "まず血溜まりをドレーンする" },
+      { "speaker": "broker", "side": "right", "text": "黄色く点滅している医療機器を選択してくださいね" },
+      { "speaker": "protagonist", "side": "left", "text": "お前…" },
+      { "speaker": "broker", "side": "right", "text": "まぁまぁ、お気になさらず" }
+    ]
+  },
+  "dlg_s1_g3": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "血だまりの下から破片が出てきたか" },
+      { "speaker": "protagonist", "side": "left", "text": "破片の除去を行う" },
+      { "speaker": "protagonist", "side": "left", "text": "上から3番目のピンセットを選んだら、破片を掴んでトレイに移動だ" },
+      { "speaker": "broker", "side": "right", "text": "途中で離さないよう、しっかり押しっぱなしにしてくださいね" },
+      { "speaker": "protagonist", "side": "left", "text": "…" }
+    ]
+  },
+  "dlg_s1_g4": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "よし、次に移る" },
+      { "speaker": "protagonist", "side": "left", "text": "皮膚の下に血腫があるようだな\n痛み出す前に除去しておこう" },
+      { "speaker": "protagonist", "side": "left", "text": "メスで切開して吸引後、ヒールゼリーだ" }
+    ]
+  },
+  "dlg_s1_g5": {
+    "lines": [ { "speaker": "protagonist", "side": "left", "text": "これでもう大丈夫だ" } ]
+  },
   "dlg_s1_after": {
     "bg": "bg_clinic.svg", "bgm": "talk",
     "lines": [
-      { "speaker": "patient", "side": "right", "text": "（試作用の仮の文）…助かった" },
-      { "speaker": "broker", "side": "none", "text": "腕は確かだな。また頼むよ" }
+      { "speaker": "patient", "side": "right", "text": "あんた…助かったよ" },
+      { "speaker": "protagonist", "side": "left", "text": "ああ…\nなあ、あんた" },
+      { "speaker": "broker", "side": "right", "text": "いやぁさすがですね\nお代はいつも通り振り込んでおきますよ" },
+      { "speaker": "protagonist", "side": "left", "text": "…そうしてくれ" },
+      { "speaker": "broker", "side": "right", "text": "また次もお願いしますね\nさあ、行きますよ" },
+      { "speaker": "patient", "side": "right", "text": "あ、ああ…" },
+      { "speaker": "patient", "side": "right", "text": "…なあ、あんた" },
+      { "speaker": "patient", "side": "right", "text": "…ありがとうな" },
+      { "speaker": "protagonist", "side": "left", "text": "…いや…" },
+      { "speaker": "protagonist", "side": "left", "text": "…" }
     ]
   },
   "dlg_s2_before": {
     "bg": "bg_clinic.svg", "bgm": "talk",
     "lines": [
-      { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）今日から手伝います。よろしくお願いします" },
-      { "speaker": "protagonist", "side": "left", "text": "…患者は二人だ。まず一人目の裂傷から" },
-      { "bgm": "briefing", "briefing": true }
+      { "speaker": "broker", "side": "right", "text": "ラーゼさ～ん？居ますか～？" },
+      { "speaker": "protagonist", "side": "left", "text": "騒がしいな…" },
+      { "speaker": "broker", "side": "right", "text": "今日は新人を連れてきましたよ" },
+      { "speaker": "protagonist", "side": "left", "text": "…は？" },
+      { "speaker": "broker", "side": "right", "text": "この前、手が足りないって言ってましたよね？\nいい人が見つかったんです" },
+      { "speaker": "broker", "side": "right", "text": "こちら、エリテさんです" },
+      { "speaker": "assistant", "side": "right", "text": "はじめまして、エリテです" },
+      { "speaker": "broker", "side": "right", "text": "彼すごいんですよ\n人が倒れたときに手際良く介抱してまして" },
+      { "speaker": "protagonist", "side": "left", "text": "おい" },
+      { "speaker": "broker", "side": "right", "text": "じゃあ私は用があるのでこれで" },
+      { "speaker": "protagonist", "side": "left", "text": "おい！" },
+      { "right": "assistant", "speaker": "protagonist", "side": "left", "text": "…まったく" },
+      { "speaker": "assistant", "side": "right", "text": "よろしくお願いします" },
+      { "speaker": "protagonist", "side": "left", "text": "ここは健康な子供の来る場所じゃない" },
+      { "speaker": "assistant", "side": "right", "text": "僕は一応大人です" },
+      { "speaker": "protagonist", "side": "left", "text": "子供はそう言うもんだ\n元いた場所に戻れ" },
+      { "speaker": "assistant", "side": "right", "text": "いえ、出来ればここで働かせてください" },
+      { "speaker": "protagonist", "side": "left", "text": "そんなわけには…" },
+      { "speaker": "patient", "side": "right", "text": "た、助けてくれ…腹が…" },
+      { "speaker": "assistant", "side": "right", "text": "急患ですね\nお手伝いします" },
+      { "speaker": "protagonist", "side": "left", "text": "…話は後だ\n邪魔だけはするなよ" },
+      { "bgm": "briefing", "speaker": "patient", "side": "right", "text": "腹が痛ぇんだ…" },
+      { "speaker": "protagonist", "side": "left", "text": "分かってる\nいま処置してやる" },
+      { "speaker": "assistant", "side": "right", "text": "カルテは？" },
+      { "speaker": "protagonist", "side": "left", "text": "…先日激しい外傷を受けて治療したばかりだ\n腹部で内出血してる可能性が高い" },
+      { "speaker": "assistant", "side": "right", "text": "開腹手術ですね" },
+      { "speaker": "assistant", "side": "right", "text": "手を洗ってきます\nそれと手術着お借りします" },
+      { "speaker": "protagonist", "side": "left", "text": "こいつ…\nまあいい、始めるぞ" },
+      { "briefing": true }
     ]
   },
-  "dlg_s2_patientB": {
+  "dlg_s2_g1": {
     "lines": [
-      { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）二人目の患者を運び込みました！ お腹の中に腫瘍があります" },
-      { "speaker": "protagonist", "side": "left", "text": "麻酔を打ってから始める。打ちすぎるなよ" }
+      { "speaker": "protagonist", "side": "left", "text": "場所は下腹部、へその下あたりだ" },
+      { "speaker": "protagonist", "side": "left", "text": "バイタルが低いな…回復剤でバイタルを安定させる" }
     ]
+  },
+  "dlg_s2_g2": {
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "バイタル、安定しました" },
+      { "speaker": "protagonist", "side": "left", "text": "麻酔注射後、ヒールゼリーで消毒してメスで切開する" }
+    ]
+  },
+  "dlg_s2_g3": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "思ったより流血が多いな…" },
+      { "speaker": "assistant", "side": "right", "text": "ドレーンで視界を確保しましょう" }
+    ]
+  },
+  "dlg_s2_g4": {
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "先生、血管が離断している箇所があります" },
+      { "speaker": "protagonist", "side": "left", "text": "…お前…いや、そのようだな\n接合する" }
+    ]
+  },
+  "dlg_s2_g5": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "完了だ\n次に移る" },
+      { "speaker": "assistant", "side": "right", "text": "現視界内には病巣は無いようです" },
+      { "speaker": "protagonist", "side": "left", "text": "前回手術した箇所だ\n…ここだ" },
+      { "speaker": "assistant", "side": "right", "text": "血管が破裂したような症状ですね" },
+      { "speaker": "protagonist", "side": "left", "text": "かすかな傷から悪化したんだろう\n処置するぞ" }
+    ]
+  },
+  "dlg_s2_g6": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "これで完了だな" },
+      { "speaker": "assistant", "side": "right", "text": "先生、こちらに来ていただけますか" },
+      { "speaker": "protagonist", "side": "left", "text": "なんだ？\n…こいつは" },
+      { "speaker": "protagonist", "side": "left", "text": "早めに除去したほうがよさそうだ\n腫瘍を摘出する" }
+    ]
+  },
+  "dlg_s2_g7": {
+    "lines": [
+      { "speaker": "protagonist", "side": "left", "text": "よし、閉腹する" },
+      { "speaker": "assistant", "side": "right", "text": "最後は縫合してヒールゼリー、テーピングですね" }
+    ]
+  },
+  "dlg_s2_g8": {
+    "lines": [ { "speaker": "assistant", "side": "right", "text": "すべて完了です\nお疲れさまでした" } ]
   },
   "dlg_s2_after": {
     "bg": "bg_clinic.svg", "bgm": "talk",
-    "lines": [ { "speaker": "assistant", "side": "right", "text": "（試作用の仮の文）二人とも助かりましたね" } ]
+    "lines": [
+      { "speaker": "assistant", "side": "right", "text": "見事な手術でした" },
+      { "speaker": "protagonist", "side": "left", "text": "それよりもあんた、どこで知識を？" },
+      { "speaker": "assistant", "side": "right", "text": "昔、勉強を" },
+      { "speaker": "protagonist", "side": "left", "text": "…そうか" },
+      { "speaker": "assistant", "side": "right", "text": "それより、ここで働きたいのですが" },
+      { "speaker": "protagonist", "side": "left", "text": "2階が空いてる\n好きに使え" },
+      { "speaker": "assistant", "side": "right", "text": "ありがとうございます" }
+    ]
   },
   "dlg_s3_before": {
     "bg": "bg_clinic.svg", "bgm": "talk",

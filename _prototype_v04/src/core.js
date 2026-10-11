@@ -233,7 +233,7 @@ export function newSave() {
     version: 1,
     unlocked: [], cleared: {},          // cleared[stageId] = { bestRank }
     flags: {},
-    options: { side: 'left', se: 70, bgm: 50, textSpeed: 'normal', skipTalk: false },
+    options: { side: 'left', se: 70, bgm: 50, textSpeed: 'normal', skipTalk: false, guide: true },
     continues: {},                      // continues[stageId][choiceKey] = { stepIndex, flags }
     lastDifficulty: {},
     training: { treated: [], best: {} },// best[lesionType][difficulty] = { grade, time }

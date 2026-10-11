@@ -1,5 +1,5 @@
 // ゲーム画面（spec/02 3.4、03、05）
-import { W, H, text, roundRect, Button, clamp } from './core.js';
+import { W, H, text, roundRect, wrapText, Button, clamp } from './core.js';
 import { AREA, toCell, toLogical, inArea, dist, distSeg, distPolyline, polylineCross, shapeCells } from './geometry.js';
 import { Lesion, rankOf } from './lesion.js';
 import { Ecg } from './ecg.js';
@@ -91,7 +91,8 @@ export class Surgery {
     this.subs = []; this.subCur = null;
     this.spoken = new Set();
     // 途中のステップの治療前の会話は、ゲーム画面に重ねて出す（止める会話。spec/02 3.4）
-    if (step.dialogue_before && !(first && i === 0)) this.startOverlayTalk(step.dialogue_before, 'stop', () => this.beginStep());
+    // 最初のステップの dialogue_before は、ゲーム画面に入った直後に出す（scenario.md の【ゲーム画面】の最初の「会話」）
+    if (step.dialogue_before) this.startOverlayTalk(step.dialogue_before, 'stop', () => this.beginStep());
     else this.beginStep();
   }
   beginStep() {
@@ -139,14 +140,16 @@ export class Surgery {
     this.lesions.push(l);
     if (l.counted) this.history.push(l);
     if (!generated) this.app.sound.se('lesion_appear', { vol: 0.6 });
+    // 一緒に出す病巣（試作の仮の書き方。組み合わせの書き方は TBD-06-10）
+    for (const w of type.with || []) this.spawn({ id: l.id + '_' + w.lesion + '_' + w.at.join('_'), lesion: w.lesion, position: [l.origin.x + w.at[0], l.origin.y + w.at[1]] }, true);
     this.trigger('lesion_appear', l.id);
     return l;
   }
   // 字幕（処置中の会話）
-  trigger(type, value) {
+  trigger(type, value, extra) {
     for (const d of this.during) {
       if (d._done) continue;
-      if (d.at.type === type && (d.at.value === undefined || d.at.value === value)) { d._done = true; this.subs.push(d); }
+      if (d.at.type === type && (d.at.value === undefined || d.at.value === value) && (d.at.step === undefined || d.at.step === extra)) { d._done = true; this.subs.push(d); }
     }
   }
   startOverlayTalk(id, kind, onDone) {
@@ -174,7 +177,15 @@ export class Surgery {
     this.decay(dt);
     this.recover(dt);
     for (const l of this.lesions) if (l.isPool && !l.done) this.growPool(l, dt);
+    for (const l of this.lesions.slice()) if (l.type.bleed && !l.done) this.bleed(l, dt);
     this.spawnPending();
+    // 字幕：血溜まり・膿が無くなって、下の病巣を処置できるようになった
+    for (const l of this.lesions) {
+      if (l.done || l.isPool) continue;
+      const b = this.isBlocked(l);
+      if (l._blocked && !b) this.trigger('lesion_unblocked', l.id);
+      l._blocked = b;
+    }
     this.updateSubs(dt);
     this.ecg.update(dt, Math.ceil(this.vital), this.anesthesia > 0);
     this.trails = this.trails.filter(t => (t.t += dt) < 1.8 || t.keep);
@@ -255,7 +266,8 @@ export class Surgery {
     for (const l of this.lesions) {
       if (l.done) continue;
       let hit = l.contains(c);
-      if (!hit && extraFor && l.path) hit = distPolyline(c, l.path) <= extraFor;
+      const lp = this.pathOf(l);
+      if (!hit && extraFor && lp) hit = distPolyline(c, lp) <= extraFor;
       if (hit) list.push(l);
     }
     return list;
@@ -264,6 +276,11 @@ export class Surgery {
     if (l.isPool) return false;
     for (const p of this.lesions) if (p.isPool && !p.done && l.overlapsPool(p)) return true;
     return false;
+  }
+  // 今の段階（省略できる段階なら、その次の段階も）で使う線
+  pathOf(l, skip = false) {
+    if (skip) { const g = l.stepGeo[l.stepIndex + 1]; return (g && g.path) || l.path; }
+    return l.curPath;
   }
   // 今の段階が instrument か（省略できる段階の次の段階を含む）
   stepFor(l, instrument) {
@@ -301,6 +318,16 @@ export class Surgery {
     }
     if (id === 'tweezers') {
       const r = this.pick(c, 'tweezers');
+      if (r.kind === 'target' && r.lesion.curTap) { this.tapPoint(r.lesion, c); this.op = { type: 'none' }; return; }
+      if (r.kind === 'target' && r.lesion.curConnect) {
+        // 2点を繋ぐ（血管接合）：どちらかの端を掴んで、もう片方へ運ぶ（A→B でも B→A でもよい）
+        const l = r.lesion, [a, b] = l.curConnect, R = l.step.radius ?? I.dest_radius + 1;
+        const from = dist(c, a) <= dist(c, b) ? a : b;
+        if (dist(c, from) > R) { this.snd(I, 'invalid'); this.op = { type: 'none' }; return; }
+        this.op = { type: 'grab', lesion: l, connect: { from, to: from === a ? b : a }, pos: toLogical(c), from: toLogical(c) };
+        this.snd(I, 'grab');
+        return;
+      }
       if (r.kind === 'target') {
         const l = r.lesion;
         this.op = { type: 'grab', lesion: l, pos: toLogical(c), from: toLogical(c) };
@@ -375,10 +402,11 @@ export class Surgery {
       if (!n) continue;
       const ratio = n / l.cells.length;
       const sf = this.stepFor(l, 'healjelly');
-      if (!sf || sf.skip || this.isBlocked(l) || l.isPool) { invalid = true; continue; }   // 手順違い・血溜まりの重なり：無効
+      if (!sf || this.isBlocked(l) || l.isPool) { invalid = true; continue; }   // 手順違い・血溜まりの重なり：無効
       const th = l.step.cover_threshold ?? I.cover_threshold;
       if (ratio + 1e-9 < th) { invalid = true; continue; }
       l.penalty += (1 - ratio) * 100 * (l.type.cover_penalty_scale ?? 1);   // 覆いきらなかった分の減点
+      if (sf.skip) this.skipStep(l);                     // 省略できる段階（裂傷の縫合針など）を飛ばしてヒールゼリー
       this.succeed(l, l.step.heal ?? I.default_success_heal);
       any = true;
     }
@@ -421,10 +449,23 @@ export class Surgery {
     const slide = (1 - this.tray.anim) * (this.side === 'left' ? 1 : -1) * (COL_W + 40);
     return { x: x + slide, y: 400, w: TRAY.w, h: TRAY.h };
   }
+  // 点をタップして閉じる・つまむ（裂傷・大型破片痕・腫瘍。順番は問わない（試作の仮。TBD-06-11））
+  tapPoint(l, c) {
+    const I = this.ins.tweezers, R = l.step.radius ?? I.dest_radius + 1;
+    const pts = l.curTap;
+    let best = -1, bd = Infinity;
+    pts.forEach((q, i) => { if (!l.tapped.has(i)) { const d = dist(c, q); if (d < bd) { bd = d; best = i; } } });
+    if (best < 0 || bd > R) { this.snd(I, 'invalid'); return; }   // 点の外：無効（ダメージなし）
+    l.tapped.add(best);
+    this.snd(I, 'put');
+    if (l.tapped.size >= pts.length) this.succeed(l, l.step.heal ?? 0);
+  }
   releaseGrab(op, p) {
     const l = op.lesion, s = l.step, I = this.ins.tweezers;
     let ok = false;
-    if (s.dest === 'tray') {
+    if (op.connect) {
+      ok = dist(toCell(p), op.connect.to) <= (s.radius ?? I.dest_radius + 1);
+    } else if (s.dest === 'tray') {
       const r = this.trayRect();
       ok = p.x >= r.x && p.x < r.x + r.w && p.y >= r.y && p.y < r.y + r.h;
     } else if (s.dest && s.dest.position) {
@@ -442,9 +483,10 @@ export class Surgery {
     if (r.kind === 'blocked') { this.snd(I, 'invalid'); this.op = { type: 'none' }; return; }
     if (r.kind === 'wrong') { this.fail(r.lesion, I.default_fail_damage, I, true); this.op = { type: 'none' }; return; }   // 手順違い：失敗（既定値）
     if (r.kind === 'miss') { this.op = { type: 'cutmiss', pts: [c], len: 0, hit: false }; this.trailStart(c, 'rgba(255,90,90,0.9)', 4); return; }
-    const l = r.lesion, path = l.path;
+    const l = r.lesion, path = this.pathOf(l, r.skip);
     if (!path) { this.op = { type: 'none' }; return; }
-    const op = { type: 'cut', lesion: l, skip: r.skip, passed: new Set(), last: c, closed: !!l.type.path_closed };
+    const closed = r.skip ? !!(l.nextStep.path ? l.nextStep.path_closed : l.type.path_closed) : l.curClosed;
+    const op = { type: 'cut', lesion: l, path, skip: r.skip, passed: new Set(), last: c, closed };
     if (!op.closed) {
       const d0 = dist(c, path[0]), d1 = dist(c, path[path.length - 1]);
       if (Math.min(d0, d1) > I.pass_radius) { this.fail(l, this.failDamage(l, I, r.skip), I); this.op = { type: 'none' }; return; }   // 端以外から切り始めた
@@ -469,7 +511,7 @@ export class Surgery {
   }
   failDamage(l, I, wrong) { return wrong ? I.default_fail_damage : (l.step && l.step.instrument === 'scalpel' ? l.step.fail_damage : l.nextStep && l.nextStep.fail_damage) ?? I.default_fail_damage; }
   dragScalpel(c) {
-    const op = this.op, I = this.ins.scalpel, l = op.lesion, path = l.path;
+    const op = this.op, I = this.ins.scalpel, l = op.lesion, path = op.path;
     const a = op.last; op.last = c;
     const steps = Math.max(1, Math.ceil(dist(a, c) / 0.4));
     for (let s = 1; s <= steps; s++) {
@@ -479,7 +521,7 @@ export class Surgery {
   }
   // 1点ずつ調べる。false を返したら操作は終わり
   cutStep(q) {
-    const op = this.op, I = this.ins.scalpel, l = op.lesion, path = l.path, n = path.length;
+    const op = this.op, I = this.ins.scalpel, l = op.lesion, path = op.path, n = path.length;
     const failNow = () => { this.op = null; if (op.trail) op.trail.keep = false; this.fail(l, this.failDamage(l, I, false), I); return false; };
     if (!op.closed) {
       const target = op.order[op.k];
@@ -520,7 +562,10 @@ export class Surgery {
   cutSuccess(l, op) {
     l.marks.push({ kind: 'cut', pts: op.trail ? op.trail.pts.slice() : [] });
     if (op.skip) this.skipStep(l);
+    const spawns = l.step.spawn_on_success || [];
     this.succeed(l, l.step.heal ?? 0);
+    // 切開で血・膿が出る（血腫・粉瘤。spec/06 3.7）
+    for (const w of spawns) this.spawn({ id: l.id + '_' + w.lesion, lesion: w.lesion, position: [l.origin.x + w.at[0], l.origin.y + w.at[1]] }, true);
   }
   dragCutMiss(c) {
     const op = this.op, I = this.ins.scalpel;
@@ -534,7 +579,7 @@ export class Surgery {
   }
   releaseCutMiss(op) {
     if (!op.hit) return;
-    // 切った場所に小さな切り傷（間引いた折れ線、長さの上限 10マス、手術エリアの外は切り捨て。spec/06 3.6）
+    // 切った場所に切り傷（空振りの切り傷。間引いた折れ線、長さの上限 10マス、手術エリアの外は切り捨て。spec/06 3.1）
     const pts = [];
     let len = 0;
     for (const q of op.pts) {
@@ -552,30 +597,31 @@ export class Surgery {
     const I = this.ins.needle;
     const cands = this.candidates(c, I.tolerance);
     if (cands.some(l => l.isPool || this.isBlocked(l))) { this.snd(I, 'invalid'); this.op = { type: 'none' }; return; }
-    const sew = cands.filter(l => this.stepFor(l, 'needle') && l.path && distPolyline(c, l.path) <= I.tolerance);
+    const sew = cands.filter(l => { const sf = this.stepFor(l, 'needle'); const lp = sf && this.pathOf(l, sf.skip); return lp && distPolyline(c, lp) <= I.tolerance; });
     if (!sew.length) { this.damage(I.miss_damage); this.snd(I, 'miss'); this.op = { type: 'none' }; return; }   // 空振り：押した瞬間にダメージ
-    sew.sort((a, b) => distPolyline(c, a.path) - distPolyline(c, b.path));   // 押した位置に最も近い線
-    const l = sew[0];
+    const pathOfN = l => this.pathOf(l, this.stepFor(l, 'needle').skip);
+    sew.sort((a, b) => distPolyline(c, pathOfN(a)) - distPolyline(c, pathOfN(b)));   // 押した位置に最も近い線
+    const l = sew[0], path = pathOfN(l);
     const leave = I.tolerance * I.recross_ratio;
-    this.op = { type: 'stitch', lesion: l, skip: this.stepFor(l, 'needle').skip, count: 0, last: c, armed: distPolyline(c, l.path) > leave };
+    this.op = { type: 'stitch', lesion: l, path, skip: this.stepFor(l, 'needle').skip, count: 0, last: c, armed: distPolyline(c, path) > leave };
     this.trailStart(c, 'rgba(40,40,40,0.95)', 4);
   }
   dragNeedle(c) {
     const op = this.op, I = this.ins.needle, l = op.lesion;
     const leave = I.tolerance * I.recross_ratio;
     const a = op.last; op.last = c;
-    const d = distPolyline(c, l.path);
+    const d = distPolyline(c, op.path);
     if (d > I.tolerance) {                             // 猶予幅の外に出た：失敗
       this.op = null; if (op.trail) op.trail.keep = false;
       this.fail(l, l.step.fail_damage ?? I.default_fail_damage, I);
       return;
     }
-    if (op.armed && polylineCross(a, c, l.path)) { op.count++; op.armed = false; this.app.sound.se('stitch', { vol: 0.7 }); }
+    if (op.armed && polylineCross(a, c, op.path)) { op.count++; op.armed = false; this.app.sound.se('stitch', { vol: 0.7 }); }
     else if (!op.armed && d >= leave) op.armed = true;  // 線から一定の距離離れてから戻ったら、また数える
   }
   releaseNeedle(op) {
     const l = op.lesion, I = this.ins.needle;
-    if (op.count >= l.path.length) {
+    if (op.count >= op.path.length) {
       l.marks.push({ kind: 'stitch', pts: op.trail ? op.trail.pts.slice() : [] });
       if (op.trail) op.trail.t = 99;
       if (op.skip) this.skipStep(l);
@@ -605,7 +651,10 @@ export class Surgery {
       this.damage(D.miss_damage ?? 1); this.snd(I, 'miss');   // 空振り：押した時点でダメージ、注入しない
       this.op = { type: 'none' }; return;
     }
-    this.op = { type: 'inject', snd: this.app.sound.se('inject', { vol: 0.5 }) };
+    // 麻酔などどこでも効く薬：患部に打つ段階の病巣の上なら、その段階も進める（切開の麻酔。spec/06 3.6）
+    const r = this.pick(c, 'injector');
+    const lesion = r.kind === 'target' && r.lesion.step.drug === this.drug ? r.lesion : null;
+    this.op = { type: 'inject', lesion, snd: this.app.sound.se('inject', { vol: 0.5 }) };
   }
   inject(dt) {
     const op = this.op, I = this.ins.injector, drug = this.drug, D = this.drugInfo();
@@ -684,6 +733,7 @@ export class Surgery {
     l.skipped = true;
     if (s.skip_damage) this.vital -= s.skip_damage * this.coef('damage');
     l.stepIndex++;
+    l.tapped = new Set();
   }
   succeed(l, heal) {
     if (heal) this.heal(heal * this.coef('heal'));
@@ -701,6 +751,7 @@ export class Surgery {
       if (l.isPool) l.refreshCells();
       this.popup('OK', at, '#bdf', 44);
       this.app.sound.se('rate_ok', { vol: 0.7 });
+      this.trigger('lesion_step', l.id, l.stepIndex);   // 字幕：病巣が N 番目の段階（0から数える）に進んだ
     }
   }
   fail(l, dmg, I, wrongStep = false) {
@@ -710,6 +761,21 @@ export class Surgery {
     if (!wrongStep && l.type.on_fail === 'reset') l.stepIndex = 0;   // 失敗で最初に戻るタイプ
   }
   popup(str, at, color, size = 44) { this.popups.push({ text: str, x: at.x, y: at.y, color, size, t: 0 }); }
+  // 縫合前に時間がかかると血溜まりが出る（裂傷。spec/06 3.2。間隔は試作の仮の値）
+  bleed(l, dt) {
+    const b = l.type.bleed;
+    if (l.stepIndex >= b.until_step) return;
+    if (this.isBlocked(l)) { l.bleedTimer = 0; return; }   // 血溜まりが残っている間は計らない（試作の仮）
+    l.bleedTimer += dt;
+    if (l.bleedTimer < b.every_sec) return;
+    l.bleedTimer = 0;
+    const pts = l.points || [l.origin];
+    const free = pts.filter(q => !this.lesions.some(o => o.isPool && !o.done && dist(o.origin, q) < 1));
+    if (!free.length) return;
+    const q = free[Math.floor(Math.random() * free.length)];
+    this.spawn({ id: l.id + '_bleed' + Math.floor(this.time * 1000), lesion: b.lesion || 'blood', position: [q.x, q.y] }, true);
+    this.app.sound.se('lesion_appear', { vol: 0.5 });
+  }
   // ---------------- バイタルの減少と回復（spec/03 1.2・1.3） ----------------
   decay(dt) {
     const stretch = this.anesthesia > 0 ? Math.max(1, this.drugInfo('anesthesia').decay_interval_stretch * this.coef('anesthesia_stretch')) : 1;
@@ -724,7 +790,7 @@ export class Surgery {
     }
     for (const l of this.lesions) {
       const vd = l.type.vital_drain;
-      if (!vd || l.done) continue;
+      if (!vd || l.done || l.generated) continue;   // 実行時に生成された病巣（空振りの切り傷など）はバイタル減少を持たない
       l.decayTimer += dt / (vd.interval_sec / this.coef('decay') * stretch);
       while (l.decayTimer >= 1) { l.decayTimer -= 1; this.vital -= vd.amount; }
     }
@@ -776,7 +842,8 @@ export class Surgery {
       this.enterStep(i + 1);
     };
     // 途中のステップの治療後の会話は、止める会話としてステップの間に出す（H2）
-    if (step.dialogue_after_step && !last) this.startOverlayTalk(step.dialogue_after_step, 'stop', proceed);
+    // 最後のステップの後の会話も、クリアの前に出す（試作の仮。scenario.md の最後の「会話」）
+    if (step.dialogue_after_step) this.startOverlayTalk(step.dialogue_after_step, 'stop', proceed);
     else proceed();
   }
   gameOver(cause) {
@@ -834,7 +901,13 @@ export class Surgery {
     this.drawSubtitle(c);
     if (this.drugMenu) this.drawDrugMenu(c);
     // ピンセットで掴んでいる物は最上位レイヤー
-    if (this.op && this.op.type === 'grab') {
+    if (this.op && this.op.type === 'grab' && this.op.connect) {
+      // 血管の端を持ち上げて引っ張る（血管接合）
+      const a = toLogical(this.op.connect.from), p = this.op.pos;
+      c.save(); c.strokeStyle = '#b3202a'; c.lineWidth = 16; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(p.x, p.y); c.stroke();
+      c.strokeStyle = 'rgba(255,170,170,0.6)'; c.lineWidth = 5; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(p.x, p.y); c.stroke(); c.restore();
+    } else if (this.op && this.op.type === 'grab') {
       const l = this.op.lesion, dx = this.op.pos.x - this.op.from.x, dy = this.op.pos.y - this.op.from.y;
       c.save(); c.translate(dx, dy); drawLesion(c, l, { objectOnly: true }); c.restore();
     }
@@ -892,6 +965,7 @@ export class Surgery {
         text(c, (this.isBlocked(l) ? '［血溜まり］' : '') + nm, at.x, at.y + 30, { size: 24, align: 'center', color: '#ff0', shadow: true });
       }
     }
+    if (this.app.save.options.guide !== false && !this.end) this.drawGuides(c);
     // 操作の跡
     for (const t of this.trails) {
       const a = t.keep ? 1 : clamp(1 - (t.t - 1.0) / 0.8, 0, 1);
@@ -917,6 +991,56 @@ export class Surgery {
     }
     c.restore();
     c.strokeStyle = '#000'; c.lineWidth = 2; c.strokeRect(AREA.x, AREA.y, AREA.w, AREA.h);
+  }
+  // 操作ガイドの矢印（spec/05 2.9）：選んでいる機器で、今の段階を処置できる病巣だけに出す。病巣のデータから自動で決める
+  drawGuides(c) {
+    const inst = this.selected === 'tape' ? 'taping' : this.selected;
+    const pulse = 0.55 + 0.45 * Math.sin(this.flashAcc * 5);
+    const col = `rgba(255,226,122,${0.55 + 0.35 * pulse})`;
+    const L = q => toLogical(q);
+    const ring = (q, r) => { const p = L(q); c.strokeStyle = col; c.lineWidth = 4; c.setLineDash([10, 8]); c.beginPath(); c.arc(p.x, p.y, r * AREA.cell * (0.9 + 0.2 * pulse), 0, Math.PI * 2); c.stroke(); c.setLineDash([]); };
+    c.save();
+    for (const l of this.lesions) {
+      if (l.done) continue;
+      if (inst === 'drain') { if (l.isPool) ring(l.origin, l.radius + 1); continue; }
+      if (l.isPool || this.isBlocked(l)) continue;
+      const sf = this.stepFor(l, inst);
+      if (!sf) continue;
+      const k = l.stepIndex + (sf.skip ? 1 : 0), step = l.type.steps[k], geo = l.stepGeo[k] || {};
+      const path = this.pathOf(l, sf.skip);
+      if (inst === 'scalpel' && path) {
+        const closed = step.path ? !!step.path_closed : !!l.type.path_closed;
+        const pts = closed ? [...path, path[0]] : path;
+        this.guideArrow(c, pts.map(L), col);
+        ring(pts[0], 1);                                  // 切り始めの位置
+      } else if (inst === 'needle' && path) {
+        this.guideArrow(c, zigzag(path, this.ins.needle.tolerance * 0.6).map(L), col);
+      } else if (inst === 'tweezers') {
+        if (geo.tap) geo.tap.forEach((q, i) => { if (!(k === l.stepIndex && l.tapped.has(i))) ring(q, 1.4); });
+        else if (geo.connect) this.guideArrow(c, geo.connect.map(L), col);
+        else if (step.dest === 'tray') {
+          const from = L({ x: l.bounds.cx, y: l.bounds.cy }), to = { x: this.oppX + COL_W / 2, y: 550 };
+          this.guideArrow(c, [from, to], col);
+        }
+      } else if (inst === 'taping') {
+        const ln = path || (l.hit.find(h => h.type === 'line') || {}).points;
+        if (ln) this.guideArrow(c, [L(ln[0]), L(ln[ln.length - 1])], col, 10);
+      } else {
+        ring({ x: l.bounds.cx, y: l.bounds.cy }, Math.max(2, (l.bounds.x1 - l.bounds.x0) / 2 + 0.5));   // ヒールゼリー・注射：使う場所を指す印
+      }
+    }
+    c.restore();
+  }
+  guideArrow(c, pts, col, width = 5) {
+    if (pts.length < 2) return;
+    c.strokeStyle = col; c.fillStyle = col; c.lineWidth = width; c.lineCap = 'round'; c.lineJoin = 'round';
+    c.setLineDash([16, 10]); c.lineDashOffset = -this.flashAcc * 40;
+    c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y)); c.stroke();
+    c.setLineDash([]); c.lineDashOffset = 0;
+    const a = pts[pts.length - 2], b = pts[pts.length - 1], ang = Math.atan2(b.y - a.y, b.x - a.x), s = 14 + width * 2;
+    c.beginPath(); c.moveTo(b.x, b.y);
+    c.lineTo(b.x - s * Math.cos(ang - 0.45), b.y - s * Math.sin(ang - 0.45));
+    c.lineTo(b.x - s * Math.cos(ang + 0.45), b.y - s * Math.sin(ang + 0.45)); c.closePath(); c.fill();
   }
   drawVital(c) {
     const x = COL_W, y = 0, w = W - COL_W * 2, h = MENU_H;
@@ -1041,8 +1165,24 @@ export class Surgery {
       c.restore();
     }
     if (ch) text(c, ch.name, x + 230, y + 50, { size: 30, color: '#9fd8ff', weight: 'bold' });
-    text(c, s.text, x + 230, y + 115, { size: 40, maxWidth: w - 260 });
+    wrapText(c, s.text, x + 230, y + (s.text.includes('\n') ? 100 : 115), w - 260, 50, { size: 40 });
   }
+}
+
+// 線に沿ったジグザグ（縫合針のガイド）
+function zigzag(path, amp) {
+  const out = [];
+  let side = 1;
+  for (let i = 0; i < path.length - 1; i++) {
+    const a = path[i], b = path[i + 1], len = dist(a, b), n = Math.max(1, Math.round(len / 2));
+    const nx = -(b.y - a.y) / (len || 1), ny = (b.x - a.x) / (len || 1);
+    for (let j = 0; j < n; j++) {
+      const t = (j + 0.5) / n;
+      out.push({ x: a.x + (b.x - a.x) * t + nx * amp * side, y: a.y + (b.y - a.y) * t + ny * amp * side });
+      side = -side;
+    }
+  }
+  return out;
 }
 
 function gradeColor(g) { return { Cool: '#5ff0ff', Good: '#7dff8a', Fine: '#ffe36b', Bad: '#ff7a7a' }[g] || '#fff'; }

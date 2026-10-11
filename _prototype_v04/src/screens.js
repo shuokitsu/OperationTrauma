@@ -37,7 +37,7 @@ export class Title extends ButtonScene {
     this.buttons = [
       new Button(bx, 520, 600, 100, 'ステージセレクト', () => app.toStageSelect()),
       new Button(bx, 640, 600, 100, 'トレーニング', () => app.toTrainingSelect()),
-      new Button(bx, 760, 600, 100, 'オプション', () => { this.options = this.options ? null : new Options(app); }),
+      new Button(bx, 760, 600, 100, 'オプション', () => { this.options = this.options ? null : new Options(app, () => { this.options = null; }); }),
       new Button(60, 960, 420, 80, '試作：全ステージ開放', () => { app.unlockAll(); this.flash('全ステージを開放しました'); }, { size: 28, bg: 'rgba(60,40,20,0.9)' }),
       new Button(500, 960, 380, 80, '試作：セーブ消去', () => { app.resetSave(); this.flash('セーブを消去しました'); }, { size: 28, bg: 'rgba(60,20,20,0.9)' }),
     ];
@@ -50,7 +50,7 @@ export class Title extends ButtonScene {
       for (const e of input.ev) {
         if (e.type !== 'down') continue;
         if (this.buttons[2].hit(e)) { this.app.sound.se('cancel'); this.options = null; return; }
-        this.options.click(e);
+        if (this.options.click(e)) return;
       }
       return;
     }
@@ -69,20 +69,21 @@ export class Title extends ButtonScene {
 
 // オプション（試作 v02 と同じ形：タイトルの上にパネルを重ね、項目ごとに値のボタンを並べる。prototype_carryover）
 class Options {
-  constructor(app) {
+  constructor(app, onClose) {
     this.app = app;
-    const o = app.save.options;
+    this.onClose = onClose;
     this.rows = [
       { label: '医療機器の配置', key: 'side', values: [['left', '左'], ['right', '右']] },
       { label: 'SE 音量', key: 'se', values: [[0, '0'], [40, '40'], [70, '70'], [100, '100']] },
       { label: 'BGM 音量', key: 'bgm', values: [[0, '0'], [30, '30'], [50, '50'], [80, '80']] },
       { label: '文字送り速度', key: 'textSpeed', values: [['slow', '遅い'], ['normal', '普通'], ['fast', '速い']] },
       { label: '会話画面全スキップ', key: 'skipTalk', values: [[false, 'OFF'], [true, 'ON']] },
+      { label: '操作ガイド', key: 'guide', values: [[false, 'OFF'], [true, 'ON']] },
     ];
     const maxN = Math.max(...this.rows.map(r => r.values.length));
     this.bw = 150; this.gap = 14; this.labelW = 420;
     this.w = Math.min(W - 80, this.labelW + maxN * (this.bw + this.gap) + 60);   // 画面からはみ出さない（bug_list B1）
-    this.x = (W - this.w) / 2; this.y = 140; this.h = 110 + this.rows.length * 110;
+    this.x = (W - this.w) / 2; this.y = 140; this.h = 110 + this.rows.length * 110 + 110;   // 下に「閉じる」ボタンの段
     this.layout();
   }
   layout() {
@@ -94,18 +95,25 @@ class Options {
         const b = new Button(this.x + this.labelW + j * (this.bw + this.gap), y, this.bw, 80, l, () => {
           o[r.key] = v; this.app.applyOptions(); this.layout();
         }, { size: 30 });
-        b.selected = o[r.key] === v;
+        b.selected = (o[r.key] ?? (r.key === 'guide' ? true : undefined)) === v;   // 操作ガイドの初期値は ON（以前のセーブには項目が無い）
         this.buttons.push(b);
       });
     });
+    this.closeButton = new Button(this.x + (this.w - 300) / 2, this.y + 100 + this.rows.length * 110, 300, 80, '閉じる', () => this.onClose(), { size: 32 });
   }
-  click(p) { const b = this.buttons.find(b => b.hit(p)); if (b) { this.app.sound.se('select'); b.onClick(); } }
+  // 閉じたら true を返す
+  click(p) {
+    if (this.closeButton.hit(p)) { this.app.sound.se('cancel'); this.closeButton.onClick(); return true; }
+    const b = this.buttons.find(b => b.hit(p)); if (b) { this.app.sound.se('select'); b.onClick(); }
+    return false;
+  }
   draw(c) {
     roundRect(c, this.x, this.y, this.w, this.h, 20);
     c.fillStyle = 'rgba(8,14,22,0.96)'; c.fill(); c.strokeStyle = '#6e8aa6'; c.lineWidth = 3; c.stroke();
     text(c, 'オプション', this.x + 40, this.y + 64, { size: 44, weight: 'bold' });
     this.rows.forEach((r, i) => text(c, r.label, this.x + 40, this.y + 152 + i * 110, { size: 32 }));
     this.buttons.forEach(b => b.draw(c));
+    this.closeButton.draw(c);
   }
 }
 

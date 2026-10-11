@@ -21,8 +21,10 @@ export class Lesion {
     this.skipped = false;
     this.penalty = 0;          // 失敗・省略以外の減点（ヒールゼリーで覆いきらなかった分、テープのはみ出し）
     this.trainingOnly = !!placement.training;
-    this.generated = !!placement.generated;   // 実行時に生成された病巣（小さな切り傷）
-    this.counted = !this.generated;           // 最大点に数えるか（小さな切り傷は数えない）
+    this.generated = !!placement.generated;   // 実行時に生成された病巣（空振りの切り傷など）
+    this.counted = !this.generated;           // 最大点に数えるか（実行時に生成された病巣は数えない）
+    this.tapped = new Set();   // ピンセットでタップした点（今の段階の分。段階が進むと空にする）
+    this.bleedTimer = 0;
     this.decayTimer = 0;
     this.marks = [];           // 処置の跡（縫い目・テープ・切開の跡）
     if (placement.shapes) {    // 実行時に形を作る病巣
@@ -32,6 +34,14 @@ export class Lesion {
       this.hit = placeShapes(type.hit_area, this.origin);
       this.path = placePath(type.path, this.origin);
     }
+    // 段階ごとの点・線（相対座標を配置の位置で絶対座標にする）
+    const abs = q => ({ x: q[0] + this.origin.x, y: q[1] + this.origin.y });
+    this.stepGeo = type.steps.map(s => ({
+      path: s.path ? s.path.map(abs) : null,
+      tap: s.tap ? s.tap.map(abs) : null,
+      connect: s.connect ? s.connect.map(abs) : null,
+    }));
+    this.points = type.points ? type.points.map(abs) : null;
     // 血溜まり・膿（独立した病巣。量に応じて広がる）
     if (type.pool) {
       this.amount = this.overrides.amount ?? type.pool.amount;
@@ -45,6 +55,11 @@ export class Lesion {
   get step() { return this.type.steps[this.stepIndex] || null; }
   get nextStep() { return this.type.steps[this.stepIndex + 1] || null; }
   get instrument() { return this.step ? this.step.instrument : null; }
+  // 今の段階で使う線（段階が線を持てばそれ、無ければ病巣の線）
+  get curPath() { const g = this.stepGeo[this.stepIndex]; return (g && g.path) || this.path; }
+  get curClosed() { const s = this.step; return s && s.path ? !!s.path_closed : !!this.type.path_closed; }
+  get curTap() { const g = this.stepGeo[this.stepIndex]; return g && g.tap; }
+  get curConnect() { const g = this.stepGeo[this.stepIndex]; return g && g.connect; }
   get radius() {
     const p = this.type.pool;
     return p.base_radius + Math.sqrt(Math.max(0, this.amount)) * p.radius_per_sqrt_amount;
@@ -68,6 +83,7 @@ export class Lesion {
   }
   advance() {
     this.stepIndex++;
+    this.tapped = new Set();
     if (this.stepIndex >= this.type.steps.length) this.done = true;
     return this.done;
   }
