@@ -289,32 +289,35 @@ export class TrainingSelect extends ButtonScene {
   }
   build() {
     const app = this.app;
-    const types = app.trainableTypes();
-    this.types = types;
+    const stages = app.trainableStages();
+    this.types = stages;
     this.buttons = [new Button(40, 40, 260, 80, '← タイトル', () => app.toTitle(), { size: 30 })];
     // 難易度の切り替え（常に表示）
     app.data.system.difficulties.forEach((d, i) => this.buttons.push(Object.assign(new Button(1180 + i * 230, 40, 210, 80, d.name, () => { this.diffId = d.id; app.save.lastDifficulty.__training = d.id; app.persist(); this.build(); }, { size: 30 }), { selected: d.id === this.diffId })));
-    types.forEach((t, i) => {
-      const col = i % 3, row = Math.floor(i / 3);
-      this.buttons.push(Object.assign(new Button(100 + col * 580, 250 + row * 150, 540, 120, app.data.lesions[t].name, () => app.startTraining('pick', [t], this.diffId)), { type: t }));
+    // 項目（トレーニング用ステージ）を並べる（P106）
+    stages.forEach((st, i) => {
+      const col = i % 4, row = Math.floor(i / 4);
+      const types = app.lesionTypesOf(st);
+      this.buttons.push(Object.assign(new Button(60 + col * 455, 170 + row * 112, 430, 96, st.name, () => app.startTraining('pick', [st.id], this.diffId), { size: 28 }), { type: types.length === 1 ? types[0] : null }));
     });
-    this.buttons.push(new Button(W / 2 - 300, 880, 600, 100, `ランダム（${app.data.stages.training.random_count}つ）`, () => {
-      const n = app.data.stages.training.random_count, q = [];
-      for (let i = 0; i < n; i++) q.push(types[Math.floor(Math.random() * types.length)]);   // 重複あり（P72）
+    const n = app.data.stages.training_random_count;
+    this.buttons.push(new Button(W / 2 - 300, 960, 600, 90, `ランダム（${n}つ）`, () => {
+      const q = [];
+      for (let i = 0; i < n; i++) q.push(stages[Math.floor(Math.random() * stages.length)].id);   // 項目からランダムに選ぶ（重複あり。P106 (c)）
       app.startTraining('random', q, this.diffId);
-    }, { disabled: !types.length }));
-    this.buttons.push(new Button(1380, 960, 500, 80, '試作：全病巣を練習可能に', () => { app.save.training.all = true; app.persist(); this.build(); }, { size: 26, bg: 'rgba(60,40,20,0.9)' }));
+    }, { disabled: !stages.length }));
+    this.buttons.push(new Button(1400, 975, 480, 70, '試作：全項目を練習可能に', () => { app.save.training.all = true; app.persist(); this.build(); }, { size: 26, bg: 'rgba(60,40,20,0.9)' }));
   }
   draw(c) {
     c.fillStyle = '#0e1a16'; c.fillRect(0, 0, W, H);
-    text(c, 'トレーニング：病巣を選ぶ', 360, 100, { size: 50, weight: 'bold' });
+    text(c, 'トレーニング：項目を選ぶ', 360, 100, { size: 50, weight: 'bold' });
     if (!this.types.length) text(c, 'ステージをクリアすると、出てきた病巣を練習できるようになります', W / 2, 500, { size: 34, align: 'center', color: '#9ab' });
     const p = this.app.input.pos;
     for (const b of this.buttons) {
       b.draw(c, b.hit(p));
       if (b.type) {
         const best = ((this.app.save.training.best[b.type] || {})[this.diffId]);
-        if (best) text(c, `ベスト：${best.grade}　${best.time.toFixed(1)}秒`, b.x + 20, b.y + b.h - 14, { size: 22, color: '#ffd27a' });
+        if (best) text(c, `ベスト：${best.grade}　${best.time.toFixed(1)}秒`, b.x + 16, b.y + b.h - 8, { size: 20, color: '#ffd27a' });
       }
     }
   }

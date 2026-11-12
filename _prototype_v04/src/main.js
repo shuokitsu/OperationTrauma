@@ -149,14 +149,22 @@ class App {
     });
   }
   // ---------- トレーニング ----------
-  trainableTypes() {
-    const all = Object.keys(this.data.lesions).filter(k => !k.startsWith('_') && !this.data.lesions[k].generated && !this.data.lesions[k].unscored);
+  // トレーニング用ステージ（項目ごとに通常のステージと同じ形で持つ。P84・P106）
+  trainingStage(id) { return this.data.stages.training_stages.find(t => t.id === id); }
+  lesionTypesOf(st) {
+    const set = new Set();
+    for (const step of st.steps) for (const p of (step.treatment && step.treatment.placements) || []) set.add(p.lesion);
+    return [...set];
+  }
+  // 病巣選択画面に並べる項目：配置した病巣の種類を、すべて治療したことがある（P106 (a)）
+  trainableStages() {
+    const all = this.data.stages.training_stages;
     if (this.save.training.all) return all;
-    return all.filter(k => this.save.training.treated.includes(k));
+    return all.filter(st => this.lesionTypesOf(st).every(t => this.save.training.treated.includes(t)));
   }
   startTraining(mode, queue, diffId) {
     const diff = this.data.system.difficulties.find(d => d.id === diffId);
-    this.scene = new Surgery(this, { stage: this.data.stages.training, difficulty: diff, flags: {}, training: { mode, queue: queue.slice(), index: 0 } });
+    this.scene = new Surgery(this, { stage: this.trainingStage(queue[0]), difficulty: diff, flags: {}, training: { mode, queue: queue.slice(), index: 0 } });
   }
   trainingDone(sg) {
     const diff = sg.diff.id, best = this.save.training.best;

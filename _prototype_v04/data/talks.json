@@ -193,6 +193,9 @@
     "bg": "bg_clinic.svg", "bgm": "talk",
     "lines": [
       { "speaker": "broker", "side": "left", "text": "（試作用の仮の文）大物の手術だ。失敗は許されないぞ" },
+      { "fade": true, "left": null, "text": "（試作用の仮の文・同じ場所での時間経過の暗転の例）――翌朝――" },
+      { "bg": "bg_title.svg", "speaker": "broker", "side": "left", "text": "（試作用の仮の文・場所移動の暗転の例。背景は仮）こっちだ。患者は奥にいる" },
+      { "bg": "bg_clinic.svg", "speaker": "protagonist", "side": "right", "text": "（試作用の仮の文・場所移動の暗転の例）…ここか" },
       { "bgm": "briefing", "briefing": true }
     ]
   },

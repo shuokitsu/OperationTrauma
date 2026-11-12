@@ -3,7 +3,7 @@
   "first_stage": "stage1",
   "patients": {
     "back": { "name": "背中", "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } },
-    "abdomen": { "name": "腹部（試作では背中の皮膚の画像で代用）", "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } },
+    "abdomen": { "name": "腹部", "images": ["patient_abdomen_0.jpg", "patient_abdomen_0.jpg", "patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "_note": "腹部の画像が読めないときは背中の画像で代用する", "dose_limits": { "anesthesia": 250 } },
     "body": { "name": "全身", "images": ["kanja_01.jpg", "kanja_02.jpg", "kanja_03.jpg"], "dose_limits": { "anesthesia": 250 } },
     "internal": { "name": "体内", "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"], "dose_limits": { "anesthesia": 120 } }
   },
@@ -179,11 +179,30 @@
         { "id": "b", "lesion": "infection", "position": [64, 30], "appear": { "type": "start" } } ] } } ]
     }
   ],
-  "training": {
-    "id": "training", "name": "トレーニング",
-    "start_vital": 80, "natural_decay": { "interval_sec": 4, "amount": 1 },
-    "patient": "back",
-    "pick_position": [43, 25],
-    "random_count": 5
-  }
+  "_training_note": "トレーニング用ステージ（項目ごとに通常のステージと同じ形で持つ。P84・P106。制限時間は持たない）",
+  "training_random_count": 5,
+  "training_stages": [
+    {"id": "t_scratch", "name": "切り傷", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_scratch_s", "patient": "back", "treatment": {"placements": [{"id": "t_scratch_0", "lesion": "scratch", "position": [42, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_scratch_big", "name": "切り傷（大きく・斜め。P99 の例）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_scratch_big_s", "patient": "back", "treatment": {"placements": [{"id": "t_scratch_big_0", "lesion": "scratch", "position": [38, 20], "appear": {"type": "start"}, "scale": 1.6, "rotate": 25}]}}]},
+    {"id": "t_laceration", "name": "裂傷", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_laceration_s", "patient": "internal", "treatment": {"placements": [{"id": "t_laceration_0", "lesion": "laceration", "position": [42, 22], "appear": {"type": "start"}}]}}]},
+    {"id": "t_laceration_long", "name": "裂傷（4点。P99 の例）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_laceration_long_s", "patient": "internal", "treatment": {"placements": [{"id": "t_laceration_long_0", "lesion": "laceration", "position": [36, 20], "appear": {"type": "start"}, "points": [[0, 0], [7, 4], [15, 3], [22, 7]]}]}}]},
+    {"id": "t_shard", "name": "破片痕", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_shard_s", "patient": "back", "treatment": {"placements": [{"id": "t_shard_0", "lesion": "shard", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_large_shard", "name": "大型破片痕", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_large_shard_s", "patient": "back", "treatment": {"placements": [{"id": "t_large_shard_0", "lesion": "large_shard", "position": [45, 24], "appear": {"type": "start"}}]}}]},
+    {"id": "t_blood", "name": "血溜まり", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_blood_s", "patient": "back", "treatment": {"placements": [{"id": "t_blood_0", "lesion": "blood", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_pus", "name": "膿", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_pus_s", "patient": "back", "treatment": {"placements": [{"id": "t_pus_0", "lesion": "pus", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_incision", "name": "切開", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_incision_s", "patient": "abdomen", "treatment": {"placements": [{"id": "t_incision_0", "lesion": "incision", "position": [41, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_closure", "name": "閉腹", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_closure_s", "patient": "abdomen", "treatment": {"placements": [{"id": "t_closure_0", "lesion": "closure", "position": [41, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_hematoma", "name": "血腫", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_hematoma_s", "patient": "back", "treatment": {"placements": [{"id": "t_hematoma_0", "lesion": "hematoma", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_atheroma", "name": "粉瘤", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_atheroma_s", "patient": "back", "treatment": {"placements": [{"id": "t_atheroma_0", "lesion": "atheroma", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_tumor", "name": "腫瘍", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_tumor_s", "patient": "internal", "treatment": {"placements": [{"id": "t_tumor_0", "lesion": "tumor", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_malignant", "name": "悪性腫瘍（腫瘍＋注射投薬）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_malignant_s", "patient": "internal", "treatment": {"placements": [{"id": "t_malignant_0", "lesion": "tumor", "position": [50, 25], "appear": {"type": "start"}}, {"id": "t_malignant_1", "lesion": "injection_anesthesia", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_vessel", "name": "血管接合", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_vessel_s", "patient": "internal", "treatment": {"placements": [{"id": "t_vessel_0", "lesion": "vessel", "position": [44, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_infection", "name": "注射投薬（抗菌剤）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_infection_s", "patient": "back", "treatment": {"placements": [{"id": "t_infection_0", "lesion": "infection", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_inj_anes", "name": "注射投薬（麻酔）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_inj_anes_s", "patient": "back", "treatment": {"placements": [{"id": "t_inj_anes_0", "lesion": "injection_anesthesia", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_mm_fish", "name": "マイクロマシン魚型（仮）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_mm_fish_s", "patient": "internal", "treatment": {"placements": [{"id": "t_mm_fish_0", "lesion": "mm_fish", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_mm_snake", "name": "マイクロマシン蛇型（仮）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_mm_snake_s", "patient": "internal", "treatment": {"placements": [{"id": "t_mm_snake_0", "lesion": "mm_snake", "position": [55, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_mm_butterfly", "name": "マイクロマシン蝶型（仮）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_mm_butterfly_s", "patient": "internal", "treatment": {"placements": [{"id": "t_mm_butterfly_0", "lesion": "mm_butterfly", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_mm_flower", "name": "マイクロマシン花型（仮）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_mm_flower_s", "patient": "internal", "treatment": {"placements": [{"id": "t_mm_flower_0", "lesion": "mm_flower", "position": [50, 25], "appear": {"type": "start"}}]}}]},
+    {"id": "t_mm_factory", "name": "マイクロマシン製造基地（仮）", "start_vital": 80, "natural_decay": {"interval_sec": 4, "amount": 1}, "steps": [{"id": "t_mm_factory_s", "patient": "internal", "treatment": {"placements": [{"id": "t_mm_factory_0", "lesion": "mm_factory", "position": [50, 25], "appear": {"type": "start"}}]}}]}
+  ]
 }

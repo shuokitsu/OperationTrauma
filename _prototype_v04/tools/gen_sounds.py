@@ -85,7 +85,7 @@ def se():
         "gameover": seq(tone(392, 0.25, "saw", 0.3), tone(330, 0.25, "saw", 0.3), tone(262, 0.6, "saw", 0.3)),
         # --- 2026-10-09 追加（試作 v03 のコードからはまだ使っていない） ---
         # 心電図（spec/03 1.4）：拍ごとの「ピッ」と、平坦になったときの「ピー」（2秒。継ぎ目なくループできる）
-        "ecg_beep": tone(1000, 0.07, "sine", 0.4, attack=0.002, release=0.03),
+        "ecg_beep": tone(1000, 0.07, "sine", 0.2, attack=0.002, release=0.03),  # 2026-10-14 に音量を半分に（P80）
         "ecg_flatline": tone(1000, 2.0, "sine", 0.35, attack=0, release=0),
         # 病巣の発生と、治療の評価（spec/05 2.6、03 5.1。途中の段階は OK）
         "lesion_appear": seq(tone(330, 0.07, "square", 0.2), tone(247, 0.12, "square", 0.2)),

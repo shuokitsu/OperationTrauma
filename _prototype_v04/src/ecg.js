@@ -1,10 +1,9 @@
 // 心電図（spec/03 1.4、04 3.3。2026-10-09 決定）
-// - テンポはバイタルに応じてなめらかに変える（例：99 で 60拍/分 → 1 で 150拍/分）
+// - テンポはバイタルゲージの色と連動（緑 60・黄 120・赤 180 拍/分。黄・赤は仮。P79 の回答、2026-10-14）。色が変わったら数秒かけて移す
 // - 麻酔中はバイタルに関係なく安静（ゆっくり）。効き始め・切れ目は数秒かけて移す
 // - バイタル0と限度量の超過で平坦になり「ピー」と鳴り続ける。ゲームオーバーの会話で数秒かけて消す
 // - 一時停止・止める会話の間は、波形も音も止める（update を呼ばなければ止まる）
 // - 患者画像の拍動アニメーションも同じテンポ（beatPhase を使う）
-import { clamp, lerp } from './core.js';
 
 const WINDOW_SEC = 4;      // 画面に出す長さ（秒）
 const RATE = 90;           // 1秒あたりの点の数
@@ -12,7 +11,7 @@ const RATE = 90;           // 1秒あたりの点の数
 export class Ecg {
   constructor(sound, cfg = {}) {
     this.sound = sound;
-    this.cfg = Object.assign({ bpm_at_99: 60, bpm_at_1: 150, bpm_anesthesia: 48, transition_sec: 3 }, cfg);
+    this.cfg = Object.assign({ bpm_green: 60, bpm_yellow: 120, bpm_red: 180, bpm_anesthesia: 45, transition_sec: 3 }, cfg);
     this.reset(99);
   }
   reset(vital) {
@@ -27,8 +26,8 @@ export class Ecg {
   }
   targetBpm(vital, anesthesia) {
     if (anesthesia) return this.cfg.bpm_anesthesia;
-    const t = clamp((vital - 1) / 98, 0, 1);
-    return lerp(this.cfg.bpm_at_1, this.cfg.bpm_at_99, t);
+    // バイタルゲージの色と連動（P79 の回答、2026-10-14）。色が変わったら transition_sec かけて移す
+    return vital >= 51 ? this.cfg.bpm_green : vital >= 26 ? this.cfg.bpm_yellow : this.cfg.bpm_red;
   }
   // dt：ゲーム内の経過時間（止まっている間は呼ばない）
   update(dt, vital, anesthesia) {

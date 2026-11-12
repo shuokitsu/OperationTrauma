@@ -25,10 +25,48 @@ export class TalkBox {
     this.done = false;
     this.buttons = [];
     if (talk && talk.bgm && !opt.overlay) app.sound.bgm(talk.bgm);
-    this.next();
+    this.fade = null;
+    // 最初に出す行が暗転を伴う（ブリーフィングから始まるなど）ときは、黒から明ける
+    if (this.needFade()) { this.apply(); this.fade = { phase: 'in', t: 0 }; }
+    else this.apply();
+  }
+  get fadeSec() { return Object.assign({ out_sec: 0.2, hold_sec: 0.1, in_sec: 0.2 }, this.app.data.system.talk_fade || {}); }
+  // 次に出す行までに暗転が要るか（会話画面だけ。spec/02 3.3）：
+  // 背景が変わる・行に "fade": true（同じ場所での時間経過など）・ブリーフィングに移る
+  needFade() {
+    if (this.opt.overlay) return false;
+    let bg = this.bg;
+    for (let i = this.index + 1; i < this.lines.length; i++) {
+      const l = this.lines[i];
+      if (l.fade) return true;
+      if (l.bg !== undefined && l.bg !== bg) return true;
+      if (l.bg !== undefined) bg = l.bg;
+      if (l.briefing) return true;
+      if (l.text || l.choice) return false;
+    }
+    return false;
+  }
+  next() {
+    this.buttons = [];
+    if (this.needFade()) this.fade = { phase: 'out', t: 0 };   // 暗くなりきったところで次の行を出す
+    else this.apply();
+  }
+  updateFade(dt) {
+    const f = this.fade, sec = this.fadeSec;
+    f.t += dt;
+    if (f.phase === 'out' && f.t >= sec.out_sec) { f.phase = 'hold'; f.t = 0; this.apply(); }
+    else if (f.phase === 'hold' && f.t >= sec.hold_sec) { f.phase = 'in'; f.t = 0; }
+    else if (f.phase === 'in' && f.t >= sec.in_sec) this.fade = null;
+  }
+  get fadeAlpha() {
+    const f = this.fade, sec = this.fadeSec;
+    if (!f) return 0;
+    if (f.phase === 'out') return Math.min(1, f.t / sec.out_sec);
+    if (f.phase === 'hold') return 1;
+    return Math.max(0, 1 - f.t / sec.in_sec);
   }
   get speed() { return SPEED[this.app.save.options.textSpeed] || SPEED.normal; }
-  next() {
+  apply() {
     this.buttons = [];
     for (;;) {
       this.index++;
@@ -75,6 +113,10 @@ export class TalkBox {
       this.opt.onDone && this.opt.onDone(this.flags);
       return;
     }
+    if (this.fade) {   // 暗転中は操作を受け付けない
+      this.updateFade(dt);
+      return;
+    }
     if (this.done) return;
     const l = this.cur;
     if (l.text && this.shown < this.full) {
@@ -105,7 +147,12 @@ export class TalkBox {
       const bg = this.bg && app.img(this.bg);
       if (bg) drawCover(c, bg, 0, 0, W, H); else { c.fillStyle = '#1b2026'; c.fillRect(0, 0, W, H); }
     }
-    if (this.done) return;
+    if (!this.done) this.drawBody(c);
+    const a = this.fadeAlpha;
+    if (a > 0) { c.fillStyle = `rgba(0,0,0,${a})`; c.fillRect(0, 0, W, H); }
+  }
+  drawBody(c) {
+    const app = this.app;
     const l = this.cur;
     // 立ち絵（話していない側は少し暗く）
     const drawChar = (id, side) => {
