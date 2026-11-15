@@ -1,0 +1,87 @@
+{
+  "_note": "トレーニング用ステージ。練習の項目ごとに1つずつ、通常のステージと同じ形で書く（制限時間は持たない）。病巣選択画面には、配置した病巣の種類をすべて治療したことがあるものだけが並ぶ。値は仮",
+  "stages": [
+    { "id": "tr_scratch", "name": "切り傷",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "scratch", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_scratch_big", "name": "切り傷（大きく・斜め）",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "scratch", "pos": [50, 24], "scale": 2, "rotate": 35 } ] } ] },
+
+    { "id": "tr_blood", "name": "血溜まり",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "blood_pool", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_pus", "name": "膿",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "pus_pool", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_shard", "name": "破片痕",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "shard", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_hematoma", "name": "血腫",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "hematoma", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_atheroma", "name": "粉瘤",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "atheroma", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_laceration", "name": "裂傷",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "laceration", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_laceration4", "name": "裂傷（4点）",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "laceration", "pos": [50, 24], "points": [[-12, 0], [-4, 3], [4, 0], [12, 3]] } ] } ] },
+
+    { "id": "tr_big_shard", "name": "大型破片痕",
+      "patients": { "p": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "big_shard", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_incision", "name": "切開",
+      "patients": { "p": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "incision", "pos": [50, 33] } ] } ] },
+
+    { "id": "tr_closure", "name": "閉腹",
+      "patients": { "p": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "closure", "pos": [50, 33] } ] } ] },
+
+    { "id": "tr_vessel", "name": "血管接合",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "vessel", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_tumor", "name": "腫瘍",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "tumor", "pos": [50, 24] } ] } ] },
+
+    { "id": "tr_malignant", "name": "悪性腫瘍",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [
+        { "id": "a", "type": "tumor", "pos": [50, 24] },
+        { "id": "b", "type": "injection_anesthesia", "pos": [50, 24] }
+      ] } ] },
+
+    { "id": "tr_injection", "name": "注射投薬（抗菌剤）",
+      "patients": { "p": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] } },
+      "start_vital": 60, "natural_decay": { "interval_sec": 4, "amount": 1 },
+      "steps": [ { "id": "s", "lesions": [ { "id": "a", "type": "injection_antibiotic", "pos": [50, 24] } ] } ] }
+  ]
+}

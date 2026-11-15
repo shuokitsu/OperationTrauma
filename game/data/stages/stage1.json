@@ -1,0 +1,129 @@
+{
+  "name": "ステージ1",
+  "title": "軽傷の治療",
+  "unlock": {},
+  "goals": { "clear": "背中の外傷をすべて治療する", "effort": [] },
+
+  "patients": {
+    "back": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"], "dose_limits": { "anesthesia": 250 } }
+  },
+  "start_vital": 70,
+  "natural_decay": { "interval_sec": 4, "amount": 1 },
+  "time_limit_sec": 300,
+  "coefficients": {},
+
+  "talk_before": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ナレーション", "text": "…" },
+    { "who": "ベクター", "text": "…" },
+    { "who": "ベクター", "text": "…さあ、もう大丈夫ですよ" },
+    { "who": "患者", "text": "痛ぇ…" },
+    { "who": "ベクター", "text": "ラーゼさーん？" },
+    { "who": "ラーゼ", "text": "…" },
+    { "who": "ベクター", "text": "さてさて、仕事ですよ" },
+    { "who": "ベクター", "text": "今日は大した怪我ではありませんから\nさっさとやっちゃってください" },
+    { "who": "患者", "text": "あんた…医者なのか…？" },
+    { "who": "ラーゼ", "text": "…生憎な" },
+    { "who": "ラーゼ", "text": "傷を見せてみろ" }
+  ],
+  "briefing": [
+    { "who": "ラーゼ", "text": "背中に外傷、金属の破片もあるな" },
+    { "who": "ラーゼ", "text": "裂傷縫合と異物除去を行う" }
+  ],
+
+  "steps": [
+    {
+      "id": "scratch",
+      "patient": "back",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "まずは軽い傷から片付ける" },
+        { "who": "ラーゼ", "text": "背中の傷にヒールゼリーを塗布する" },
+        { "who": "ベクター", "text": "黄色い枠で囲われているのがヒールゼリーですよ" },
+        { "who": "ラーゼ", "text": "…？\nお前、何を言ってるんだ？" },
+        { "who": "ベクター", "text": "いえ、なんでもありません" },
+        { "who": "ラーゼ", "text": "ともかく、開始する" }
+      ],
+      "lesions": [
+        { "id": "cut1", "type": "scratch", "pos": [30, 16], "rotate": -12 },
+        { "id": "cut2", "type": "scratch", "pos": [66, 31], "rotate": 20 }
+      ],
+      "subtitles": [
+        { "at": "start", "lines": [ { "who": "ラーゼ", "text": "ヒールゼリーを選んだ状態で傷をなぞるんだ" } ] }
+      ],
+      "talk_after": [
+        { "who": "ラーゼ", "text": "これでいいだろう" }
+      ]
+    },
+    {
+      "id": "blood",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "次は邪魔な血を除去する" },
+        { "who": "ラーゼ", "text": "まず血溜まりをドレーンする" },
+        { "who": "ベクター", "text": "黄色く点滅している医療機器を選択してくださいね" },
+        { "who": "ラーゼ", "text": "お前…" },
+        { "who": "ベクター", "text": "まぁまぁ、お気になさらず" }
+      ],
+      "lesions": [
+        { "id": "pool1", "type": "blood_pool", "pos": [50, 24] }
+      ],
+      "subtitles": [
+        { "at": "start", "lines": [ { "who": "ラーゼ", "text": "上から2番目のドレーンを選択し、血だまりを長押しで吸引だ" } ] }
+      ]
+    },
+    {
+      "id": "shard",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "血だまりの下から破片が出てきたか" },
+        { "who": "ラーゼ", "text": "破片の除去を行う" },
+        { "who": "ラーゼ", "text": "上から3番目のピンセットを選んだら、破片を掴んでトレイに移動だ" },
+        { "who": "ベクター", "text": "途中で離さないよう、しっかり押しっぱなしにしてくださいね" },
+        { "who": "ラーゼ", "text": "…" }
+      ],
+      "lesions": [
+        { "id": "shard1", "type": "shard", "pos": [50, 24] }
+      ],
+      "subtitles": [
+        { "at": "start", "lines": [ { "who": "ラーゼ", "text": "破片を持ったままトレイに移動し、離すんだ" } ] },
+        { "at": { "lesion": "shard1", "stage": 1 }, "lines": [ { "who": "ラーゼ", "text": "軽い傷はヒールゼリーを塗れば塞がるだろう" } ] }
+      ],
+      "talk_after": [
+        { "who": "ラーゼ", "text": "よし、次に移る" }
+      ]
+    },
+    {
+      "id": "hematoma",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "皮膚の下に血腫があるようだな\n痛み出す前に除去しておこう" },
+        { "who": "ラーゼ", "text": "メスで切開して吸引後、ヒールゼリーだ" }
+      ],
+      "lesions": [
+        { "id": "hema1", "type": "hematoma", "pos": [38, 33] }
+      ],
+      "subtitles": [
+        { "at": { "lesion": "hema1", "stage": 0 }, "lines": [ { "who": "ラーゼ", "text": "まず切開する\n上から4番目のメスを選んで、血腫に沿ってなぞるんだ" } ] },
+        { "at": { "lesion": "hema1", "stage": 1 }, "lines": [ { "who": "ラーゼ", "text": "血が出てきたな、ドレーンで除去する" } ] },
+        { "at": { "lesion": "hema1", "stage": 2 }, "lines": [ { "who": "ラーゼ", "text": "あとはヒールゼリーで止血する" } ] }
+      ],
+      "talk_after": [
+        { "who": "ラーゼ", "text": "これでもう大丈夫だ" }
+      ]
+    }
+  ],
+
+  "talk_after": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "患者", "text": "あんた…助かったよ" },
+    { "who": "ラーゼ", "text": "ああ…\nなあ、あんた" },
+    { "who": "ベクター", "text": "いやぁさすがですね\nお代はいつもの方法でお渡ししますね" },
+    { "who": "ラーゼ", "text": "…そうしてくれ" },
+    { "who": "ラーゼ", "text": "ついでに医者も寄越してくれると助かるんだがな" },
+    { "who": "ベクター", "text": "また次もお願いしますね\nさあ、行きますよ" },
+    { "who": "患者", "text": "あ、ああ…" },
+    { "who": "患者", "text": "…なあ、あんた" },
+    { "who": "患者", "text": "…ありがとうな" },
+    { "who": "ラーゼ", "text": "…いや…" },
+    { "who": "ラーゼ", "text": "…" }
+  ],
+
+  "on_clear": { "set_flags": ["stage1_cleared"] }
+}

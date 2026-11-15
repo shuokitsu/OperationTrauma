@@ -1,0 +1,76 @@
+{
+  "_note": "投薬するかしないかでシナリオが分かれる。制限時間は90秒で、時間切れは「投薬しなかった」結果になる（ゲームオーバーにしない）。投薬した → ステージ5、投薬しなかった → ステージ6（仮）。会話の「（作成中）」の部分は scenario.md のとおり",
+  "name": "ステージ4",
+  "title": "渡された薬",
+  "unlock": { "cleared": ["stage3"] },
+  "goals": { "clear": "首の静脈に薬を投与する", "effort": [] },
+
+  "patients": {
+    "neck": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] }
+  },
+  "start_vital": 80,
+  "natural_decay": null,
+  "time_limit_sec": 90,
+  "_note_time": "time_limit_fixed: true は、制限時間に難易度の係数を掛けない。no_rank: true は、ランクを付けない",
+  "time_limit_fixed": true,
+  "no_rank": true,
+  "on_timeout": { "type": "end_stage", "set_flags": ["stage4_not_dosed"], "clear_flags": ["stage4_dosed"] },
+  "coefficients": {},
+
+  "talk_before": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ラーゼ", "text": "エリテのやつ…どこへ行ったんだ？" },
+    { "who": "ベクター", "text": "ラーゼさーん？" },
+    { "who": "ラーゼ", "text": "…またあんたか" },
+    { "who": "ベクター", "text": "今日はこの患者さんです" },
+    { "who": "ベクター", "text": "この注射を心臓に近い場所に打ってください" },
+    { "who": "ラーゼ", "text": "は…？\n一体何のマネだ" },
+    { "who": "ベクター", "text": "言ったとおりにしないと大変なことになりますよ" },
+    { "who": "ラーゼ", "text": "…" },
+    { "who": "ベクター", "text": "おっと、患者さんには不用意に触らないでくださいね" },
+    { "who": "ベクター", "text": "で、どうやって処置すればいいんですか？" },
+    { "who": "ラーゼ", "text": "首の静脈が心臓に近いが…" },
+    { "who": "ベクター", "text": "ではそれでお願いします" }
+  ],
+  "briefing": [
+    { "who": "ラーゼ", "text": "一体なんだ…抗がん剤か降圧剤か…？" },
+    { "who": "ラーゼ", "text": "とてもそんな生易しい話には到底見えないが…" },
+    { "who": "ラーゼ", "text": "…本当に処置していいのか…？" }
+  ],
+
+  "steps": [
+    {
+      "id": "dose",
+      "patient": "neck",
+      "lesions": [
+        { "id": "vein", "type": "injection_mystery", "pos": [52, 5] }
+      ],
+      "subtitles": [
+        { "at": "start", "lines": [ { "who": "ラーゼ", "text": "本当に投薬していいのか…？" } ] }
+      ],
+      "on_done": { "set_flags": ["stage4_dosed"], "clear_flags": ["stage4_not_dosed"] },
+      "talk_after": [
+        { "if": "stage4_dosed", "who": "ラーゼ", "text": "投薬…完了だ" },
+        { "if": "stage4_not_dosed", "who": "ラーゼ", "text": "…" }
+      ]
+    }
+  ],
+
+  "talk_after": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "if": "stage4_dosed", "who": "ラーゼ", "text": "…終わったぞ" },
+    { "if": "stage4_dosed", "who": "ベクター", "text": "さすが、迅速ですねぇ" },
+    { "if": "stage4_dosed", "who": "ラーゼ", "text": "…" },
+    { "if": "stage4_dosed", "who": "ベクター", "text": "それでは今日は…\n！？" },
+    { "if": "stage4_not_dosed", "who": "ベクター", "text": "ラーゼさん、早く処置してください" },
+    { "if": "stage4_not_dosed", "who": "ラーゼ", "text": "…" },
+    { "if": "stage4_not_dosed", "who": "ベクター", "text": "このままでは…\n！？" },
+    { "who": "ナレーション", "text": "…ゴゴゴゴゴ…", "se": "alarm" }
+  ],
+
+  "on_clear": [
+    { "set_flags": ["stage4_cleared"] },
+    { "if": "stage4_dosed", "unlock_stages": ["stage5"] },
+    { "if": "stage4_not_dosed", "unlock_stages": ["stage6"] }
+  ]
+}

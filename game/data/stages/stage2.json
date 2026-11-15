@@ -1,0 +1,192 @@
+{
+  "name": "ステージ2",
+  "title": "開腹手術",
+  "unlock": { "cleared": ["stage1"] },
+  "goals": { "clear": "開腹して内出血と病巣を治療し、閉腹する", "effort": [] },
+
+  "patients": {
+    "abdomen": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"], "dose_limits": { "anesthesia": 250 } },
+    "inside": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"], "dose_limits": { "anesthesia": 250 } }
+  },
+  "start_vital": 35,
+  "natural_decay": { "interval_sec": 4, "amount": 1 },
+  "time_limit_sec": 600,
+  "coefficients": {},
+
+  "talk_before": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ベクター", "text": "ラーゼさ～ん？居ますか～？" },
+    { "who": "ラーゼ", "text": "騒がしいな…" },
+    { "who": "ベクター", "text": "今日は新人を連れてきましたよ" },
+    { "who": "ラーゼ", "text": "…は？" },
+    { "who": "ベクター", "text": "この前、手が足りないって言ってましたよね？\nいい人が見つかったんです" },
+    { "who": "ベクター", "text": "こちら、エリテさんです" },
+    { "who": "エリテ", "text": "はじめまして、エリテです" },
+    { "who": "ベクター", "text": "彼すごいんですよ\n人が倒れたときに手際良く介抱してまして" },
+    { "who": "ラーゼ", "text": "おい" },
+    { "who": "ベクター", "text": "じゃあ私は用があるのでこれで" },
+    { "who": "ラーゼ", "text": "おい！" },
+    { "hide": "right" },
+    { "who": "ラーゼ", "text": "…まったく" },
+    { "who": "エリテ", "text": "よろしくお願いします" },
+    { "who": "ラーゼ", "text": "ここは健康な子供の来る場所じゃない" },
+    { "who": "エリテ", "text": "僕は一応大人です" },
+    { "who": "ラーゼ", "text": "子供はそう言うもんだ\n元いた場所に戻れ" },
+    { "who": "エリテ", "text": "いえ、出来ればここで働かせてください" },
+    { "who": "ラーゼ", "text": "そんなわけには…" },
+    { "who": "患者", "text": "た、助けてくれ…腹が…" },
+    { "who": "エリテ", "text": "急患ですね\nお手伝いします" },
+    { "who": "ラーゼ", "text": "…話は後だ\n邪魔だけはするなよ" }
+  ],
+  "briefing": [
+    { "who": "患者", "text": "腹が痛ぇんだ…" },
+    { "who": "ラーゼ", "text": "分かってる\nいま処置してやる" },
+    { "who": "エリテ", "text": "カルテは？" },
+    { "who": "ラーゼ", "text": "…先日激しい外傷を受けて治療したばかりだ\n腹部で内出血してる可能性が高い" },
+    { "who": "エリテ", "text": "開腹手術ですね" },
+    { "who": "エリテ", "text": "手を洗ってきます\nそれと手術着お借りします" },
+    { "who": "ラーゼ", "text": "こいつ…\nまあいい、始めるぞ" }
+  ],
+
+  "steps": [
+    {
+      "id": "recover",
+      "patient": "abdomen",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "場所は下腹部、へその下あたりだ" },
+        { "who": "ラーゼ", "text": "バイタルが低いな…回復剤でバイタルを安定させる" }
+      ],
+      "clear": { "type": "inject", "drug": "recovery", "amount": 80 },
+      "subtitles": [
+        { "at": "start", "lines": [ { "who": "ラーゼ", "text": "注射を選んで回復剤投与だ\n回復剤はどこに打っても効果がある" } ] }
+      ],
+      "talk_after": [
+        { "who": "エリテ", "text": "バイタル、安定しました" }
+      ]
+    },
+    {
+      "id": "open",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "麻酔注射後、ヒールゼリーで消毒してメスで切開する" }
+      ],
+      "lesions": [
+        { "id": "inc", "type": "incision", "pos": [50, 33] }
+      ],
+      "subtitles": [
+        { "at": { "lesion": "inc", "stage": 0 }, "lines": [ { "who": "エリテ", "text": "麻酔は注射を選んでから麻酔薬を選択します\n患部に針を打ち込んだままキープしてください" } ] },
+        { "at": { "lesion": "inc", "stage": 1 }, "lines": [ { "who": "エリテ", "text": "次にヒールゼリーで切開する箇所を消毒してください" } ] },
+        { "at": { "lesion": "inc", "stage": 2 }, "lines": [ { "who": "エリテ", "text": "最後はメスです\n慎重にどうぞ" } ] }
+      ]
+    },
+    {
+      "id": "bleeding",
+      "patient": "inside",
+      "talk_before": [
+        { "who": "ラーゼ", "text": "思ったより流血が多いな…" },
+        { "who": "エリテ", "text": "ドレーンで視界を確保しましょう" }
+      ],
+      "lesions": [
+        { "id": "b1", "type": "blood_pool", "pos": [34, 20], "overrides": { "pool": { "amount": 30, "grow_per_sec": 0.3, "max": 50 } } },
+        { "id": "b2", "type": "blood_pool", "pos": [42, 26], "overrides": { "pool": { "amount": 30, "grow_per_sec": 0.3, "max": 50 } } },
+        { "id": "b3", "type": "blood_pool", "pos": [64, 22], "overrides": { "pool": { "amount": 35, "grow_per_sec": 0.3, "max": 50 } } }
+      ],
+      "subtitles": [
+        { "at": "start", "lines": [ { "who": "エリテ", "text": "ドレーンで流血を吸い込んでください" } ] }
+      ]
+    },
+    {
+      "id": "vessels",
+      "talk_before": [
+        { "who": "エリテ", "text": "先生、血管が離断している箇所があります" },
+        { "who": "ラーゼ", "text": "…お前…いや、そのようだな\n接合する" }
+      ],
+      "lesions": [
+        { "id": "v1", "type": "vessel", "pos": [38, 22] },
+        { "id": "v2", "type": "vessel", "pos": [64, 24], "rotate": 30, "appear": { "after": "v1" } }
+      ],
+      "subtitles": [
+        { "at": { "lesion": "v1", "stage": 0 }, "lines": [ { "who": "エリテ", "text": "ピンセットで血管同士を繋ぎ合わせましょう\n片方の血管を引っ張って、もう片方へ" } ] },
+        { "at": { "lesion": "v1", "stage": 1 }, "lines": [ { "who": "エリテ", "text": "今のうちに縫合針を\n線に沿ってジグザグに縫ってください" } ] },
+        { "at": { "lesion": "v2", "stage": 0 }, "lines": [ { "who": "エリテ", "text": "もう1か所、見つかりました\n血管を引っ張ってもう片方へ" } ] },
+        { "at": { "lesion": "v2", "stage": 1 }, "lines": [ { "who": "エリテ", "text": "血管が繋がったら縫合針でジグザグに縫ってください" } ] }
+      ],
+      "talk_after": [
+        { "who": "ラーゼ", "text": "完了だ\n次に移る" }
+      ],
+      "continue_point": { "name": "血管の接合のあとから" }
+    },
+    {
+      "id": "rupture",
+      "talk_before": [
+        { "who": "エリテ", "text": "現視界内には病巣は無いようです" },
+        { "who": "ラーゼ", "text": "前回手術した箇所だ\n…ここだ" },
+        { "who": "エリテ", "text": "血管が破裂したような症状ですね" },
+        { "who": "ラーゼ", "text": "かすかな傷から悪化したんだろう\n処置するぞ" }
+      ],
+      "lesions": [
+        { "id": "lac", "type": "laceration", "pos": [50, 26] }
+      ],
+      "subtitles": [
+        { "at": { "lesion": "lac", "stage": 0 }, "lines": [ { "who": "エリテ", "text": "まずは血だまりのドレーンを" } ] },
+        { "at": { "lesion": "lac", "stage": 1 }, "lines": [ { "who": "エリテ", "text": "ピンセットで患部をつまんで閉じてください" } ] },
+        { "at": { "lesion": "lac", "stage": 2 }, "lines": [ { "who": "エリテ", "text": "縫合針で縫いましょう" } ] },
+        { "at": { "lesion": "lac", "stage": 3 }, "lines": [ { "who": "エリテ", "text": "ヒールゼリーです" } ] }
+      ],
+      "talk_after": [
+        { "who": "ラーゼ", "text": "これで完了だな" }
+      ]
+    },
+    {
+      "id": "tumor",
+      "talk_before": [
+        { "who": "エリテ", "text": "先生、こちらに来ていただけますか" },
+        { "who": "ラーゼ", "text": "なんだ？\n…こいつは" },
+        { "who": "ラーゼ", "text": "早めに除去したほうがよさそうだ\n腫瘍を摘出する" }
+      ],
+      "lesions": [
+        { "id": "tm", "type": "tumor", "pos": [58, 24] }
+      ],
+      "subtitles": [
+        { "at": { "lesion": "tm", "stage": 0 }, "lines": [ { "who": "エリテ", "text": "メスで腫瘍を切除しましょう\n丸く切り取ってください" } ] },
+        { "at": { "lesion": "tm", "stage": 1 }, "lines": [ { "who": "エリテ", "text": "切除しました\nピンセットで除去してください" } ] },
+        { "at": { "lesion": "tm", "stage": 2 }, "lines": [ { "who": "エリテ", "text": "続けてピンセットで切断面を近づけましょう\n左右をそれぞれつまんでください" } ] },
+        { "at": { "lesion": "tm", "stage": 3 }, "lines": [ { "who": "エリテ", "text": "開かないうちに縫いましょう\n縫合針、どうぞ" } ] },
+        { "at": { "lesion": "tm", "stage": 4 }, "lines": [ { "who": "エリテ", "text": "次は上下です\nピンセットでつまんでください" } ] },
+        { "at": { "lesion": "tm", "stage": 5 }, "lines": [ { "who": "エリテ", "text": "最後は上下の縫合です" } ] }
+      ],
+      "talk_after": [
+        { "who": "ラーゼ", "text": "よし、閉腹する" },
+        { "who": "エリテ", "text": "最後は縫合してヒールゼリー、テーピングですね" }
+      ],
+      "continue_point": { "name": "閉腹から" }
+    },
+    {
+      "id": "close",
+      "patient": "abdomen",
+      "lesions": [
+        { "id": "cl", "type": "closure", "pos": [50, 33] }
+      ],
+      "subtitles": [
+        { "at": { "lesion": "cl", "stage": 0 }, "lines": [ { "who": "エリテ", "text": "まずは縫合針です\nジグザグに縫ってください" } ] },
+        { "at": { "lesion": "cl", "stage": 1 }, "lines": [ { "who": "エリテ", "text": "ヒールゼリーで消毒しましょう" } ] },
+        { "at": { "lesion": "cl", "stage": 2 }, "lines": [ { "who": "エリテ", "text": "テーピングはこちらです\n持ち上げたあと、傷の端から端まで引っ張ってください" } ] }
+      ],
+      "talk_after": [
+        { "who": "エリテ", "text": "すべて完了です\nお疲れさまでした" }
+      ]
+    }
+  ],
+
+  "talk_after": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "エリテ", "text": "見事な手術でした" },
+    { "who": "ラーゼ", "text": "それよりもあんた、どこで知識を？" },
+    { "who": "エリテ", "text": "昔、勉強を" },
+    { "who": "ラーゼ", "text": "勉強だって？" },
+    { "who": "エリテ", "text": "それより、ここで働きたいのですが" },
+    { "who": "ラーゼ", "text": "2階が空いてる\n好きに使え" },
+    { "who": "エリテ", "text": "…！\nありがとうございます" }
+  ],
+
+  "on_clear": { "set_flags": ["stage2_cleared"] }
+}

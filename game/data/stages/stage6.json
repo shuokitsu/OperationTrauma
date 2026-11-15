@@ -1,0 +1,47 @@
+{
+  "_note": "scenario.md が作成中のため、会話も手術の中身もすべて仮の内容。ステージ4で投薬しなかった場合に進む。クリアでグッドエンド",
+  "name": "ステージ6",
+  "title": "（作成中）",
+  "unlock": { "flags": ["stage4_not_dosed"] },
+  "goals": { "clear": "（仮）患者を治療する", "effort": [] },
+
+  "patients": {
+    "body": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] },
+    "inside": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] }
+  },
+  "start_vital": 50,
+  "natural_decay": { "interval_sec": 4, "amount": 1 },
+  "time_limit_sec": 480,
+  "coefficients": {},
+
+  "talk_before": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ナレーション", "text": "（作成中）" }
+  ],
+  "briefing": [
+    { "who": "ラーゼ", "text": "（作成中）" }
+  ],
+
+  "steps": [
+    { "id": "open", "patient": "body",
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "inside", "patient": "inside",
+      "lesions": [
+        { "id": "v1", "type": "vessel", "pos": [36, 18] },
+        { "id": "v2", "type": "vessel", "pos": [38, 34], "rotate": -20, "appear": { "after": "v1" } },
+        { "id": "tm", "type": "tumor", "pos": [64, 26] },
+        { "id": "ab", "type": "injection_antibiotic", "pos": [50, 12], "appear": { "after_sec": 15 } }
+      ],
+      "continue_point": { "name": "閉腹から" } },
+    { "id": "close", "patient": "body",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ] }
+  ],
+
+  "talk_after": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ナレーション", "text": "（作成中）" }
+  ],
+
+  "on_clear": { "set_flags": ["stage6_cleared"] },
+  "ending": { "title": "GOOD END", "text": "（作成中）" }
+}

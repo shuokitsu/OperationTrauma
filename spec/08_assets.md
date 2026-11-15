@@ -1,7 +1,7 @@
 # 08 フォルダ構成・素材
 
 - ステータス：草案
-- 最終更新：2026-10-10
+- 最終更新：2026-11-15
 
 ## 1. フォルダ構成
 
@@ -26,7 +26,7 @@
 
 - データの中身は [07_data_format.md](07_data_format.md) 参照。各データの意味は [glossary.md](glossary.md)。
 - 「医療機器データ」は、以前の名称「治療器具パラメータ」を、用語の統一（glossary の表記ゆれ）に合わせて改めたもの。
-- 実際のフォルダ名（英語表記など）は `TBD-08-1`。
+- 実際のフォルダ名（決定、2026-11-15。正式版）：リポジトリの `game/` の下に、`src/`（プログラム）、`data/`（データ。`system.json`・`instruments.json`・`lesions.json`・`stages/`・`training.json`）、`assets/images/`（画像）、`assets/sound/se/`・`assets/sound/bgm/`（サウンド）。会話はステージのデータの中に書くので、「シナリオ／テキスト」のフォルダは作らない（[07_data_format.md](07_data_format.md) 1章）。ファイルの命名規則は `TBD-08-1`。
 
 ## 2. 仕様書用の画像
 

@@ -1,0 +1,174 @@
+{
+  "_note": "ゲーム画面の中身（steps）は scenario.md が作成中のため、仮の内容。A（手分け）は患者3人の難しい開腹手術、B（二人で対応）は患者6人（開腹3人。A より少し簡単。そのあと外傷3人）",
+  "name": "ステージ3",
+  "title": "爆発の負傷者",
+  "unlock": { "cleared": ["stage2"] },
+  "goals": { "clear": "運び込まれた負傷者をすべて治療する", "effort": [] },
+
+  "patients": {
+    "p1": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] },
+    "p1_in": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] },
+    "p2": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] },
+    "p2_in": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] },
+    "p3": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] },
+    "p3_in": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] },
+    "p4": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] },
+    "p5": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] },
+    "p6": { "images": ["patient_skin_0.jpg", "patient_skin_1.jpg", "patient_skin_2.jpg"] }
+  },
+  "start_vital": 60,
+  "natural_decay": { "interval_sec": 5, "amount": 1 },
+  "time_limit_sec": 1200,
+  "coefficients": {},
+
+  "talk_before": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "エリテ", "text": "ラーゼ先生" },
+    { "who": "ラーゼ", "text": "…先生はよせ" },
+    { "who": "エリテ", "text": "先生は何故ここで医者を？" },
+    { "who": "ラーゼ", "text": "…たまたま治療が出来たからだ" },
+    { "who": "エリテ", "text": "？\nどういう意味でしょうか？" },
+    { "who": "ラーゼ", "text": "大した意味じゃない" },
+    { "who": "ラーゼ", "text": "以前、飛んできたミサイルの爆発に巻き込まれてな\n俺は幸運にも無傷だったが" },
+    { "who": "ラーゼ", "text": "巻き込まれた何人かを治療したのがそもそもの始まりだ" },
+    { "who": "エリテ", "text": "それは…大変でしたね" },
+    { "who": "ラーゼ", "text": "それよりあんた、昔、勉強したと言ってたな" },
+    { "who": "エリテ", "text": "はい" },
+    { "who": "ラーゼ", "text": "このご時世、医療の勉強だなんて\n相当恵まれた環境じゃないと不可能だと思うが" },
+    { "who": "エリテ", "text": "…" },
+    { "who": "ラーゼ", "text": "まあいいさ、俺の仕事が減るならな" },
+    { "who": "エリテ", "text": "…善処します" },
+    { "who": "ナレーション", "text": "…ゴゴゴゴゴ…", "se": "alarm" },
+    { "who": "エリテ", "text": "今、何か音が…？" },
+    { "who": "ラーゼ", "text": "こいつは…\nおいあんた、医療機器の準備だ" },
+    { "who": "エリテ", "text": "え？" },
+    { "who": "患者", "text": "爆発だ！頼む助けてくれ！" }
+  ],
+  "briefing": [
+    { "who": "ラーゼ", "text": "おいおい…何人いるんだ？" },
+    { "who": "エリテ", "text": "先生、提案があります" },
+    { "who": "ラーゼ", "text": "なんだ？こんな時に" },
+    { "who": "エリテ", "text": "トリアージをお願いします" },
+    { "who": "ラーゼ", "text": "それで？続きがあるんだろ？" },
+    { "who": "エリテ", "text": "はい\nまず軽処置群は後に回すとして" },
+    { "who": "エリテ", "text": "緊急群は先生が、準緊急群は私が\nそれぞれ個別に対応しましょう" },
+    { "who": "ラーゼ", "text": "あんた、一人で対処できるのか？" },
+    { "who": "エリテ", "text": "…いえ、経験はありませんが…\nただ人数が多すぎて、このままでは間に合いません" },
+    { "choice": [
+      { "text": "A. 分かった、手分けしよう", "set": "s3_split" },
+      { "text": "B. いや、二人で対応しよう", "set": "s3_together" }
+    ] },
+    { "if": "s3_split", "who": "ラーゼ", "text": "出来るところまでやってみろ\nただし無理なやつは俺に回せ" },
+    { "if": "s3_split", "who": "エリテ", "text": "…！\n承知しました" },
+    { "if": "s3_together", "who": "ラーゼ", "text": "一人だとかえって時間がかかる\nいつも通り俺の助手につけ" },
+    { "if": "s3_together", "who": "エリテ", "text": "…承知しました" },
+    { "if": "s3_together", "who": "ラーゼ", "text": "ペースを上げて対応する\n遅れずについて来い" },
+    { "if": "s3_together", "who": "エリテ", "text": "…！\nはい！" },
+    { "who": "ラーゼ", "text": "始めるぞ" }
+  ],
+
+  "steps": [
+    { "id": "a1_open", "if": "s3_split", "patient": "p1",
+      "talk_before": [ { "who": "ラーゼ", "text": "（仮）1人目だ。開腹する" } ],
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "a1_in", "if": "s3_split", "patient": "p1_in",
+      "lesions": [
+        { "id": "tm", "type": "tumor", "pos": [40, 24] },
+        { "id": "pus", "type": "pus_pool", "pos": [40, 24] },
+        { "id": "v1", "type": "vessel", "pos": [66, 18], "rotate": -20 },
+        { "id": "v2", "type": "vessel", "pos": [68, 34], "rotate": 25, "appear": { "after": "v1" } }
+      ] },
+    { "id": "a1_close", "if": "s3_split", "patient": "p1",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ],
+      "continue_point": { "name": "2人目の治療から" } },
+
+    { "id": "a2_open", "if": "s3_split", "patient": "p2",
+      "talk_before": [ { "who": "ラーゼ", "text": "（仮）2人目。こいつも開腹だ" } ],
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "a2_in", "if": "s3_split", "patient": "p2_in",
+      "lesions": [
+        { "id": "lac", "type": "laceration", "pos": [34, 20], "rotate": 15 },
+        { "id": "tm", "type": "tumor", "pos": [64, 26] },
+        { "id": "mal", "type": "injection_anesthesia", "pos": [64, 26] }
+      ] },
+    { "id": "a2_close", "if": "s3_split", "patient": "p2",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ],
+      "continue_point": { "name": "3人目の治療から" } },
+
+    { "id": "a3_open", "if": "s3_split", "patient": "p3",
+      "talk_before": [ { "who": "ラーゼ", "text": "（仮）3人目。こいつが一番ひどい" } ],
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "a3_in", "if": "s3_split", "patient": "p3_in",
+      "lesions": [
+        { "id": "big", "type": "big_shard", "pos": [36, 30], "rotate": -10 },
+        { "id": "lac", "type": "laceration", "pos": [62, 16], "points": [[-10, 0], [-3, 2], [4, 0], [10, 2]] },
+        { "id": "v1", "type": "vessel", "pos": [64, 36], "appear": { "after_sec": 20 } },
+        { "id": "b1", "type": "blood_pool", "pos": [48, 14], "appear": { "after_sec": 35 } }
+      ] },
+    { "id": "a3_close", "if": "s3_split", "patient": "p3",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ],
+      "talk_after": [ { "who": "ラーゼ", "text": "（仮）こっちは終わった。エリテのほうは…" } ] },
+
+    { "id": "b1_open", "if": "s3_together", "patient": "p1",
+      "talk_before": [ { "who": "ラーゼ", "text": "（仮）1人目だ。開腹する" }, { "who": "エリテ", "text": "（仮）はい！" } ],
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "b1_in", "if": "s3_together", "patient": "p1_in",
+      "lesions": [
+        { "id": "v1", "type": "vessel", "pos": [40, 22] },
+        { "id": "b1", "type": "blood_pool", "pos": [64, 28] }
+      ] },
+    { "id": "b1_close", "if": "s3_together", "patient": "p1",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ],
+      "continue_point": { "name": "2人目の治療から" } },
+
+    { "id": "b2_open", "if": "s3_together", "patient": "p2",
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "b2_in", "if": "s3_together", "patient": "p2_in",
+      "lesions": [ { "id": "lac", "type": "laceration", "pos": [50, 24] } ] },
+    { "id": "b2_close", "if": "s3_together", "patient": "p2",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ],
+      "continue_point": { "name": "3人目の治療から" } },
+
+    { "id": "b3_open", "if": "s3_together", "patient": "p3",
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "b3_in", "if": "s3_together", "patient": "p3_in",
+      "lesions": [ { "id": "tm", "type": "tumor", "pos": [50, 24] } ] },
+    { "id": "b3_close", "if": "s3_together", "patient": "p3",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ],
+      "talk_after": [ { "who": "エリテ", "text": "（仮）開腹の3人は完了です\n残りは外傷の3人です" } ],
+      "continue_point": { "name": "4人目（外傷）の治療から" } },
+
+    { "id": "b4", "if": "s3_together", "patient": "p4",
+      "lesions": [
+        { "id": "c1", "type": "scratch", "pos": [28, 18], "rotate": 10 },
+        { "id": "c2", "type": "scratch", "pos": [70, 30], "rotate": -25 },
+        { "id": "sh", "type": "shard", "pos": [50, 24] }
+      ],
+      "continue_point": { "name": "5人目（外傷）の治療から" } },
+    { "id": "b5", "if": "s3_together", "patient": "p5",
+      "lesions": [
+        { "id": "hm", "type": "hematoma", "pos": [36, 28] },
+        { "id": "c1", "type": "scratch", "pos": [66, 18], "rotate": 30 }
+      ],
+      "continue_point": { "name": "6人目（外傷）の治療から" } },
+    { "id": "b6", "if": "s3_together", "patient": "p6",
+      "lesions": [
+        { "id": "big", "type": "big_shard", "pos": [42, 22], "rotate": 15 },
+        { "id": "b1", "type": "blood_pool", "pos": [68, 32] }
+      ],
+      "talk_after": [ { "who": "エリテ", "text": "（仮）全員、処置が終わりました" } ] }
+  ],
+
+  "talk_after": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ラーゼ", "text": "終わったか…" },
+    { "who": "エリテ", "text": "…なんとか" },
+    { "who": "ラーゼ", "text": "あれだけの人数、俺一人では対応できなかった" },
+    { "who": "エリテ", "text": "そんな、先生のおかげです" },
+    { "who": "ラーゼ", "text": "助かったよ、あんた…\n…いや、エリテ" },
+    { "who": "エリテ", "text": "ラーゼ先生…\n…ありがとうございます" },
+    { "who": "ラーゼ", "text": "…先生はよせ" }
+  ],
+
+  "on_clear": { "set_flags": ["stage3_cleared"] }
+}

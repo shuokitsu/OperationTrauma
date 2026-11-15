@@ -1,0 +1,62 @@
+{
+  "_note": "システムデータ。ゲーム全体の調整用の値。難易度の名前と係数、配点などは仮の値（遊びながら調整する）",
+
+  "difficulties": [
+    { "id": "easy", "name": "やさしい", "coef": { "damage": 0.7, "decay": 0.7, "heal": 1.3, "anesthesia_duration": 1.3, "anesthesia_stretch": 1.3, "recover": 1.3, "time_limit": 1.3, "start_vital": 1.3, "dose_limit": 1.3, "score_time": 1.3 } },
+    { "id": "normal", "name": "ふつう", "coef": {} },
+    { "id": "hard", "name": "むずかしい", "coef": { "damage": 1.3, "decay": 1.3, "heal": 0.7, "anesthesia_duration": 0.7, "anesthesia_stretch": 0.7, "recover": 0.7, "time_limit": 0.7, "start_vital": 0.7, "dose_limit": 0.7, "score_time": 0.7 } }
+  ],
+  "default_difficulty": "normal",
+
+  "_note_score": "病巣の点数（100点満点）の既定値。病巣データの score で病巣ごとに上書きできる",
+  "default_score": {
+    "time": { "points": 60, "full_within_sec": 15, "zero_after_sec": 60 },
+    "no_miss": 20, "no_skip": 20, "fail_penalty": 10
+  },
+  "ratings": [
+    { "name": "Cool", "min": 90 }, { "name": "Good", "min": 70 }, { "name": "Fine", "min": 40 }, { "name": "Bad", "min": 0 }
+  ],
+  "ranks": [
+    { "name": "XS", "min": 1.0 }, { "name": "S", "min": 0.95 }, { "name": "A", "min": 0.8 },
+    { "name": "B", "min": 0.6 }, { "name": "C", "min": 0.4 }, { "name": "D", "min": 0 }
+  ],
+
+  "subtitle_next_sec": 5,
+  "text_speed": { "slow": 20, "normal": 40, "fast": 90 },
+  "talk_fade": { "out_sec": 0.2, "hold_sec": 0.1, "in_sec": 0.2 },
+  "ecg": { "bpm_green": 60, "bpm_yellow": 120, "bpm_red": 180, "bpm_anesthesia": 45, "transition_sec": 3 },
+  "gameover_wait_sec": 1.5,
+  "training_random_count": 5,
+
+  "_note_characters": "話者の名前ごとの立ち絵（stand）と、出す側（side）。face（顔画像）が無いときは立ち絵の上の部分を使う。ここに無い名前（ナレーションなど）は立ち絵なし",
+  "characters": {
+    "ラーゼ": { "stand": "char_protagonist.jpg", "side": "left" },
+    "エリテ": { "stand": "char_assistant.jpg", "side": "right" },
+    "ベクター": { "stand": "char_broker.svg", "side": "right" },
+    "患者": { "stand": "char_patient.svg", "side": "right" }
+  },
+
+  "title_bg": "bg_title.svg",
+  "briefing": { "bg": "bg_title.svg", "bgm": "briefing" },
+
+  "_note_gameover": "ステージデータに gameover_talks が無いときに使う、原因ごとのゲームオーバーの会話",
+  "default_gameover_talks": {
+    "vital": [ { "who": "ラーゼ", "text": "…駄目だ。\n手が、届かなかった…" } ],
+    "dose": [ { "who": "ラーゼ", "text": "しまった、薬を打ちすぎた…！" } ],
+    "timeout": [ { "who": "ラーゼ", "text": "時間をかけすぎた…\nこれ以上は患者がもたない" } ]
+  },
+
+  "common_images": [
+    "bg_title.svg", "bg_clinic.svg",
+    "char_protagonist.jpg", "char_assistant.jpg", "char_broker.svg", "char_patient.svg"
+  ],
+  "sounds": {
+    "se": [
+      "alarm", "cancel", "checkpoint", "clear", "cut", "dose_warn", "drain", "ecg_beep", "ecg_flatline", "gameover",
+      "gel", "grab", "heal", "heartbeat", "inject", "invalid", "lesion_appear", "miss", "put", "rank",
+      "rate_bad", "rate_cool", "rate_fine", "rate_good", "rate_ok", "select", "stitch", "success",
+      "tape_lift", "tape_stick", "text"
+    ],
+    "bgm": ["title", "talk", "briefing", "surgery", "result", "gameover"]
+  }
+}

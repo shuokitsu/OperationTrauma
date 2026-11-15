@@ -1,0 +1,11 @@
+{
+  "_note": "ステージの一覧。x・y はステージセレクト画面での位置（左上）、next は線で結ぶ先。ステージを足すときは、ここに1行足してファイルを置く",
+  "stages": [
+    { "id": "stage1", "file": "stage1.json", "x": 60, "y": 220, "next": ["stage2"] },
+    { "id": "stage2", "file": "stage2.json", "x": 520, "y": 220, "next": ["stage3"] },
+    { "id": "stage3", "file": "stage3.json", "x": 980, "y": 220, "next": ["stage4"] },
+    { "id": "stage4", "file": "stage4.json", "x": 1440, "y": 220, "next": ["stage5", "stage6"] },
+    { "id": "stage5", "file": "stage5.json", "x": 1040, "y": 600, "next": [] },
+    { "id": "stage6", "file": "stage6.json", "x": 1480, "y": 600, "next": [] }
+  ]
+}

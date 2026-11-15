@@ -1,0 +1,47 @@
+{
+  "_note": "scenario.md が作成中のため、会話も手術の中身もすべて仮の内容。ステージ4で投薬した場合に進む。クリアでバッドエンド",
+  "name": "ステージ5",
+  "title": "（作成中）",
+  "unlock": { "flags": ["stage4_dosed"] },
+  "goals": { "clear": "（仮）患者を治療する", "effort": [] },
+
+  "patients": {
+    "body": { "images": ["patient_abdomen_0.jpg"], "fallback_images": ["patient_skin_0.jpg"] },
+    "inside": { "images": ["patient_internal_0.svg", "patient_internal_1.svg", "patient_internal_2.svg"] }
+  },
+  "start_vital": 50,
+  "natural_decay": { "interval_sec": 4, "amount": 1 },
+  "time_limit_sec": 480,
+  "coefficients": {},
+
+  "talk_before": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ナレーション", "text": "（作成中）" }
+  ],
+  "briefing": [
+    { "who": "ラーゼ", "text": "（作成中）" }
+  ],
+
+  "steps": [
+    { "id": "open", "patient": "body",
+      "lesions": [ { "id": "inc", "type": "incision", "pos": [50, 33] } ] },
+    { "id": "inside", "patient": "inside",
+      "lesions": [
+        { "id": "tm", "type": "tumor", "pos": [42, 24] },
+        { "id": "mal", "type": "injection_anesthesia", "pos": [42, 24] },
+        { "id": "pus", "type": "pus_pool", "pos": [66, 20] },
+        { "id": "lac", "type": "laceration", "pos": [66, 34], "appear": { "after": "pus" } }
+      ],
+      "continue_point": { "name": "閉腹から" } },
+    { "id": "close", "patient": "body",
+      "lesions": [ { "id": "cl", "type": "closure", "pos": [50, 33] } ] }
+  ],
+
+  "talk_after": [
+    { "bg": "bg_clinic.svg", "bgm": "talk" },
+    { "who": "ナレーション", "text": "（作成中）" }
+  ],
+
+  "on_clear": { "set_flags": ["stage5_cleared"] },
+  "ending": { "title": "BAD END", "text": "（作成中）" }
+}

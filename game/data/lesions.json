@@ -1,0 +1,174 @@
+{
+  "_note": "病巣データ（種類）。書き方は data/README.md。回復値・ダメージ値・時間・配点は仮の値（遊びながら調整する）",
+
+  "scratch": {
+    "name": "切り傷", "look": "scratch", "shape": "line",
+    "points": [[-7, 0], [0, 1], [7, 0]], "width": 1,
+    "steps": [ { "tool": "healjelly", "action": "cover", "heal": 1 } ],
+    "vital_drain": { "interval_sec": 6, "amount": 1 },
+    "score": { "time": { "full_within_sec": 8, "zero_after_sec": 40 } },
+    "_note": "メスの空振りなどで実行中に出たものは、バイタル減少を持たない",
+    "when_spawned": { "vital_drain": null }
+  },
+
+  "blood_pool": {
+    "name": "血溜まり", "look": "pool", "kind": "pool", "color": "blood",
+    "points": [[0, 0]],
+    "pool": { "amount": 25, "grow_per_sec": 0.3, "max": 50 },
+    "steps": [ { "tool": "drain", "action": "suck", "heal": 1 } ],
+    "vital_drain": { "interval_sec": 5, "amount": 1 },
+    "score": { "time": { "full_within_sec": 6, "zero_after_sec": 30 } }
+  },
+
+  "pus_pool": {
+    "name": "膿", "look": "pool", "kind": "pool", "color": "pus",
+    "points": [[0, 0]],
+    "pool": { "amount": 25, "grow_per_sec": 0.2, "max": 45 },
+    "steps": [ { "tool": "drain", "action": "suck", "heal": 1 } ],
+    "vital_drain": { "interval_sec": 6, "amount": 1 },
+    "score": { "time": { "full_within_sec": 6, "zero_after_sec": 30 } }
+  },
+
+  "laceration": {
+    "name": "裂傷", "look": "laceration", "shape": "line",
+    "points": [[-8, 0], [0, 2], [8, 0]], "width": 1.5,
+    "with": [ { "lesion": "blood_pool", "at": "points", "overrides": { "pool": { "amount": 14, "grow_per_sec": 0.15, "max": 30 }, "vital_drain": null } } ],
+    "steps": [
+      { "tool": "drain", "action": "pools", "heal": 1 },
+      { "tool": "tweezers", "action": "tap", "radius": 3, "heal": 1 },
+      { "tool": "needle", "action": "stitch", "optional": true, "heal": 2, "fail_damage": 1 },
+      { "tool": "healjelly", "action": "cover", "heal": 3 }
+    ],
+    "respawn": { "lesion": "blood_pool", "after_sec": 14, "before_step": 3, "overrides": { "pool": { "amount": 14, "grow_per_sec": 0.15, "max": 30 }, "vital_drain": null } },
+    "vital_drain": { "interval_sec": 3, "amount": 1 },
+    "score": { "time": { "full_within_sec": 30, "zero_after_sec": 100 } }
+  },
+
+  "shard": {
+    "name": "破片痕", "look": "shard", "shape": "point",
+    "points": [[0, 0]], "body_radius": 2.5,
+    "steps": [
+      { "tool": "tweezers", "action": "carry", "dest": "tray", "heal": 1, "fail_damage": 2 },
+      { "tool": "healjelly", "action": "cover", "width": 2, "heal": 1 }
+    ],
+    "vital_drain": { "interval_sec": 5, "amount": 1 },
+    "score": { "time": { "full_within_sec": 12, "zero_after_sec": 50 } }
+  },
+
+  "big_shard": {
+    "name": "大型破片痕", "look": "laceration", "shape": "line",
+    "points": [[-6, 0], [0, 0], [6, 0]], "width": 1.5,
+    "steps": [
+      { "tool": "scalpel", "action": "cut", "heal": 1, "fail_damage": 2 },
+      { "tool": "tweezers", "action": "carry", "dest": "tray", "heal": 1, "fail_damage": 2 },
+      { "tool": "tweezers", "action": "tap", "radius": 3, "heal": 1 },
+      { "tool": "needle", "action": "stitch", "optional": true, "heal": 2, "fail_damage": 1 },
+      { "tool": "healjelly", "action": "cover", "heal": 3 }
+    ],
+    "vital_drain": { "interval_sec": 4, "amount": 1 },
+    "score": { "time": { "full_within_sec": 35, "zero_after_sec": 110 } }
+  },
+
+  "incision": {
+    "name": "切開", "look": "incision", "shape": "line", "keep_after_done": true,
+    "points": [[-10, 0], [-5, 0], [0, 0], [5, 0], [10, 0]], "width": 1,
+    "steps": [
+      { "tool": "injector", "action": "inject", "drug": "anesthesia", "amount": 30, "set": "inject" },
+      { "tool": "healjelly", "action": "cover", "optional": true, "skip_damage": 1, "heal": 0 },
+      { "tool": "scalpel", "action": "cut", "heal": 2, "fail_damage": 2 }
+    ],
+    "sets": { "inject": [[-10, 0]] },
+    "score": { "time": { "full_within_sec": 20, "zero_after_sec": 70 } }
+  },
+
+  "closure": {
+    "name": "閉腹", "look": "closure", "shape": "line", "keep_after_done": true,
+    "points": [[-10, 0], [-5, 0], [0, 0], [5, 0], [10, 0]], "width": 1,
+    "steps": [
+      { "tool": "needle", "action": "stitch", "heal": 2, "fail_damage": 1 },
+      { "tool": "healjelly", "action": "cover", "optional": true, "skip_penalty": 65, "heal": 1 },
+      { "tool": "taping", "action": "tape", "heal": 2 }
+    ],
+    "score": { "time": { "full_within_sec": 20, "zero_after_sec": 70 } }
+  },
+
+  "hematoma": {
+    "name": "血腫", "look": "hematoma", "shape": "line", "color": "blood",
+    "points": [[-3, 0], [3, 0]], "width": 2,
+    "steps": [
+      { "tool": "scalpel", "action": "cut", "heal": 1, "fail_damage": 2,
+        "spawn": { "lesion": "blood_pool", "overrides": { "pool": { "amount": 22, "grow_per_sec": 0, "max": 22 }, "vital_drain": null } } },
+      { "tool": "drain", "action": "pools", "heal": 1 },
+      { "tool": "healjelly", "action": "cover", "heal": 2 }
+    ],
+    "vital_drain": { "interval_sec": 6, "amount": 1 },
+    "score": { "time": { "full_within_sec": 20, "zero_after_sec": 70 } }
+  },
+
+  "atheroma": {
+    "name": "粉瘤", "look": "hematoma", "shape": "line", "color": "pus",
+    "points": [[-3, 0], [3, 0]], "width": 2,
+    "steps": [
+      { "tool": "scalpel", "action": "cut", "heal": 1, "fail_damage": 2,
+        "spawn": { "lesion": "pus_pool", "overrides": { "pool": { "amount": 22, "grow_per_sec": 0, "max": 22 }, "vital_drain": null } } },
+      { "tool": "drain", "action": "pools", "heal": 1 },
+      { "tool": "healjelly", "action": "cover", "heal": 2 }
+    ],
+    "vital_drain": { "interval_sec": 6, "amount": 1 },
+    "score": { "time": { "full_within_sec": 20, "zero_after_sec": 70 } }
+  },
+
+  "tumor": {
+    "name": "腫瘍", "look": "tumor", "shape": "ring",
+    "_note": "points は円形に並んだ8つの点（メスの通過点）。lr・ud はつまむ点、lr_line・ud_line は縫う線",
+    "points": [[6, 0], [4.24, 4.24], [0, 6], [-4.24, 4.24], [-6, 0], [-4.24, -4.24], [0, -6], [4.24, -4.24]],
+    "sets": {
+      "lr": [[-4, 0], [4, 0]], "lr_line": [[-5, 0], [0, 0], [5, 0]],
+      "ud": [[0, -4], [0, 4]], "ud_line": [[0, -5], [0, 0], [0, 5]]
+    },
+    "steps": [
+      { "tool": "scalpel", "action": "cut", "closed": true, "heal": 1, "fail_damage": 3 },
+      { "tool": "tweezers", "action": "carry", "dest": "tray", "heal": 1, "fail_damage": 2 },
+      { "tool": "tweezers", "action": "tap", "set": "lr", "radius": 3, "heal": 1 },
+      { "tool": "needle", "action": "stitch", "set": "lr_line", "heal": 1, "fail_damage": 1 },
+      { "tool": "tweezers", "action": "tap", "set": "ud", "radius": 3, "heal": 1 },
+      { "tool": "needle", "action": "stitch", "set": "ud_line", "heal": 3, "fail_damage": 1 }
+    ],
+    "vital_drain": { "interval_sec": 4, "amount": 1 },
+    "score": { "time": { "full_within_sec": 45, "zero_after_sec": 150 } }
+  },
+
+  "vessel": {
+    "name": "血管接合", "look": "vessel", "shape": "line", "keep_after_done": true,
+    "points": [[-5, 0], [5, 0]], "width": 1.5,
+    "steps": [
+      { "tool": "tweezers", "action": "connect", "radius": 3, "heal": 1, "fail_damage": 2 },
+      { "tool": "needle", "action": "stitch", "count": 3, "heal": 2, "fail_damage": 1 }
+    ],
+    "vital_drain": { "interval_sec": 3, "amount": 1 },
+    "score": { "time": { "full_within_sec": 18, "zero_after_sec": 70 } }
+  },
+
+  "injection_antibiotic": {
+    "name": "注射投薬（抗菌剤）", "look": "inject", "shape": "point",
+    "points": [[0, 0]], "body_radius": 3,
+    "steps": [ { "tool": "injector", "action": "inject", "drug": "antibiotic", "amount": 60, "heal": 2 } ],
+    "vital_drain": { "interval_sec": 5, "amount": 1 },
+    "score": { "time": { "full_within_sec": 10, "zero_after_sec": 45 } }
+  },
+
+  "injection_anesthesia": {
+    "name": "注射投薬（麻酔）", "look": "inject", "shape": "point",
+    "_note": "腫瘍の上に重ねて出すと悪性腫瘍を表す。患部に打つ麻酔なので、いつもの麻酔の効果は出ず、限度量にも数えない",
+    "points": [[0, 0]], "body_radius": 3,
+    "steps": [ { "tool": "injector", "action": "inject", "drug": "anesthesia", "amount": 40, "heal": 1 } ],
+    "score": { "time": { "full_within_sec": 10, "zero_after_sec": 45 } }
+  },
+
+  "injection_mystery": {
+    "name": "投薬", "look": "inject", "shape": "point",
+    "_note": "ステージ4で使う。ベクターから渡された薬を打つ",
+    "points": [[0, 0]], "body_radius": 3,
+    "steps": [ { "tool": "injector", "action": "inject", "drug": "mystery", "amount": 80 } ]
+  }
+}
